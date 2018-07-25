@@ -36,7 +36,7 @@ void setup() {
 void updateMatrix(int col) {
   byte1 = 0x00;
   for (int row = 0; row < 4; row++){
-    byte1 = byte1 + (matrix[row+col*4] << row); // ^ 0xFF; //invert since we want to pull low for active drain
+    byte1 = byte1 + (matrix[(3-row)+col*4] << row); // ^ 0xFF; //invert since we want to pull low for active drain
     //byte2 = rows[col];
     //byte2 = 0xFF;
   }
