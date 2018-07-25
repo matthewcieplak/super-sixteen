@@ -13,8 +13,10 @@ int digit = 0;
 int counterTime = 0;
 int num_display = 0;
 int digit_display = 0;
-int lastAnalogValue = 0;
-int analogValue = 0;
+int lastAnalogValues[2];
+int analogValues[2];
+float calibration_value = 1.0;
+
 #define SEG_A 2
 #define SEG_B 3
 #define SEG_C 4
@@ -82,6 +84,11 @@ void setup() {
 //assuming dac single channel, gain=2
 void setOutput(unsigned int val)
 {
+  if (val > 4095){
+    val = 4095;
+  } else if (val < 0) {
+    val = 0;
+  }
   byte lowByte = val & 0xff;
   byte highByte = ((val >> 8) & 0xff) | 0x10;
 
@@ -102,11 +109,16 @@ void loop() {
 void readInput(){
   if (timeElapsed2 > 10) {
     timeElapsed2 = 0;
-    analogValue = analogRead(0);
-    if (abs(analogValue - lastAnalogValue) > 4) {
-      num_display = analogValue / 11.60;
-      lastAnalogValue = analogValue;
-      setOutput(num_display * 11.63 * 4);
+    analogValues[0] = analogRead(0);
+    analogValues[1] = analogRead(1);
+
+    for(int i = 0; i < 2; i++) {
+      if (abs(analogValues[i] - lastAnalogValues[i]) > 4) {
+        lastAnalogValues[i] = analogValues[i];
+        num_display = analogValues[0] / 11.60;
+        calibration_value = (float(analogValues[1]) + 1024.0) / 1500.0;
+        setOutput(num_display * 11.63 * 4 * calibration_value);
+      }
     }
   }
 }
