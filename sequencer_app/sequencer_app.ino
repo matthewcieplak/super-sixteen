@@ -10,6 +10,24 @@ elapsedMillis timekeeper;
 #define GATE_PIN 0
 #define LDAC_PIN 1
 #define CLOCK_OUT_PIN 2
+#define CLOCK_IN_PIN 3
+#define RESET_PIN 4
+
+#define GLIDE_PIN 5
+#define REPEAT_PIN 6
+#define RECORD_PIN 7
+
+#define GLIDE_LED_PIN 3 //this one's on display driver chip, not mcu
+#define SAVE_PIN 4 //these four on display driver chip, not MCU
+#define LOAD_PIN 5 //ditto
+#define PLAY_PIN 6 //ditto
+#define SHIFT_PIN 7 //ditto
+
+const int function_buttons[4] = {SAVE_PIN, LOAD_PIN, PLAY_PIN, SHIFT_PIN};
+int function_button_matrix[4] = {1, 1, 1, 1}; //store status of buttons in/out
+const int aux_buttons[3] = {GLIDE_PIN, REPEAT_PIN, RECORD_PIN};
+int aux_button_matrix[3] = {1, 1, 1};
+
 const int CS0_PIN = 10;
 const int CS1_PIN = 9;
 const int GAIN_1 = 0x1;
@@ -17,6 +35,8 @@ const int GAIN_2 = 0x0;
 
 
 uint8_t current_step = 0;
+uint8_t active_step = 0;
+uint8_t sequence_length = 16;
 const int led_rows[4] = {0x80, 0x40, 0x20, 0x10};
 //const int current_step_rows[4] = {0xE0, 0xD0, 0xB0, 0x70};
 int step_map[16]       = {3, 2, 1, 0, 0, 1, 2, 3, 3, 2, 1, 0, 0, 1, 2, 3}; //rows are wired symmetrically rather than sequentially
@@ -30,6 +50,7 @@ int cv_matrix[16];
 bool step_matrix[16]   = {1, 0, 0, 0, 1, 1, 0, 0, 1, 1, 1, 0, 1, 1, 1, 1};
 bool led_matrix[16]    = {1, 0, 0, 0, 1, 1, 0, 0, 1, 1, 1, 0, 1, 1, 1, 1};
 bool button_matrix[16] = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
+bool glide_matrix[16];
 //bool current_step_matrix[16] = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
 bool gate_active = false;
 bool clock_active = false;
@@ -46,6 +67,8 @@ int digit_display[3] = {0, 0, 0};
 #define OCTAVE_PARAM 2
 #define DURATION_PARAM 3
 #define CV_PARAM 4
+
+int analog_params[4] = {PITCH_PARAM, OCTAVE_PARAM, DURATION_PARAM, CV_PARAM};
 
 int display_param = PITCH_PARAM;
 
@@ -142,25 +165,27 @@ void initializeDisplay() {
   for (int pin = 0; pin < 16; pin++) {
     if (pin >= 4 && pin < 8) {
       DisplayDriver.pinMode(pin, INPUT_PULLUP); //use these for reading in 4 top buttons
+    } else {
+      DisplayDriver.pinMode(pin, OUTPUT);
     }
-    DisplayDriver.pinMode(pin, OUTPUT);
-    DisplayDriver.writePort(0x0000);
+    //DisplayDriver.writePort(0x0000);
   }
 }
 
 void initializeButtons() {
   pinMode(A4, INPUT_PULLUP); //encoder A
   pinMode(A5, INPUT_PULLUP); //encoder B
-  //  pinMode(11, INPUT_PULLUP); //glide button
-  //  pinMode(12, INPUT_PULLUP); //mutate button
-  //  pinMode(13, INPUT_PULLUP); //repeat button
+  pinMode(GLIDE_PIN, INPUT_PULLUP); //glide button
+  pinMode(REPEAT_PIN, INPUT_PULLUP); //repeat button
+  pinMode(RECORD_PIN, INPUT_PULLUP); //record button
 
-  //  pinMode(5, INPUT); //clock in (external pullup)
+  pinMode(GATE_PIN, OUTPUT); //gate
+  
+  //  pinMode(LDAC_PIN, OUTPUT); //LDAC
+  //  pinMode(CLOCK_OUT_PIN, OUTPUT); //clock out
+  //  pinMode(CLOCK_IN_PIN, INPUT); //clock in (external pullup)
   //  pinMode(6, INPUT); //reset in (external pullup)
   //
-  pinMode(GATE_PIN, OUTPUT); //gate
-  //  pinMode(LDAC_PIN, OUTPUT); //LDAC
-  //pinMode(CLOCK_OUT_PIN, OUTPUT); //clock out
 }
 
 
@@ -187,41 +212,71 @@ void readButtons(int row) {
   MatrixDriver.digitalWrite(row, LOW);
   for (int ii = 0; ii < 4; ii++) {
     int stepnum = row * 4 + ii;
-    //    //check each bit in the byte and see if it's pulled low
+    //    //check each bit in the byte and see if it's pulled low -- to reduce SPI overhead
     //    bool value = (button_rows[row] & (0x08 >> col)); //step_map[row*4+col])); //pins backwards again, iterate R-L by rightwards bitshift
-    //    if (value != button_matrix[stepnum]) {
-    //      button_matrix[stepnum] = value; //store button state
-    //      if (value == 0){ //toggle step status when button is pressed in
-    //        step_matrix[stepnum] = !step_matrix[stepnum];
-    //        led_matrix[stepnum] = !led_matrix[stepnum];
-    //      }
-    //    }
-    //
-    //
     bool value = MatrixDriver.digitalRead(button_map[stepnum] + 4);
     if (value != button_matrix[stepnum]) { //detect when button changes state
       selected_step = stepnum;
       button_matrix[stepnum] = value; //store button state
       if (value == 0) { //toggle step status when button is pressed in
-        step_matrix[stepnum] = !step_matrix[stepnum];
-        led_matrix[stepnum] = !led_matrix[stepnum];
-
-        //update display to show currently selected step value if applicable
-        switch(display_param) {
-          //case TEMPO_PARAM: break
-          case PITCH_PARAM:    num_display = pitch_matrix[stepnum]; break;
-          case OCTAVE_PARAM:   num_display = octave_matrix[stepnum]; break;
-          case DURATION_PARAM: num_display = duration_matrix[stepnum]; break;
-          case CV_PARAM:       num_display = cv_matrix[stepnum]; break;
-        }
-        setDisplayNum();
-        //Serial.print("Pressed ");
-        //Serial.print(stepnum);
+        selectStep(stepnum); 
       }
     }
-
-  }
+  } 
   MatrixDriver.digitalWrite(row, HIGH);
+
+  int function_button = DisplayDriver.digitalRead(function_buttons[row]); //get pins 4-7 of display driver chip for buttons near display
+  if (function_button != function_button_matrix[row]) {
+    function_button_matrix[row] = function_button;
+    if (function_button == 0) {
+      switch(function_buttons[row]) {
+        case SHIFT_PIN: //todo write shift fn
+        case PLAY_PIN: //todo write play fn
+        case LOAD_PIN: //todo write load fn
+        case SAVE_PIN: //todo write save fn
+        default:
+          num_display = (row+5) * 111;
+          setDisplayNum();
+      }
+    }
+  }
+
+  if (aux_buttons[row]) {
+    int aux_button = digitalRead(aux_buttons[row]);
+    if (aux_button != aux_button_matrix[row]) {
+      aux_button_matrix[row] = aux_button;
+      if (aux_button == 0) { //take action on pressed, not depressed
+        switch(aux_buttons[row]) {
+          case GLIDE_PIN: 
+            glide_matrix[selected_step] = !glide_matrix[selected_step];
+            DisplayDriver.digitalWrite(GLIDE_LED_PIN, glide_matrix[selected_step] ? HIGH : LOW); //glide LED
+            break;
+          case RECORD_PIN: //todo write record fn
+          case REPEAT_PIN: //todo write repeat fn
+          default: 
+           num_display = (row+1) * 222;
+           setDisplayNum();
+        }
+      }
+    }
+  }
+}
+
+void selectStep(unsigned int stepnum) {
+  step_matrix[stepnum] = !step_matrix[stepnum];
+  led_matrix[stepnum] = !led_matrix[stepnum];
+  DisplayDriver.digitalWrite(GLIDE_LED_PIN, glide_matrix[stepnum]); //glide LED
+
+
+  //update display to show currently selected step value if applicable
+  switch(display_param) {
+    //case TEMPO_PARAM: break
+    case PITCH_PARAM:    num_display = pitch_matrix[stepnum]; break;
+    case OCTAVE_PARAM:   num_display = octave_matrix[stepnum]; break;
+    case DURATION_PARAM: num_display = duration_matrix[stepnum]; break;
+    case CV_PARAM:       num_display = cv_matrix[stepnum]; break;
+  }
+  setDisplayNum();
 }
 
 //assuming dac single channel, gain=2
@@ -273,29 +328,36 @@ void increment_step() {
       current_step = 0;
     }
     led_matrix[current_step] = !step_matrix[current_step]; //set current led
-    
-    //PITCH/OCTAVE
-    int note = (octave_matrix[current_step] + 4) * 12 + pitch_matrix[current_step];
-    setOutput(0, GAIN_2, 1, note * 11.63 * 4 * calibration_value); //convert from 0-88 to 0-4096, scale octave by calibration value
-    
-    //CV
-    //setOutput(0, GAIN_2, 1, cv_matrix[current_step] * 40.96);
 
-    //GATE
-    //if (!gate_active) {
-      digitalWrite(GATE_PIN, step_matrix[current_step] ? HIGH : LOW);
-      gate_active = step_matrix[current_step];
-    //}
-
-    //CLOCK
-    digitalWrite(CLOCK_OUT_PIN, HIGH);
-    clock_active = true;
+    if (step_matrix[current_step]) {
+      //PITCH/OCTAVE
+      int note = (octave_matrix[current_step] + 4) * 12 + pitch_matrix[current_step];
+      setOutput(0, GAIN_2, 1, note * 11.63 * 4 * calibration_value); //convert from 0-88 to 0-4096, scale octave by calibration value
+      
+      //CV
+      //setOutput(0, GAIN_2, 1, cv_matrix[current_step] * 40.96);
+  
+      //GATE
+      active_step = current_step;
+      //if (!gate_active) {
+        digitalWrite(GATE_PIN, step_matrix[current_step] ? HIGH : LOW);
+        gate_active = step_matrix[current_step];
+      //}
+  
+      //CLOCK
+      digitalWrite(CLOCK_OUT_PIN, HIGH);
+      clock_active = true;
+    }
   }
 }
 
 void update_gate() {
   double percent_step = timekeeper / (double)tempo * 100.0;
-  if (gate_active && duration_matrix[current_step] < percent_step) {
+  int steps_advanced = current_step - active_step + 1;
+  if (steps_advanced < 1) {
+    steps_advanced = current_step + sequence_length - active_step + 1;
+  }
+  if (gate_active && duration_matrix[active_step] < percent_step * steps_advanced) {
     digitalWrite(GATE_PIN, LOW);
     gate_active == false;
   }
@@ -322,11 +384,9 @@ void multiplex_leds() {
 }
 
 void read_input() {
-  if (stepper % 10 == 0) {
-    if (stepper == 40) {
-      stepper = 0;
-    }
-
+  if (stepper > 10) {
+    stepper = 0;
+    
     read_encoder();
     
     
@@ -338,7 +398,11 @@ void read_input() {
     if (i > 3 || i < 0) return; //sometimes we get desynced by interrupts, and analogRead on a wrong pin is fatal
     analogValues[i] = analogRead(i);
 
-    if (abs(analogValues[i] - lastAnalogValues[i]) > 5) {
+    int change_threshold = 15;
+    if (display_param == analog_params[i]) {
+      change_threshold = 3; //increase sensitivity when param is selected, decrease otherwise to reduce accidental "bump" changes
+    }
+    if (abs(analogValues[i] - lastAnalogValues[i]) > change_threshold) {
       lastAnalogValues[i] = analogValues[i];
       switch (i) {
         case 0: setPitch(analogValues[0]); break;
