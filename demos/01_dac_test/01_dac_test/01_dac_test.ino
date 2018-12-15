@@ -1,6 +1,6 @@
 #include <SPI.h>
  
-const int PIN_CS = 10;
+const int PIN_CS = 9;
 const int GAIN_1 = 0x1;
 const int GAIN_2 = 0x0;
 int output_v = 0;
@@ -13,6 +13,8 @@ uint32_t counter = 0;
 void setup()
 {
   pinMode(PIN_CS, OUTPUT);
+  pinMode(3, OUTPUT); //LDAC
+  digitalWrite(3, LOW);
   SPI.begin();  
   SPI.setClockDivider(SPI_CLOCK_DIV2);
 }
@@ -34,22 +36,21 @@ void setOutput(byte channel, byte gain, byte shutdown, unsigned int val)
   byte lowByte = val & 0xff;
   byte highByte = ((val >> 8) & 0xff) | channel << 7 | gain << 5 | shutdown << 4;
    
-  PORTB &= 0xfb;
+  //PORTB &= 0xfb;
+  digitalWrite(PIN_CS, LOW);
   SPI.transfer(highByte);
   SPI.transfer(lowByte);
-  PORTB |= 0x4;
+  digitalWrite(PIN_CS, HIGH);
 }
 
 
-void loop(void) {
-
-    stepper++; 
-    if(stepper>tempo){ //If it's time to advance to the next step: 
-      stepper = 0;
-      counter += 32;
-      if (counter >= 4095) {
-        counter = 0;
-      }
-      setOutput(counter);
-    }
+void loop()
+{
+ //high-res triangular wave
+ for (int i=0; i < 4096; i+=32)   
+ {
+  setOutput(0, GAIN_2, 1, i);
+  setOutput(1, GAIN_2, 1, i);
+  //setOutput(i);
+ }
 }
