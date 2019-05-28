@@ -15,8 +15,8 @@ MCP23S17 DisplayDriver(&SPI, CS0_PIN, 0);
 
 int num_display = 0;
 int selected_step = 0;
-uint8_t current_step = 0;
-uint8_t active_step = 0;
+uint8_t current_step = 15;
+uint8_t active_step = 15;
 uint8_t sequence_length = 16;
 
 int pitch_matrix[16];
@@ -30,4 +30,5 @@ bool glide_matrix[16];
 
 int tempo = 150;
 bool shift_state = 0;
+bool play_active = 0;
 int control_mode = SEQUENCE_MODE;

@@ -25,11 +25,12 @@ void initializeButtons() {
 
 	pinMode(GATE_PIN, OUTPUT); //gate
 
-							   //  pinMode(LDAC_PIN, OUTPUT); //LDAC
-							   //  pinMode(CLOCK_OUT_PIN, OUTPUT); //clock out
-							   //  pinMode(CLOCK_IN_PIN, INPUT); //clock in (external pullup)
-							   //  pinMode(6, INPUT); //reset in (external pullup)
-							   
+
+    pinMode(CLOCK_OUT_PIN, OUTPUT); //clock out
+    pinMode(CLOCK_IN_PIN, INPUT); //clock in (external pullup)
+    pinMode(RESET_PIN, INPUT); //reset in (external pullup)						   
+	pinMode(LDAC_PIN, OUTPUT); //LDAC
+	digitalWrite(LDAC_PIN, LOW);
 }
 
 void readButtons(int row) {
@@ -120,6 +121,8 @@ void saveButton(bool state) { //use as calibrate button for now
 
 void playButton(bool state) {
 	if (state) {
+		play_active = 1;
+		timekeeper = 0;
 		num_display = 777;
 		setDisplayNum();
 	}

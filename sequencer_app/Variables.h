@@ -29,6 +29,7 @@ extern uint8_t sequence_length;
 
 extern int tempo;
 extern bool shift_state;
+extern bool play_active;
 
 const int SEQUENCE_MODE = 0;
 const int CALIBRATE_MODE = 1;

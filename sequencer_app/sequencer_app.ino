@@ -1,7 +1,7 @@
 #include "Calibrate.h"
 #include <Arduino.h>
 #include <string.h>
-#include <MCP23S17.h> //https://github.com/MajenkoLibraries/MCP23S17
+//#include <MCP23S17.h> //https://github.com/MajenkoLibraries/MCP23S17
 #include <SPI.h>
 #include <elapsedMillis.h>
 
@@ -46,7 +46,7 @@ void loop() {
 }
 
 void run_sequence() {
-	increment_step();
+	update_clock();
 	multiplex_leds();
 	read_input();
 	blink_step();

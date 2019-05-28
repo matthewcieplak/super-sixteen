@@ -33,7 +33,7 @@ void updateCalibration() {
 
 int setCalibratedOutput(double pitch) {
 	if (pitch > 96) {
-		pitch = 48;
+		pitch = 96;
 	}
 	int octave1 = pitch / 12; //nearest C at or below pitch
 	int octave2 = octave1 + ((int(pitch) % 12) > 0 ? 1 : 0); //nearest C above pitch, or equal if first is C
