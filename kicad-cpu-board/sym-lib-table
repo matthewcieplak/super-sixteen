@@ -1,0 +1,4 @@
+(sym_lib_table
+  (lib (name W25Q80DVSN)(type Legacy)(uri ${KIPRJMOD}/parts/W25Q80DVSN.lib)(options "")(descr ""))
+  (lib (name kicad-cpu-board-rescue)(type Legacy)(uri ${KIPRJMOD}/kicad-cpu-board-rescue.lib)(options "")(descr ""))
+)
