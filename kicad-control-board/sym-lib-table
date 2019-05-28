@@ -1,0 +1,7 @@
+(sym_lib_table
+  (lib (name ba56-12ywa)(type Legacy)(uri ${KIPRJMOD}/parts/ba56-12ywa.lib)(options "")(descr ""))
+  (lib (name TactSwitch4Pin)(type Legacy)(uri ${KIPRJMOD}/parts/TactSwitch4Pin.lib)(options "")(descr ""))
+  (lib (name W25Q80DVSN)(type Legacy)(uri ${KIPRJMOD}/parts/W25Q80DVSN.lib)(options "")(descr ""))
+  (lib (name microchip)(type Legacy)(uri ${KICAD_SYMBOL_DIR}/legacy/microchip.lib)(options "")(descr ""))
+  (lib (name kicad-control-board-rescue)(type Legacy)(uri ${KIPRJMOD}/kicad-control-board-rescue.lib)(options "")(descr ""))
+)
