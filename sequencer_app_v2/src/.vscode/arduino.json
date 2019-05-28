@@ -1,0 +1,6 @@
+{
+    "board": "arduino:avr:uno",
+    "programmer": "Atmel STK500 development board",
+    "sketch": "sequencer_app.ino",
+    "port": "COM4"
+}

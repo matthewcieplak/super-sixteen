@@ -1,0 +1,165 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{C5F80730-F44F-4478-BDAE-6634EFC2CA88}</ProjectGuid>
+    <RootNamespace>
+    </RootNamespace>
+    <ProjectName>sequencer_app</ProjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>
+    </PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>
+    </PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>
+    </PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>
+    </PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup />
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\sequencer_app;$(ProjectDir)..\..\libraries\MCP23S17-master;$(ProjectDir)..\..\..\..\..\..\Program Files (x86)\arduino-1.8.7\hardware\arduino\avr\libraries\SPI\src;$(ProjectDir)..\..\libraries\elapsedMillis-master;$(ProjectDir)..\..\..\..\..\..\Program Files (x86)\arduino-1.8.7\hardware\arduino\avr\libraries\EEPROM\src;$(ProjectDir)..\..\..\..\..\..\Program Files (x86)\arduino-1.8.7\libraries;$(ProjectDir)..\..\..\..\..\..\Program Files (x86)\arduino-1.8.7\hardware\arduino\avr\libraries;$(ProjectDir)..\..\libraries;$(ProjectDir)..\..\..\..\..\..\Program Files (x86)\arduino-1.8.7\hardware\arduino\avr\cores\arduino;$(ProjectDir)..\..\..\..\..\..\Program Files (x86)\arduino-1.8.7\hardware\arduino\avr\variants\standard;$(ProjectDir)..\..\..\..\..\..\Program Files (x86)\arduino-1.8.7\hardware\tools\avr\avr\include;$(ProjectDir)..\..\..\..\..\..\Program Files (x86)\arduino-1.8.7\hardware\tools\avr\avr\include\avr;$(ProjectDir)..\..\..\..\..\..\Program Files (x86)\arduino-1.8.7\hardware\tools\avr\lib\gcc\avr\4.8.1\include;$(ProjectDir)..\..\..\..\..\..\Program Files (x86)\arduino-1.8.7\hardware\tools\avr\lib\gcc\avr\4.9.2\include;$(ProjectDir)..\..\..\..\..\..\Program Files (x86)\arduino-1.8.7\hardware\tools\avr\lib\gcc\avr\4.9.3\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <ForcedIncludeFiles>$(ProjectDir)__vm\.sequencer_app.vsarduino.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <WholeProgramOptimization>false</WholeProgramOptimization>
+      <PreprocessorDefinitions>__AVR_ATmega328__;F_CPU=16000000L;ARDUINO=10807;ARDUINO_AVR_UNO;ARDUINO_ARCH_AVR;__cplusplus=201103L;_VMICRO_INTELLISENSE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\sequencer_app;$(ProjectDir)..\..\..\..\..\..\Program Files (x86)\arduino-1.8.7\hardware\arduino\avr\libraries\SPI\src;$(ProjectDir)..\..\libraries\MCP23S17-master;$(ProjectDir)..\..\libraries\elapsedMillis-master;$(ProjectDir)..\..\..\..\..\..\Program Files (x86)\arduino-1.8.7\libraries;$(ProjectDir)..\..\..\..\..\..\Program Files (x86)\arduino-1.8.7\hardware\arduino\avr\libraries;$(ProjectDir)..\..\libraries;$(ProjectDir)..\..\..\..\..\..\Program Files (x86)\arduino-1.8.7\hardware\arduino\avr\cores\arduino;$(ProjectDir)..\..\..\..\..\..\Program Files (x86)\arduino-1.8.7\hardware\arduino\avr\variants\standard;$(ProjectDir)..\..\..\..\..\..\Program Files (x86)\arduino-1.8.7\hardware\tools\avr\avr\include;$(ProjectDir)..\..\..\..\..\..\Program Files (x86)\arduino-1.8.7\hardware\tools\avr\avr\include\avr;$(ProjectDir)..\..\..\..\..\..\Program Files (x86)\arduino-1.8.7\hardware\tools\avr\lib\gcc\avr\4.8.1\include;$(ProjectDir)..\..\..\..\..\..\Program Files (x86)\arduino-1.8.7\hardware\tools\avr\lib\gcc\avr\4.9.2\include;$(ProjectDir)..\..\..\..\..\..\Program Files (x86)\arduino-1.8.7\hardware\tools\avr\lib\gcc\avr\4.9.3\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <ForcedIncludeFiles>$(ProjectDir)__vm\.sequencer_app.vsarduino.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <IgnoreStandardIncludePath>false</IgnoreStandardIncludePath>
+      <PreprocessorDefinitions>__AVR_ATmega328p__;__AVR_ATmega328P__;_VMDEBUG=1;F_CPU=16000000L;ARDUINO=10807;ARDUINO_AVR_UNO;ARDUINO_ARCH_AVR;__cplusplus=201103L;_VMICRO_INTELLISENSE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ProjectCapability Include="VisualMicro" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="sequencer_app.ino">
+      <FileType>CppCode</FileType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="AnalogIO.h">
+      <FileType>CppHeader</FileType>
+    </ClInclude>
+    <ClInclude Include="Buttons.h">
+      <FileType>CppHeader</FileType>
+    </ClInclude>
+    <ClInclude Include="Calibrate.h" />
+    <ClInclude Include="Display.h">
+      <FileType>CppHeader</FileType>
+    </ClInclude>
+    <ClInclude Include="Encoder.h">
+      <FileType>CppHeader</FileType>
+    </ClInclude>
+    <ClInclude Include="Font.h">
+      <FileType>CppHeader</FileType>
+    </ClInclude>
+    <ClInclude Include="LEDMatrix.h">
+      <FileType>CppHeader</FileType>
+    </ClInclude>
+    <ClInclude Include="Main.h">
+      <FileType>CppHeader</FileType>
+    </ClInclude>
+    <ClInclude Include="Pinout.h">
+      <FileType>CppHeader</FileType>
+    </ClInclude>
+    <ClInclude Include="Sequencer.h">
+      <FileType>CppHeader</FileType>
+    </ClInclude>
+    <ClInclude Include="Variables.h">
+      <FileType>CppHeader</FileType>
+    </ClInclude>
+    <ClInclude Include="__vm\.sequencer_app.vsarduino.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="AnalogIO.cpp" />
+    <ClCompile Include="Buttons.cpp" />
+    <ClCompile Include="Calibrate.cpp" />
+    <ClCompile Include="Display.cpp" />
+    <ClCompile Include="Encoder.cpp" />
+    <ClCompile Include="Font.cpp" />
+    <ClCompile Include="LEDMatrix.cpp" />
+    <ClCompile Include="Sequencer.cpp" />
+    <ClCompile Include="Variables.cpp" />
+  </ItemGroup>
+  <PropertyGroup>
+    <DebuggerFlavor>VisualMicroDebugger</DebuggerFlavor>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+  <ProjectExtensions>
+    <VisualStudio>
+      <UserProperties vm.upload.useprogrammer="1" vm.programmer_name="stk500" arduino.upload.port="COM4" />
+    </VisualStudio>
+  </ProjectExtensions>
+</Project>
