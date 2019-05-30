@@ -10,7 +10,6 @@ extern elapsedMillis timekeeper;
 extern elapsedMillis blinker;
 
 extern MCP23S17 ButtonDriver;
-extern MCP23S17 DisplayDriver;
 
 extern int pitch_matrix[16];
 extern int octave_matrix[16];

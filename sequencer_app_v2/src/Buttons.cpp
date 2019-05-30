@@ -6,85 +6,95 @@
 #include "Display.h"
 #include "Calibrate.h"
 
-int button_map[16] = { 3, 2, 1, 0, 0, 1, 2, 3, 3, 2, 1, 0, 0, 1, 2, 3 }; //rows are wired symmetrically rather than sequentially
+int button_map[16] = { 12, 13, 14, 15, 11, 10, 9, 8, 4, 5, 6, 7, 3, 2, 1, 0 }; //rows are wired symmetrically rather than sequentially
 bool button_matrix[16] = { 1,1,1,1, 1,1,1,1, 1,1,1,1, 1,1,1,1 };
 int saveCount = 0;
 
-const int function_buttons[4] = { SAVE_PIN, LOAD_PIN, PLAY_PIN, SHIFT_PIN };
-bool function_button_matrix[5] = { 0, 1, 1, 1, 1 }; //store status of buttons in/out  -- no idea why but first bit never toggles? works when offset by one - bad memory address?
-const int aux_buttons[3] = { GLIDE_PIN, REPEAT_PIN, RECORD_PIN };
-bool aux_button_matrix[3] = { 1, 1, 1 };
+const int function_buttons[7] = { SAVE_PIN, LOAD_PIN, PLAY_PIN, SHIFT_PIN, RECORD_PIN, REPEAT_PIN, GLIDE_PIN };
+bool function_button_matrix[8] = { 0, 1, 1, 1, 1, 1, 1, 1 }; //store status of buttons in/out  -- no idea why but first bit never toggles? works when offset by one - bad memory address?
+
+int row = 0;
+uint16_t buttons_state;
+uint16_t buttons_mask;
 
 
 void initializeButtons() {
+	pinMode(CS0_PIN, OUTPUT);
 	pinMode(ENC_A_PIN, INPUT_PULLUP); //encoder A
 	pinMode(ENC_B_PIN, INPUT_PULLUP); //encoder B
-	pinMode(GLIDE_PIN, INPUT_PULLUP); //glide button
-	pinMode(REPEAT_PIN, INPUT_PULLUP); //repeat button
-	pinMode(RECORD_PIN, INPUT_PULLUP); //record button
-
 	pinMode(GATE_PIN, OUTPUT); //gate
 
 
     pinMode(CLOCK_OUT_PIN, OUTPUT); //clock out
     pinMode(CLOCK_IN_PIN, INPUT); //clock in (external pullup)
     pinMode(RESET_PIN, INPUT); //reset in (external pullup)						   
-	pinMode(LDAC_PIN, OUTPUT); //LDAC
-	digitalWrite(LDAC_PIN, LOW);
+
+	SPI.setBitOrder(MSBFIRST);
+	ButtonDriver.begin();
+	for (int i = 0; i < 4; i++){
+		ButtonDriver.pinMode(i+4, OUTPUT);
+		ButtonDriver.digitalWrite(i+4, HIGH);		
+		ButtonDriver.pinMode(i, INPUT_PULLUP);
+		ButtonDriver.pinMode(i+8, INPUT_PULLUP);
+		ButtonDriver.pinMode(i+12, INPUT_PULLUP);
+	}
+	ButtonDriver.pinMode(15, OUTPUT);
+
 }
 
-void readButtons(int row) {
-	//Bank3.writePort(0, button_rows[row]);
-	//byte button_row = Bank3.readPort(0) & 0x00; // (mask since we only want the last 4 bits, pins 4-7);
-	ButtonDriver.digitalWrite(row, LOW);
+void read_buttons() {
+	SPI.setBitOrder(MSBFIRST); //MCP23S17 is picky
+	row++;
+	if (row > 3) row = 0;
+	ButtonDriver.digitalWrite(row+4, LOW);
+	buttons_state = ButtonDriver.readPort(); //read all pins at once to reduce spi overhead (prevents display flicker)
 	for (int ii = 0; ii < 4; ii++) {
-		int stepnum = row * 4 + ii;
-		//    //check each bit in the byte and see if it's pulled low -- to reduce SPI overhead
-		//    bool value = (button_rows[row] & (0x08 >> col)); //step_map[row*4+col])); //pins backwards again, iterate R-L by rightwards bitshift
-		bool value = ButtonDriver.digitalRead(button_map[stepnum] + 4);
+		int stepnum = button_map[row * 4 + ii];
+		//bool value = ButtonDriver.digitalRead(button_map[stepnum]); //read one pin at a time
+		buttons_mask = buttons_state & 0x000F; //mask off only bits 1-4, the button matrix columns
+		buttons_mask = buttons_mask & 0x01 << ii; //select one bit to scan
+		bool value = buttons_mask >> ii; //shift to 0 position
 		if (value != button_matrix[stepnum]) { //detect when button changes state
 			button_matrix[stepnum] = value; //store button state
 			if (value == 0) { //toggle step status when button is pressed in
 				selectStep(stepnum);
+				// TEST running display number
+				//num_display = stepnum;
+				//setDisplayNum();
 			}
 		}
 	}
-	ButtonDriver.digitalWrite(row, HIGH);
+	ButtonDriver.digitalWrite(row+4, HIGH);
 
-	bool function_button = DisplayDriver.digitalRead(function_buttons[row]); //get pins 4-7 of display driver chip for buttons near display
-	if (function_button_matrix[row+1] != function_button) {
-		function_button_matrix[row+1] = function_button;
-		//Serial.write(function_button);
-		switch (function_buttons[row]) {
-		case SAVE_PIN:  saveButton(function_button);  break;
-		case SHIFT_PIN: shiftButton(function_button); break;
-		case PLAY_PIN:  playButton(function_button); break;
-		case LOAD_PIN:  loadButton(function_button); break;
-		default:
-			num_display = (row + 5) * 111;
-			setDisplayNum();
-		}
-	}
+	//bool function_button = ButtonDriver.digitalRead(function_buttons[row]); //get pins 4-7 of display driver chip for buttons near display
+	buttons_mask = (~buttons_state & 0xFF00); // >> 8;
+	if (buttons_mask > 0) {
+		for(int ii = 0; ii<7; ii++){
+			bool function_button_state = (buttons_mask & 0x01 << (ii+8)) >> (ii+8);
 
-	if (aux_buttons[row]) {
-		int aux_button = digitalRead(aux_buttons[row]);
-		if (aux_button != aux_button_matrix[row]) {
-			aux_button_matrix[row] = aux_button;
-			if (aux_button == 0) { //take action on pressed, not depressed
-				switch (aux_buttons[row]) {
-				case GLIDE_PIN:
-					glide_matrix[selected_step] = !glide_matrix[selected_step];
-					DisplayDriver.digitalWrite(GLIDE_LED_PIN, glide_matrix[selected_step] ? HIGH : LOW); //glide LED
-					break;
+			if (function_button_state != function_button_matrix[ii+1]){
+				function_button_matrix[ii+1] = function_button_state;
+				//Serial.write(function_button);
+				switch (function_buttons[ii]) {
+				case SHIFT_PIN: shiftButton(function_button_state); break;
+				case PLAY_PIN:   playButton(function_button_state); break;
+				case LOAD_PIN:   loadButton(function_button_state); break;
+				case SAVE_PIN:   saveButton(function_button_state); break;
+				case GLIDE_PIN: glideButton(function_button_state); break;
 				case RECORD_PIN: //todo write record fn
 				case REPEAT_PIN: //todo write repeat fn
 				default:
-					num_display = (row + 1) * 222;
+					num_display = (ii + 5) * 111;
 					setDisplayNum();
+					ButtonDriver.digitalWrite(15, HIGH);
 				}
 			}
 		}
+	} else {
+		ButtonDriver.digitalWrite(15, LOW);
 	}
+
+	return;
 }
 
 void selectStep(unsigned int stepnum) {
@@ -100,7 +110,7 @@ void selectStep(unsigned int stepnum) {
 		}
 		selected_step = stepnum;
 		displaySelectedParam();
-		DisplayDriver.digitalWrite(GLIDE_LED_PIN, glide_matrix[stepnum]); //glide LED
+		ButtonDriver.digitalWrite(GLIDE_LED_PIN, glide_matrix[stepnum]); //glide LED
 		setDisplayNum();
 	}
 }
@@ -155,4 +165,9 @@ void shiftButton(bool state) {
 	
 
 	bool shift_state = state;
+}
+
+void glideButton(bool state){
+	glide_matrix[selected_step] = !glide_matrix[selected_step];
+	ButtonDriver.digitalWrite(GLIDE_LED_PIN, glide_matrix[selected_step] ? HIGH : LOW); //glide LED
 }

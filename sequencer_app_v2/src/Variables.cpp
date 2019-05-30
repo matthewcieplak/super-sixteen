@@ -11,7 +11,6 @@ elapsedMillis timekeeper;
 elapsedMillis blinker;
 
 MCP23S17 ButtonDriver(&SPI, CS0_PIN, 0);
-MCP23S17 DisplayDriver(&SPI, CS0_PIN, 1);
 
 int num_display = 0;
 int selected_step = 0;

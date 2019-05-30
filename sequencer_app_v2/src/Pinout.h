@@ -1,21 +1,21 @@
 #pragma once
 
 #define ENC_PORT PINC
-#define GATE_PIN 0
-#define LDAC_PIN 1
-#define CLOCK_OUT_PIN 2
-#define CLOCK_IN_PIN 3
-#define RESET_PIN 4
+#define GATE_PIN PD0
+//#define LDAC_PIN 1
+#define CLOCK_OUT_PIN PD2
+#define CLOCK_IN_PIN PD3
+#define RESET_PIN PD4
 
-#define GLIDE_PIN 5
-#define REPEAT_PIN 6
-#define RECORD_PIN 7
 
-#define GLIDE_LED_PIN 3 //this one's on display driver chip, not mcu
-#define SAVE_PIN 4 //these four on display driver chip, not MCU
-#define LOAD_PIN 5 //ditto
-#define PLAY_PIN 6 //ditto
-#define SHIFT_PIN 7 //ditto
+#define GLIDE_LED_PIN 15 //these 8 are on the button driver chip, not the MCU
+#define GLIDE_PIN 14
+#define REPEAT_PIN 13
+#define RECORD_PIN 12
+#define SAVE_PIN 11 
+#define LOAD_PIN 10 
+#define PLAY_PIN 9 
+#define SHIFT_PIN 8
 
 #define CS0_PIN  10 //MCP23S17 for buttons, aux LEDS
 #define CS1_PIN  9  //Display/matrix shift registers
@@ -24,8 +24,8 @@
 
   //DIGIT DISPLAY PINS
 #define DIGIT_1_PIN PD5
-#define DIGIT_2_PIN PD6
-#define DIGIT_3_PIN PD7
+#define DIGIT_2_PIN PD7
+#define DIGIT_3_PIN PD6 
 
 #define GAIN_1  0x1
 #define GAIN_2  0x0

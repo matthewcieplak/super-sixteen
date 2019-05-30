@@ -44,10 +44,10 @@ void setOutput(uint8_t channel, uint8_t gain, uint8_t shutdown, unsigned int val
 	uint8_t highByte = ((val >> 8) & 0xff) | channel << 7 | gain << 5 | shutdown << 4;
 
 	//PORTB &= 0xfb;
-	digitalWrite(CS1_PIN, LOW);
+	digitalWrite(CS2_PIN, LOW);
 	SPI.transfer(highByte);
 	SPI.transfer(lowByte);
-	digitalWrite(CS1_PIN, HIGH);
+	digitalWrite(CS2_PIN, HIGH);
 }
 
 

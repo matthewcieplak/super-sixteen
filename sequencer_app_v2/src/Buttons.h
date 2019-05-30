@@ -2,7 +2,7 @@
 
 void initializeButtons();
 
-void readButtons(int row);
+void read_buttons();
 
 void selectStep(unsigned int stepnum);
 

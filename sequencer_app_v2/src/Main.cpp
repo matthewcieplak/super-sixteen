@@ -8,7 +8,7 @@
 #include "Buttons.h"
 #include "Encoder.h"
 #include "AnalogIO.h"
-#include "Display.h"
+//#include "Display.h"
 #include "Font.h"
 #include "LEDMatrix.h"
 #include "Main.h"
@@ -22,8 +22,7 @@ void setup() {
 	pinMode(CS1_PIN, OUTPUT); //enable CS for DAC
 
 	initializeMatrix();
-	initializeDisplay();
-	initializeFont();
+	//initializeDisplay();
 	initializeButtons();
 	//readCalibrationValues(); -- disable temporarily to bypass overwriting EEPROM during programming. uncomment for typical use
 
@@ -52,6 +51,7 @@ void run_sequence() {
 	blink_step();
 	read_input();
 	read_encoder();
+	read_buttons();
 }
 
 void run_calibration() {

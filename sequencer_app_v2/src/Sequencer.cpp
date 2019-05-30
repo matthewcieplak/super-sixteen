@@ -1,6 +1,7 @@
 #include "Variables.h"
 #include "Pinout.h"
 #include "AnalogIO.h"
+#include "Display.h"
 #include "Calibrate.h"
 #include "Sequencer.h"
 
@@ -71,6 +72,10 @@ void increment_step() {
 		digitalWrite(GATE_PIN, step_matrix[active_step] ? HIGH : LOW);
 		gate_active = step_matrix[active_step];
 	}
+
+	// TEST running display number
+	// num_display = current_step;
+	// setDisplayNum();
 }
 
 void update_glide() {
