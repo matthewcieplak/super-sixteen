@@ -26,7 +26,8 @@ extern uint8_t current_step;
 extern uint8_t active_step;
 extern uint8_t sequence_length;
 
-extern int tempo;
+extern int tempo_millis;
+extern double tempo_bpm;
 extern bool shift_state;
 extern bool play_active;
 

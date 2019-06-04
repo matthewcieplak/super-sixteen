@@ -4,6 +4,10 @@
 #include "Encoder.h"
 #include "Display.h"
 #include "Calibrate.h"
+#include "Sequencer.h"
+
+int encoder_amount = 0;
+int increment_amount = 0;
 
 //magic numbers from https://www.circuitsathome.com/mcu/reading-rotary-encoder-on-arduino/
 void read_encoder() {
@@ -20,14 +24,14 @@ void read_encoder() {
 
 void encoder_increment(int amt) {
 	if (amt == 0) return;
+	encoder_amount += amt;
+	if (abs(encoder_amount) < 4) return; //encoder detent is too coarse for 1-per step granularity
+	increment_amount = encoder_amount > 0 ? 1 : -1;
+	encoder_amount = 0;
 	if (control_mode == CALIBRATE_MODE) {
-		incrementCalibration(amt);
+		incrementCalibration(increment_amount);
 	} else {
-		tempo += amt;
-		if (tempo < 20) tempo = 20;
-		if (tempo > 500) tempo = 500;
-		num_display = tempo;
-		display_param = TEMPO_PARAM;
-		setDisplayNum();
+		increment_tempo(increment_amount);
 	}
+	//setDisplayAlpha("ENC");
 }

@@ -12,12 +12,12 @@ bool clock_in_active = false;
 int prev_note = 0;
 int active_note = 0;
 int glide_duration = 50;
-int calculated_tempo = tempo;
+int calculated_tempo = tempo_millis;
 
 const int CLOCK_PULSE_DURATION = 10; //milliseconds pulse width of clock output
 
 void update_clock() {
-	if (play_active && timekeeper > tempo) {
+	if (play_active && timekeeper > tempo_millis) {
 		//CLOCK
 		//increment_step();
 		if (clock_out_active) {
@@ -74,8 +74,7 @@ void increment_step() {
 	}
 
 	// TEST running display number
-	// num_display = current_step;
-	// setDisplayNum();
+	// setDisplayNum(current_step);
 }
 
 void update_glide() {
@@ -106,7 +105,21 @@ void update_gate() {
 	}
 
 	if (clock_out_active && timekeeper > CLOCK_PULSE_DURATION) {
-		//digitalWrite(CLOCK_OUT_PIN, LOW);
+		digitalWrite(CLOCK_OUT_PIN, LOW);
 	}
 }
 
+void on_play_button(){
+	play_active = !play_active;
+	timekeeper = 0;
+	calculated_tempo = tempo_millis;
+}
+
+void increment_tempo(int amount){
+	tempo_bpm += amount;
+	if (tempo_bpm < 20) tempo_bpm = 20;
+	if (tempo_bpm > 500) tempo_bpm = 500;
+	display_param = TEMPO_PARAM;
+	setDisplayNum(tempo_bpm);
+	tempo_millis = 15000 / tempo_bpm;
+}
