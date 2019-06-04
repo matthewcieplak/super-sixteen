@@ -18,8 +18,15 @@
 
 void setup() {
 	analogReference(EXTERNAL); // use AREF for reference voltage
-	pinMode(CS0_PIN, OUTPUT); //enable CS for DAC
-	pinMode(CS1_PIN, OUTPUT); //enable CS for DAC
+	pinMode(CS0_PIN, OUTPUT); 
+	pinMode(CS1_PIN, OUTPUT); 
+	pinMode(CS2_PIN, OUTPUT);
+	pinMode(CS3_PIN, OUTPUT);
+	digitalWrite(CS0_PIN, HIGH);
+	digitalWrite(CS1_PIN, HIGH);
+	digitalWrite(CS2_PIN, HIGH);
+	digitalWrite(CS3_PIN, HIGH);
+
 
 	initializeMatrix();
 	//initializeDisplay();
@@ -49,9 +56,10 @@ void run_sequence() {
 	update_gate();
 	multiplex_leds();
 	blink_step();
-	read_input();
+
 	read_encoder();
 	read_buttons();
+	read_input();
 }
 
 void run_calibration() {

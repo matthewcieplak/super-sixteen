@@ -26,9 +26,9 @@ void updateCalibration() {
 		i++;
 	}
 	led_matrix[selected_step] = 1;
-	num_display = calibration_values[selected_step];
+	setDisplayNum(calibration_values[selected_step]);
 	setCalibratedOutput(selected_step * 12);
-	setDisplayNum();
+	
 }
 
 int setCalibratedOutput(double pitch) {
@@ -45,9 +45,8 @@ int setCalibratedOutput(double pitch) {
 		calibratedPitch = point1;
 	} else {
 		calibratedPitch = point1 + double(pitch - octave1 * 12.0) * double(point2 - point1) / double(12);
-		//use display for output
-		//num_display = calibratedPitch / 10;
-		//setDisplayNum();
+		//TESTMODE use display for output
+		//setDisplayNum(calibratedPitch / 10);
 	}
 
 	setOutput(0, GAIN_2, 1, calibratedPitch);

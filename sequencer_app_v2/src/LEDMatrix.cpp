@@ -43,21 +43,12 @@ void updateMatrix(int row) {
 	digitalWrite(CS1_PIN, LOW);
 	digitalWrite(digit_pins[digit_counter], HIGH);
 	SPI.setBitOrder(LSBFIRST); //shift registers like LSB
-	update7SegmentDisplay(row); //has to happen HERE bc it's part of the shift register 2-byte sequence
+	updateSevenSegmentDisplay(); //has to happen HERE bc it's part of the shift register 2-byte sequence
 	SPI.transfer(~byte1); //led matrix
 	digitalWrite(CS1_PIN, HIGH);
 	digitalWrite(digit_pins[digit_counter], LOW);
 
 }
-
-void update7SegmentDisplay(int row){
-	SPI.transfer(~(alphabet[digit_display[digit_counter]])); 
-	digit_counter++;
-	if (digit_counter == 3) {
-		digit_counter = 0;
-	}
-}
-
 
 void multiplex_leds() {
 	if (multiplex > 0) {

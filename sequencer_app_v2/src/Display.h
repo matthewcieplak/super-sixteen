@@ -6,6 +6,8 @@ extern int digit_counter;
 
 void initializeDisplay();
 
-void updateDisplay();
+extern void updateSevenSegmentDisplay();
 
-void setDisplayNum();
+void setDisplayNum(int displayNum);
+
+void setDisplayAlpha(char displayAlpha[3]);

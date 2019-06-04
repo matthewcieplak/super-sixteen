@@ -11,7 +11,6 @@ void loadButton(bool state);
 void playButton(bool state);
 void shiftButton(bool state);
 
-void repeatButton(bool state);
+void recordButton(bool state);
 void repeatButton(bool state);
 void glideButton(bool state);
-
