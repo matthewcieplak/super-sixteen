@@ -1,3 +1,9 @@
 [submodule "sequencer_app_v2/lib/c_queue"]
 	path = sequencer_app_v2/lib/c_queue
 	url = https://github.com/clnhlzmn/c_queue.git
+[submodule "sequencer_app_v2/lib/MCP23S17"]
+	path = sequencer_app_v2/lib/MCP23S17
+	url = https://github.com/MajenkoLibraries/MCP23S17.git
+[submodule "sequencer_app_v2/lib/elapsedMillis"]
+	path = sequencer_app_v2/lib/elapsedMillis
+	url = https://github.com/pfeerick/elapsedMillis.git
