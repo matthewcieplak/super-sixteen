@@ -7,22 +7,9 @@
 #include "Calibrate.h"
 #include "Sequencer.h"
 
-int button_map[16] = { 12, 13, 14, 15, 11, 10, 9, 8, 4, 5, 6, 7, 3, 2, 1, 0 }; //rows are wired symmetrically rather than sequentially
-bool button_matrix[16] = { 1,1,1,1, 1,1,1,1, 1,1,1,1, 1,1,1,1 };
-int saveCount = 0;
+namespace supersixteen{
 
-const int function_buttons[7] = { SHIFT_PIN, PLAY_PIN, LOAD_PIN, SAVE_PIN, RECORD_PIN, REPEAT_PIN, GLIDE_PIN };
-bool function_button_matrix[8] = { 0, 0, 0, 0, 0, 0, 0 }; //store status of buttons in/out  -- no idea why but first bit never toggles? works when offset by one - bad memory address?
-
-int row = 0;
-uint16_t buttons_state;
-uint16_t buttons_mask;
-bool shift_mode = 0;
-
-
-void initializeButtons() {
-
-
+void Buttons::Init() {
 	pinMode(ENC_A_PIN, INPUT_PULLUP); //encoder A
 	pinMode(ENC_B_PIN, INPUT_PULLUP); //encoder B
 
@@ -48,7 +35,7 @@ void initializeButtons() {
 	ButtonDriver.pinMode(15, OUTPUT);
 }
 
-void read_buttons() {
+void Buttons::Poll() {
 	SPI.setBitOrder(MSBFIRST); //MCP23S17 is picky
 	row++;
 	if (row > 3) row = 0;
@@ -65,7 +52,7 @@ void read_buttons() {
 			if (value == 0) { //toggle step status when button is pressed in
 				selectStep(stepnum);
 				// TEST running display number
-				setDisplayNum(stepnum);
+				//setDisplayNum(stepnum);
 			}
 		}
 	}
@@ -105,7 +92,7 @@ void read_buttons() {
 	}
 }
 
-void selectStep(unsigned int stepnum) {
+void Buttons::selectStep(unsigned int stepnum) {
 	if (control_mode == CALIBRATE_MODE) {
 		if (stepnum < 9) {
 			selected_step = stepnum;
@@ -123,7 +110,7 @@ void selectStep(unsigned int stepnum) {
 	}
 }
 
-void saveButton(bool state) { //use as calibrate button for now
+void Buttons::saveButton(bool state) { //use as calibrate button for now
 	setDisplayAlpha("SAV");
 	return;
 
@@ -140,34 +127,36 @@ void saveButton(bool state) { //use as calibrate button for now
 	}
 }
 
-void playButton(bool state) {
+void Buttons::playButton(bool state) {
 	setDisplayAlpha("PLY");
 	if (state) {
 		on_play_button();
 	}
 }
 
-void loadButton(bool state) {
+void Buttons::loadButton(bool state) {
 	setDisplayAlpha("LOD");
 	if (state) {
 	}
 }
 
-void shiftButton(bool state) {
+void Buttons::shiftButton(bool state) {
 	setDisplayAlpha("SHF");
 	shift_mode = state;
 }
 
-void glideButton(bool state){
+void Buttons::glideButton(bool state){
 	setDisplayAlpha("GLD");
 	glide_matrix[selected_step] = !glide_matrix[selected_step];
 	ButtonDriver.digitalWrite(GLIDE_LED_PIN, glide_matrix[selected_step] ? HIGH : LOW); //glide LED
 }
 
-void recordButton(bool state){
+void Buttons::recordButton(bool state){
 	setDisplayAlpha("REC");
 }
 
-void repeatButton(bool state){
+void Buttons::repeatButton(bool state){
 	setDisplayAlpha("RPT");
+}
+
 }

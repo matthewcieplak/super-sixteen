@@ -4,6 +4,8 @@
 #include "Pinout.h"
 #include <elapsedMillis.h>
 
+
+namespace supersixteen{
 extern elapsedMillis multiplex;
 extern elapsedMillis stepper;
 extern elapsedMillis timekeeper;
@@ -37,4 +39,4 @@ extern int control_mode;
 
 //float EMA_a = 0.6; //input smoothing coeff
 
-
+}

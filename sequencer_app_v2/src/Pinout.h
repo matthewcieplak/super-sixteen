@@ -1,5 +1,7 @@
 #pragma once
 
+namespace supersixteen{
+
 #define GATE_PIN PD0
 //#define LDAC_PIN 1
 #define CLOCK_OUT_PIN PD2
@@ -37,3 +39,5 @@
 #define ENC_A_PIN A4
 #define ENC_B_PIN A5
 #define ENC_PORT PINC
+
+}
