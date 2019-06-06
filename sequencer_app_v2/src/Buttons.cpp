@@ -9,10 +9,9 @@
 
 namespace supersixteen{
 
-void Buttons::Init() {
+void Buttons::Init(Display display, AnalogIo analogIo) {
 	pinMode(ENC_A_PIN, INPUT_PULLUP); //encoder A
 	pinMode(ENC_B_PIN, INPUT_PULLUP); //encoder B
-
 
 	pinMode(GATE_PIN, OUTPUT); //gate
     pinMode(CLOCK_OUT_PIN, OUTPUT); //clock out
@@ -104,7 +103,7 @@ void Buttons::selectStep(unsigned int stepnum) {
 			led_matrix[stepnum] = step_matrix[stepnum];
 		}
 		selected_step = stepnum;
-		displaySelectedParam();
+		analogIo.displaySelectedParam();
 		ButtonDriver.digitalWrite(GLIDE_LED_PIN, glide_matrix[stepnum]); //glide LED
 		//setDisplayNum();
 	}
@@ -118,7 +117,7 @@ void Buttons::saveButton(bool state) { //use as calibrate button for now
 		if (control_mode == CALIBRATE_MODE) {
 			control_mode = SEQUENCE_MODE;
 			memcpy(led_matrix, step_matrix, sizeof led_matrix); //reset LED matrix to sequence
-			displaySelectedParam();
+			analogIo.displaySelectedParam();
 			writeCalibrationValues();
 		}
 		else {

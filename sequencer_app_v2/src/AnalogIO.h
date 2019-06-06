@@ -22,13 +22,9 @@ class AnalogIo{
 
         void displaySelectedParam();
 
-
-
         int lastAnalogValues[4];
         int analogValues[4];
         int analogMultiplexor = 0;
-
-
 };
 
 }

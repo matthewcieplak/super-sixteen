@@ -6,8 +6,8 @@
 
 int digit_counter = 0;
 extern int digit_display[3] = { 0, 0, 0 };
-
-void setDisplayNum(int displayNum){
+namespace supersixteen{
+void Display::setDisplayNum(int displayNum){
 	num_display	= displayNum;
 	digit_display[2] = abs(num_display) % 10;
 	digit_display[1] = abs(num_display) / 10 % 10;
@@ -23,17 +23,18 @@ void setDisplayNum(int displayNum){
 	}
 }
 
-void setDisplayAlpha(char displayAlpha[]){ //turns 3-character array "MAJ" into ascii indexes
+void Display::setDisplayAlpha(char displayAlpha[]){ //turns 3-character array "MAJ" into ascii indexes
 	digit_display[0] = displayAlpha[0] - 55;
 	digit_display[1] = displayAlpha[1] - 55;
 	digit_display[2] = displayAlpha[2] - 55;
 }
 
 
-void updateSevenSegmentDisplay(){
+void Display::updateSevenSegmentDisplay(){
 	SPI.transfer(~(alphabet[digit_display[2-digit_counter]])); 
 	digit_counter++;
 	if (digit_counter == 3) {
 		digit_counter = 0;
 	}
+}
 }

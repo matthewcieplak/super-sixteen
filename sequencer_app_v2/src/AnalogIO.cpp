@@ -6,7 +6,6 @@
 #include "Pinout.h"
 #include "AnalogIO.h"
 #include "Display.h"
-#include "AnalogIO.h"
 
 namespace supersixteen {
 
