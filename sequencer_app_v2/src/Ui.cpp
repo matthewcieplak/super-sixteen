@@ -15,11 +15,13 @@ namespace supersixteen{
 Buttons buttons;
 AnalogIo analogIo;
 Display display;
-Dac *dacVar;
 Encoder encoder;
 LedMatrix ledMatrix;
-Calibration *calibrationVar;
-Sequencer *sequencerVar;
+
+//initialized by main.cpp
+Calibration *calibrationVar2;
+Sequencer *sequencerVar2;
+Dac *dacVar2;
 
 bool shift_state = false;
 
@@ -43,14 +45,16 @@ void Ui::init(Calibration& calibration, Dac& dac, Sequencer& sequencer){
 	digitalWrite(CS2_PIN, HIGH);
 	digitalWrite(CS3_PIN, HIGH);
 
-    analogIo.init();
+	calibrationVar2 = &calibration;
+    dacVar2         = &dac;
+    sequencerVar2   = &sequencer;
+    analogIo.init(sequencer);
     buttons.init();
     display.init();
-    ledMatrix.init(display);
+    ledMatrix.init(display, sequencer);
+	initializeSequenceMode();
 
-    calibrationVar = &calibration; 
-    dacVar         = &dac;
-    sequencerVar   = &sequencer;
+
 }
 
 void Ui::poll(){
@@ -83,10 +87,8 @@ void Ui::saveButton(bool state) { //use as calibrate button for now
 	if (state == 0) { //only toggle on input
 		if (ui_mode == CALIBRATE_MODE) {
 			ui_mode = SEQUENCE_MODE;
-			memcpy(led_matrix, step_matrix, sizeof led_matrix); //reset LED matrix to sequence
-			analogIo.displaySelectedParam();
-            display.setDisplayNum(analogIo.getDisplayNum());
-			calibrationVar->writeCalibrationValues();
+			calibrationVar2->writeCalibrationValues();
+			initializeSequenceMode();
 		}
 		else {
 			initializeCalibrationMode();
@@ -118,30 +120,29 @@ void Ui::onButtonToggle(int button, bool button_state) {
 
 void Ui::onEncoderIncrement(int increment_amount) {
     if (ui_mode == CALIBRATE_MODE) {
-		calibrationVar->incrementCalibration(increment_amount, calibration_step);
+		calibrationVar2->incrementCalibration(increment_amount, calibration_step);
         updateCalibration(calibration_step);
 	} else {
-		sequencerVar->incrementTempo(increment_amount);
+		sequencerVar2->incrementTempo(increment_amount);
 	}
 }
 
 void Ui::glideButton(){
 	//display.setDisplayAlpha("GLD");
-	sequencerVar->toggleGlide();
-	ButtonDriver.digitalWrite(GLIDE_LED_PIN, glide_matrix[selected_step] ? HIGH : LOW); //glide LED
+	buttons.setGlideLed(sequencerVar2->toggleGlide());
 }
 
 
 void Ui::selectStep(int step){
-    sequencerVar->selectStep(step);
+    sequencerVar2->selectStep(step);
     analogIo.displaySelectedParam();
-	ButtonDriver.digitalWrite(GLIDE_LED_PIN, glide_matrix[step]); //glide LED
+	buttons.setGlideLed(sequencerVar2->getGlide());
 }
 
 
 void Ui::initializeCalibrationMode() {
 	ui_mode = CALIBRATE_MODE;
-	calibrationVar->readCalibrationValues();
+	calibrationVar2->readCalibrationValues();
 	updateCalibration(calibration_step);
 }
 
@@ -150,12 +151,19 @@ void Ui::updateCalibration(int step) {
     calibration_step = step;
 	ledMatrix.reset();
 	ledMatrix.toggleLed(step);
-	display.setDisplayNum(calibrationVar->getCalibrationValue(step));
-	dacVar->setOutput(0, GAIN_2, 1, calibrationVar->getCalibratedOutput(step * 12));
+	display.setDisplayNum(calibrationVar2->getCalibrationValue(step));
+	dacVar2->setOutput(0, GAIN_2, 1, calibrationVar2->getCalibratedOutput(step * 12));
 }
 
 bool Ui::isSequencing(){
 	return (ui_mode != CALIBRATE_MODE);
+}
+
+void Ui::initializeSequenceMode(){
+	ledMatrix.reset();
+	ledMatrix.setMatrixFromSequencer();
+	analogIo.displaySelectedParam();
+	display.setDisplayNum(analogIo.getDisplayNum());
 }
 
 }

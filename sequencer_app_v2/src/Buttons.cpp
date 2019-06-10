@@ -1,13 +1,15 @@
-#include "Variables.h"
 #include "Pinout.h"
 #include "LEDMatrix.h"
 #include "Buttons.h"
 #include "Calibrate.h"
 #include "Sequencer.h"
+#include <MCP23S17.h>
 
 namespace supersixteen{	
 	
 const int function_buttons[7] = { SHIFT_PIN, PLAY_PIN, LOAD_PIN, SAVE_PIN, RECORD_PIN, REPEAT_PIN, GLIDE_PIN };
+
+MCP23S17 ButtonDriver(&SPI, CS0_PIN, 0);
 
 void Buttons::init() {
 	pinMode(GATE_PIN, OUTPUT); //gate
@@ -77,6 +79,10 @@ bool Buttons::getButtonState(){
 
 int Buttons::getButtonPressed(){
 	return button_pressed;
+}
+
+void Buttons::setGlideLed(bool glide){
+	ButtonDriver.digitalWrite(GLIDE_LED_PIN, glide); //glide LED
 }
 
 }

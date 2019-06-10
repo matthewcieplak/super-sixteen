@@ -2,28 +2,34 @@
 #include "Variables.h"
 #include "Pinout.h"
 #include "Display.h"
+#include "Sequencer.h"
 #include "LEDMatrix.h"
 #include "Buttons.h"
 #include "Font.h"
 
 namespace supersixteen{
 
+elapsedMillis multiplex;
+bool led_matrix[16];
 int step_map[16] = { 3, 2, 1, 0, 0, 1, 2 ,3, 3, 2, 1, 0, 0, 1, 2, 3 }; //rows are wired symmetrically rather than sequentially
-const int led_rows[4] = { 0x80, 0x40, 0x20, 0x10 };
+
 uint8_t byte1;
 uint8_t byte2;
-int digit_pins[3] = { DIGIT_1_PIN, DIGIT_2_PIN, DIGIT_3_PIN };
+
 int row_counter = 0;
 int col = 0;
 int j;
-byte dataToSend;
-int digit_counter = 0;
-Display* displayVar;	
 
-void LedMatrix::init(Display& display) {
+byte dataToSend;
+
+Display* displayVar3;	
+Sequencer* sequencerVar3;
+
+void LedMatrix::init(Display& display, Sequencer& sequencer) {
 	pinMode(CS1_PIN, OUTPUT);
 	SPI.begin();
-	displayVar = &display;
+	displayVar3 = &display;
+	sequencerVar3 = &sequencer;
 }
 
 void LedMatrix::updateMatrix(int row) {
@@ -34,13 +40,11 @@ void LedMatrix::updateMatrix(int row) {
 	}
 	byte1 += ~byte2;
 	digitalWrite(CS1_PIN, LOW);
-	digitalWrite(digit_pins[digit_counter], HIGH);
 	SPI.setBitOrder(LSBFIRST); //shift registers like LSB
-	displayVar->updateSevenSegmentDisplay(); //has to happen HERE bc it's part of the shift register 2-byte sequence
+	displayVar3->updateSevenSegmentDisplay(); //has to happen HERE bc it's part of the shift register 2-byte sequence
 	SPI.transfer(~byte1); //led matrix
 	digitalWrite(CS1_PIN, HIGH);
-	digitalWrite(digit_pins[digit_counter], LOW);
-
+	displayVar3->nextDigit();
 }
 
 void LedMatrix::multiplex_leds() {
@@ -60,22 +64,24 @@ void LedMatrix::multiplex_leds() {
 }
 
 void LedMatrix::blink_step() {
-	if (step_matrix[selected_step]) {
-		if (blinker > (led_matrix[selected_step] ? 600 : 100)) { //blink long when active
-			blink_led();
-			blinker = 0;
-		}
-	}
-	else {
-		if (blinker > (led_matrix[selected_step] ? 100 : 600)) { //blink short when inactive
-			blink_led();
-			blinker = 0;
-		}
-	}
+	//TODO chase LED
+	// if (step_matrix[selected_step]) {
+	// 	if (blinker > (led_matrix[selected_step] ? 600 : 100)) { //blink long when active
+	// 		blink_led();
+	// 		blinker = 0;
+	// 	}
+	// }
+	// else {
+	// 	if (blinker > (led_matrix[selected_step] ? 100 : 600)) { //blink short when inactive
+	// 		blink_led();
+	// 		blinker = 0;
+	// 	}
+	// }
 }
 
 void LedMatrix::blink_led() {
-	led_matrix[selected_step] = !led_matrix[selected_step];
+	//TODO chase leds
+	//led_matrix[selected_step] = !led_matrix[selected_step];
 }
 
 void LedMatrix::reset(){
@@ -84,9 +90,14 @@ void LedMatrix::reset(){
 	}
 }
 
+void LedMatrix::setMatrixFromSequencer(){
+	memcpy(led_matrix, sequencerVar3->getStepMatrix(), sizeof led_matrix); //reset LED matrix to sequence
+}
+
 void LedMatrix::toggleLed(int led){
 	led_matrix[led] = ~led_matrix[led];
 }
+
 
 
 

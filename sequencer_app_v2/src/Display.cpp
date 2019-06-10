@@ -7,7 +7,10 @@
 namespace supersixteen{
 
 int digit_counter = 0;
+int num_display = 0;
 int digit_display[3] = { 0, 0, 0 };
+int digit_pins[3] = { DIGIT_1_PIN, DIGIT_2_PIN, DIGIT_3_PIN };
+
 
 void Display::init(){
 	pinMode(DIGIT_1_PIN, OUTPUT);
@@ -42,10 +45,15 @@ void Display::setDisplayAlpha(const char displayAlpha[]){ //turns 3-character ar
 
 
 void Display::updateSevenSegmentDisplay(){
+	digitalWrite(digit_pins[digit_counter], HIGH);
 	SPI.transfer(~(alphabet[digit_display[2-digit_counter]])); 
+}
+
+void Display::nextDigit(){
 	digit_counter++;
 	if (digit_counter == 3) {
 		digit_counter = 0;
 	}
+	digitalWrite(digit_pins[digit_counter], LOW);
 }
 }

@@ -6,6 +6,7 @@
 #include "Pinout.h"
 #include "AnalogIO.h"
 #include "Display.h"
+#include "Sequencer.h"
 
 namespace supersixteen {
 
@@ -26,28 +27,14 @@ int display_param = PITCH_PARAM;
 int display_num = 0;
 bool param_changed = false;
 
+Sequencer* sequencerVar;
 
-//assuming dac single channel, gain=2
-//void AnalogIo::setOutput(unsigned int val) {
-//	if (val > 4096) {
-//		val = 4095;
-//	}
-//	byte lowByte = val & 0xff;
-//	byte highByte = ((val >> 8) & 0xff) | 0x10;
-//
-//	digitalWrite(CS1_PIN, LOW);
-//	PORTB &= 0xfb;
-//	SPI.transfer(highByte);
-//	SPI.transfer(lowByte);
-//	PORTB |= 0x4;
-//	digitalWrite(CS1_PIN, HIGH);
-//}
-
-void AnalogIo::init(){
+void AnalogIo::init(Sequencer& sequencer){
 	pinMode(ANALOG_PIN_1, INPUT);
 	pinMode(ANALOG_PIN_2, INPUT);
 	pinMode(ANALOG_PIN_3, INPUT);
 	pinMode(ANALOG_PIN_4, INPUT);
+	sequencerVar = &sequencer;
 }
 
 void AnalogIo::poll() {
@@ -78,39 +65,35 @@ void AnalogIo::setPitch(int analogValue) {
 	display_param = PITCH_PARAM;
 	//calibration_value = (float(analogValues[1]) + 1024.0) / 1500.0 ; //11.60
 	int newVal = analogValue / 42.1 - 12.1; //convert from 0_1024 to 0_88 to -12_0_12
-	if (pitch_matrix[selected_step] != newVal) setDisplayNum(newVal);
-	pitch_matrix[selected_step] = newVal;
+	if (sequencerVar->setPitch(newVal)) setDisplayNum(newVal);
 }
 
 void AnalogIo::setOctave(int analogValue) {
 	display_param = OCTAVE_PARAM;
 	int newVal = analogValue / 120 - 4; //convert from 0-1024 to -4_0_4
-	if (octave_matrix[selected_step] != newVal) setDisplayNum(newVal);
-	octave_matrix[selected_step] = newVal;
+	if (sequencerVar->setOctave(newVal)) setDisplayNum(newVal);
 }
 
 void AnalogIo::setDuration(long analogValue) { //need extra bits for exponent operation
 	display_param = DURATION_PARAM;
 	int newVal = analogValue * analogValue / 2615; //convert from 0-1024 to 0-400 with exponential curve
-	if (duration_matrix[selected_step] != newVal) setDisplayNum(newVal);
-	duration_matrix[selected_step] = newVal;
+	if (sequencerVar->setDuration(newVal)) setDisplayNum(newVal);
 }
 
 void AnalogIo::setCV(int analogValue) {
 	display_param = CV_PARAM;
 	int newVal = analogValue / 10.23; //convert from 0-1024 to 0-100
-	if (cv_matrix[selected_step] != newVal) setDisplayNum(newVal);
-	cv_matrix[selected_step] = newVal;
+	if (sequencerVar->setCv(newVal)) setDisplayNum(newVal);
 }
 
 void AnalogIo::displaySelectedParam() {
 	//update display to show currently selected step value if applicable
 	switch (display_param) {
 		//case TEMPO_PARAM: break
-	case PITCH_PARAM:    setDisplayNum(pitch_matrix[selected_step]); break;
-	case OCTAVE_PARAM:   setDisplayNum(octave_matrix[selected_step]); break;
-	case DURATION_PARAM: setDisplayNum(duration_matrix[selected_step]); break;
-	case CV_PARAM:       setDisplayNum(cv_matrix[selected_step]); break;
+	case PITCH_PARAM:    setDisplayNum(sequencerVar->getPitch()); break;
+	case OCTAVE_PARAM:   setDisplayNum(sequencerVar->getOctave()); break;
+	case DURATION_PARAM: setDisplayNum(sequencerVar->getDuration()); break;
+	case CV_PARAM:       setDisplayNum(sequencerVar->getCv()); break;
 	//case CALIBRATION_PARAM: num_display = calibration_values[selected_step]; break;
 	}
 }

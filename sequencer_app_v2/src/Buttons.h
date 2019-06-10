@@ -2,6 +2,7 @@
 
 #include "Display.h"
 #include "AnalogIo.h"
+#include <MCP23S17.h>
 
 namespace supersixteen{
 
@@ -17,6 +18,8 @@ class Buttons {
     bool getButtonToggled();
     bool getButtonState();
     int getButtonPressed();
+
+    void setGlideLed(bool glide);
 
     bool button_toggled = false;
     bool button_state = false;

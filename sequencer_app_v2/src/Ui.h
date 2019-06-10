@@ -17,6 +17,7 @@ class Ui{
         void onEncoderIncrement(int increment_amount);
         void selectStep(int step);
         void glideButton();
+        void initializeSequenceMode();
         void initializeCalibrationMode();
         void updateCalibration(int step);
 };

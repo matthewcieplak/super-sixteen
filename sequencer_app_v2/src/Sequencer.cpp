@@ -6,9 +6,27 @@
 
 namespace supersixteen{
 
+int pitch_matrix[16];
+int octave_matrix[16];
+int duration_matrix[16];
+int cv_matrix[16];
+
+bool step_matrix[16] = { 1,0,0,0, 1,1,0,0, 1,1,1,0, 1,1,1,1 };
+bool glide_matrix[16];
+
+int selected_step;
+uint8_t current_step;
+uint8_t active_step;
+uint8_t sequence_length;
+
 bool gate_active = false;
 bool clock_out_active = false;
 bool clock_in_active = false;
+
+double tempo_bpm = 120;
+unsigned int tempo_millis = 15000 / tempo_bpm; //would be 60000 but we count 4 steps per "beat"
+bool play_active = 1;
+
 
 int prev_note = 0;
 int active_note = 0;
@@ -19,10 +37,15 @@ Calibration *calibrationVar;
 Dac *dacVar;
 
 const int CLOCK_PULSE_DURATION = 10; //milliseconds pulse width of clock output
+elapsedMillis timekeeper;
+
 
 void Sequencer::init(Calibration& calibration, Dac& dac) {
 	calibrationVar = &calibration;
 	dacVar = &dac;
+	for (int i = 0; i < 16; i++) {
+		duration_matrix[i] = 80;
+	}
 }
 
 void Sequencer::updateClock() {
@@ -58,12 +81,13 @@ void Sequencer::updateClock() {
 }
 
 void Sequencer::incrementStep() {
-	led_matrix[current_step] = step_matrix[current_step]; //reset previous LED
+	//TODO chase leds
+	//led_matrix[current_step] = step_matrix[current_step]; //reset previous LED
 	current_step++;
 	if (current_step == 16) {
 		current_step = 0;
 	}
-	led_matrix[current_step] = !step_matrix[current_step]; //set current led
+	//led_matrix[current_step] = !step_matrix[current_step]; //set current led
 
 	if (step_matrix[current_step]) {
 		//PITCH/OCTAVE
@@ -140,13 +164,57 @@ void Sequencer::incrementTempo(int amount){
 void Sequencer::selectStep(int stepnum){
 	if (selected_step == stepnum || !step_matrix[stepnum]) { //require 2 presses to turn active steps off, so they can be selected/edited without double-tapping //TODO maybe implement hold-to-deactivate
         step_matrix[stepnum] = !step_matrix[stepnum];
-        led_matrix[stepnum] = step_matrix[stepnum];
+        //todo chase leds
+		//led_matrix[stepnum] = step_matrix[stepnum];
     }
     selected_step = stepnum;
 }
 
-void Sequencer::toggleGlide(){
+bool Sequencer::toggleGlide(){
 	glide_matrix[selected_step] = !glide_matrix[selected_step];
+	return glide_matrix[selected_step];
+}
+
+bool Sequencer::setPitch(int newVal){
+	bool changed = pitch_matrix[selected_step] != newVal;
+	pitch_matrix[selected_step] = newVal;
+	return changed;
+}
+bool Sequencer::setOctave(int newVal){
+	bool changed = octave_matrix[selected_step] != newVal;
+	octave_matrix[selected_step] = newVal;
+	return changed;
+}
+bool Sequencer::setDuration(int newVal){
+	bool changed = duration_matrix[selected_step] != newVal;
+	duration_matrix[selected_step] = newVal;
+	return changed;
+}
+bool Sequencer::setCv(int newVal){
+	bool changed = cv_matrix[selected_step] != newVal;
+	cv_matrix[selected_step] = newVal;
+	return changed;
+}
+
+bool Sequencer::getGlide(){
+	return glide_matrix[selected_step];
+}
+
+int Sequencer::getPitch(){
+	return pitch_matrix[selected_step];
+}
+int Sequencer::getOctave(){
+	return octave_matrix[selected_step];
+}
+int Sequencer::getDuration(){
+	return duration_matrix[selected_step];
+}
+int Sequencer::getCv(){
+	return cv_matrix[selected_step];
+}
+
+bool *Sequencer::getStepMatrix(){
+	return step_matrix;
 }
 
 }

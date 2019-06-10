@@ -19,8 +19,20 @@ class Sequencer{
 
         void onPlayButton();
 
-        void toggleGlide();
+        bool toggleGlide();
+        bool setPitch(int newVal);
+        bool setOctave(int newVal);
+        bool setDuration(int newVal);
+        bool setCv(int newVal);
 
+        bool getGlide();
+        int getPitch();
+        int getOctave();
+        int getDuration();
+        int getCv();
+
+        bool  *getStepMatrix();
+        
     private:
         void updateGlide();
         void updateGate();

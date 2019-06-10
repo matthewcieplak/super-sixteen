@@ -2,12 +2,13 @@
 
 #include <Arduino.h>
 #include <stdint.h>
+#include "Sequencer.h"
 
 namespace supersixteen{
 
 class AnalogIo{
     public:
-        void init();
+        void init(Sequencer& sequencer);
 
         void poll();
 
