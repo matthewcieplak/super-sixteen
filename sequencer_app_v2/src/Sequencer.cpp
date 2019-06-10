@@ -1,9 +1,10 @@
 #include "Variables.h"
 #include "Pinout.h"
-#include "AnalogIO.h"
-#include "Display.h"
+#include "Dac.h"
 #include "Calibrate.h"
 #include "Sequencer.h"
+
+namespace supersixteen{
 
 bool gate_active = false;
 bool clock_out_active = false;
@@ -13,10 +14,18 @@ int prev_note = 0;
 int active_note = 0;
 int glide_duration = 50;
 int calculated_tempo = tempo_millis;
+double current_note_value = 0;
+Calibration *calibrationVar;
+Dac *dacVar;
 
 const int CLOCK_PULSE_DURATION = 10; //milliseconds pulse width of clock output
 
-void update_clock() {
+void Sequencer::init(Calibration& calibration, Dac& dac) {
+	calibrationVar = &calibration;
+	dacVar = &dac;
+}
+
+void Sequencer::updateClock() {
 	if (play_active && timekeeper > tempo_millis) {
 		//CLOCK
 		//increment_step();
@@ -28,11 +37,11 @@ void update_clock() {
 			digitalWrite(CLOCK_OUT_PIN, HIGH);
 			clock_out_active = true;
 		}
-		increment_step();
+		incrementStep();
 		timekeeper = 0;
 	}
 
-	update_glide();
+	updateGlide();
 
 	
 	if (digitalRead(CLOCK_IN_PIN) == LOW) {
@@ -41,14 +50,14 @@ void update_clock() {
 			play_active = false; //read the hardware input, which is normally connected to the hardware output, as the internal clock
 			calculated_tempo = timekeeper;
 			timekeeper = 0;
-			increment_step();
+			incrementStep();
 		}
 	} else {
 		clock_in_active = false;
 	}
 }
 
-void increment_step() {
+void Sequencer::incrementStep() {
 	led_matrix[current_step] = step_matrix[current_step]; //reset previous LED
 	current_step++;
 	if (current_step == 16) {
@@ -63,9 +72,11 @@ void increment_step() {
 		active_note = (octave_matrix[active_step] + 2) * 12 + pitch_matrix[active_step];
 
 		if (glide_matrix[active_step]) {
-			update_glide();
+			updateGlide();
 		} else {
-			setCalibratedOutput(active_note);
+			current_note_value = calibrationVar->getCalibratedOutput(active_note);
+			dacVar->setOutput(0, GAIN_2, 1, current_note_value);
+
 		}
 
 		//GATE
@@ -77,7 +88,7 @@ void increment_step() {
 	// setDisplayNum(current_step);
 }
 
-void update_glide() {
+void Sequencer::updateGlide() {
 	if (step_matrix[active_step] && glide_matrix[active_step]) {
 		int steps_advanced = current_step - active_step;
 		if (steps_advanced < 0) {
@@ -88,12 +99,14 @@ void update_glide() {
 		if (glidekeeper < glide_time) {
 			//double instantaneous_pitch = ((active_note * timekeeper) + prev_note * (tempo - timekeeper)) / double(tempo);
 			double instantaneous_pitch = ((active_note * glidekeeper) + prev_note * (glide_time - glidekeeper)) / double(glide_time);
-			setCalibratedOutput(instantaneous_pitch);
+			current_note_value = calibrationVar->getCalibratedOutput(instantaneous_pitch);
+			dacVar->setOutput(0, GAIN_2, 1, current_note_value);
+
 		}
 	}
 }
 
-void update_gate() {
+void Sequencer::updateGate() {
 	double percent_step = timekeeper / (double)calculated_tempo * 100.0;
 	int steps_advanced = current_step - active_step + 1;
 	if (steps_advanced < 1) {
@@ -109,17 +122,31 @@ void update_gate() {
 	}
 }
 
-void on_play_button(){
+void Sequencer::onPlayButton(){
 	play_active = !play_active;
 	timekeeper = 0;
 	calculated_tempo = tempo_millis;
 }
 
-void increment_tempo(int amount){
+void Sequencer::incrementTempo(int amount){
 	tempo_bpm += amount;
 	if (tempo_bpm < 20) tempo_bpm = 20;
 	if (tempo_bpm > 500) tempo_bpm = 500;
-	display_param = TEMPO_PARAM;
-	setDisplayNum(tempo_bpm);
+	//display_param = TEMPO_PARAM;
+	//setDisplayNum(tempo_bpm);
 	tempo_millis = 15000 / tempo_bpm;
+}
+
+void Sequencer::selectStep(int stepnum){
+	if (selected_step == stepnum || !step_matrix[stepnum]) { //require 2 presses to turn active steps off, so they can be selected/edited without double-tapping //TODO maybe implement hold-to-deactivate
+        step_matrix[stepnum] = !step_matrix[stepnum];
+        led_matrix[stepnum] = step_matrix[stepnum];
+    }
+    selected_step = stepnum;
+}
+
+void Sequencer::toggleGlide(){
+	glide_matrix[selected_step] = !glide_matrix[selected_step];
+}
+
 }

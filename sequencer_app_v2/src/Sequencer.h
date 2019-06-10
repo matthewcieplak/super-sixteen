@@ -1,14 +1,30 @@
 #pragma once
 // Sequencer.h
+#include "Calibrate.h"
+#include "Dac.h"
 
-void update_clock();
+namespace supersixteen {
 
-void increment_step();
+class Sequencer{
+    public:
+        void init(Calibration& calibration, Dac& dac);
 
-void increment_tempo(int amount);
+        void updateClock();
 
-void update_glide();
+        void incrementStep();
 
-void update_gate();
+        void selectStep(int step);
 
-void on_play_button();
+        void incrementTempo(int amount);
+
+        void onPlayButton();
+
+        void toggleGlide();
+
+    private:
+        void updateGlide();
+        void updateGate();
+
+};
+
+}

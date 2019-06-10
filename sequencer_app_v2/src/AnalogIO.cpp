@@ -21,9 +21,10 @@ const int analog_pins[4] = {
 #define OCTAVE_PARAM 2
 #define DURATION_PARAM 3
 #define CV_PARAM 4
-#define CALIBRATION_PARAM 5
 const int analog_params[4] = { PITCH_PARAM, OCTAVE_PARAM, DURATION_PARAM, CV_PARAM };
-const int display_param = PITCH_PARAM;
+int display_param = PITCH_PARAM;
+int display_num = 0;
+bool param_changed = false;
 
 
 //assuming dac single channel, gain=2
@@ -42,25 +43,14 @@ const int display_param = PITCH_PARAM;
 //	digitalWrite(CS1_PIN, HIGH);
 //}
 
-void AnalogIo::setOutput(uint8_t channel, uint8_t gain, uint8_t shutdown, unsigned int val)
-{
-	if (val < 0) {
-		val = 0;
-	} else if (val > 4095) {
-		val = 4095;
-	}
-	uint8_t lowByte = val & 0xff;
-	uint8_t highByte = ((val >> 8) & 0xff) | channel << 7 | gain << 5 | shutdown << 4;
-
-	//PORTB &= 0xfb;
-	digitalWrite(CS3_PIN, LOW);
-	SPI.transfer(highByte);
-	SPI.transfer(lowByte);
-	digitalWrite(CS3_PIN, HIGH);
+void AnalogIo::init(){
+	pinMode(ANALOG_PIN_1, INPUT);
+	pinMode(ANALOG_PIN_2, INPUT);
+	pinMode(ANALOG_PIN_3, INPUT);
+	pinMode(ANALOG_PIN_4, INPUT);
 }
 
-
-void AnalogIo::read_input() {
+void AnalogIo::poll() {
 	analogMultiplexor += 1;
 	if (analogMultiplexor > 3) {
 		analogMultiplexor = 0;
@@ -105,6 +95,7 @@ void AnalogIo::setDuration(long analogValue) { //need extra bits for exponent op
 	if (duration_matrix[selected_step] != newVal) setDisplayNum(newVal);
 	duration_matrix[selected_step] = newVal;
 }
+
 void AnalogIo::setCV(int analogValue) {
 	display_param = CV_PARAM;
 	int newVal = analogValue / 10.23; //convert from 0-1024 to 0-100
@@ -124,4 +115,13 @@ void AnalogIo::displaySelectedParam() {
 	}
 }
 
+void AnalogIo::setDisplayNum(int displayNum){
+	display_num = displayNum;
+	param_changed = true;
 }
+
+int AnalogIo::getDisplayNum(){
+	return display_num;
+}
+
+};

@@ -5,12 +5,20 @@
 #include "Display.h"
 #include "Calibrate.h"
 #include "Sequencer.h"
+#include "Arduino.h"
+#include <stdint.h>
 
-int encoder_amount = 0;
-int increment_amount = 0;
+namespace supersixteen{
+
+int increment_amount;
+
+void Encoder::init(){
+	pinMode(ENC_A_PIN, INPUT_PULLUP); //encoder A
+	pinMode(ENC_B_PIN, INPUT_PULLUP); //encoder B
+}
 
 //magic numbers from https://www.circuitsathome.com/mcu/reading-rotary-encoder-on-arduino/
-void read_encoder() {
+void Encoder::poll(){
 	///* returns change in encoder state (-1,0,1) */
 	//int8_t read_encoder()
 	//{
@@ -22,16 +30,16 @@ void read_encoder() {
 	encoder_increment(enc_states[(old_AB & 0x0f)] * -1); //extract encrement/decrement value from state table
 }
 
-void encoder_increment(int amt) {
+void Encoder::encoder_increment(int amt) {
 	if (amt == 0) return;
 	encoder_amount += amt;
 	if (abs(encoder_amount) < 4) return; //encoder detent is too coarse for 1-per step granularity
 	increment_amount = encoder_amount > 0 ? 1 : -1;
 	encoder_amount = 0;
-	if (control_mode == CALIBRATE_MODE) {
-		incrementCalibration(increment_amount);
-	} else {
-		increment_tempo(increment_amount);
-	}
-	//setDisplayAlpha("ENC");
+}
+
+int Encoder::getIncrementAmount(){
+	return increment_amount;
+}
+
 }

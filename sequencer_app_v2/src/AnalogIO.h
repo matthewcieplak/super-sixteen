@@ -1,14 +1,23 @@
 #pragma once
 
+#include <Arduino.h>
+#include <stdint.h>
+
 namespace supersixteen{
 
 class AnalogIo{
     public:
-        void setOutput(uint8_t channel, uint8_t gain, uint8_t shutdown, unsigned int val);
+        void init();
 
-        void read_input();
+        void poll();
+
+        void displaySelectedParam();
+
+        int getDisplayNum();
      
-        extern int display_param;
+        int display_param;
+        int display_num;
+        bool param_changed;
 
     private:
 
@@ -18,9 +27,10 @@ class AnalogIo{
 
         void setDuration(long analogValue);
 
+        void setDisplayNum(int displayNum);
+
         void setCV(int analogValue);
 
-        void displaySelectedParam();
 
         int lastAnalogValues[4];
         int analogValues[4];

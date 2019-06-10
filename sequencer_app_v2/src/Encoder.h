@@ -1,6 +1,18 @@
 #pragma once
 // Encoder.h
 
-void read_encoder();
+namespace supersixteen
+{
 
-void encoder_increment(int amt);
+class Encoder{
+    public:
+        void init();
+        void poll();
+        int getIncrementAmount();
+        int encoder_amount = 0;
+        int increment_amount = 0;
+    private:
+        void encoder_increment(int amt);
+};
+
+}

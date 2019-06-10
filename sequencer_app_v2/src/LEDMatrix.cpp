@@ -1,9 +1,12 @@
+#include <Arduino.h>
 #include "Variables.h"
 #include "Pinout.h"
 #include "Display.h"
 #include "LEDMatrix.h"
 #include "Buttons.h"
 #include "Font.h"
+
+namespace supersixteen{
 
 int step_map[16] = { 3, 2, 1, 0, 0, 1, 2 ,3, 3, 2, 1, 0, 0, 1, 2, 3 }; //rows are wired symmetrically rather than sequentially
 const int led_rows[4] = { 0x80, 0x40, 0x20, 0x10 };
@@ -14,26 +17,16 @@ int row_counter = 0;
 int col = 0;
 int j;
 byte dataToSend;
-//int digit_counter = 0;
+int digit_counter = 0;
+Display* displayVar;	
 
-
-
-void initializeMatrix() {
+void LedMatrix::init(Display& display) {
 	pinMode(CS1_PIN, OUTPUT);
-	
-	pinMode(DIGIT_1_PIN, OUTPUT);
-	pinMode(DIGIT_2_PIN, OUTPUT);
-	pinMode(DIGIT_3_PIN, OUTPUT);
-	digitalWrite(DIGIT_1_PIN, LOW);
-	digitalWrite(DIGIT_2_PIN, LOW);
-	digitalWrite(DIGIT_3_PIN, LOW);
-
 	SPI.begin();
-
-        
+	displayVar = &display;
 }
 
-void updateMatrix(int row) {
+void LedMatrix::updateMatrix(int row) {
 	byte1 = (1 << (7-row)); //turn on row driver
 	byte2 = 0xF0;
 	for (col = 0; col < 4; col++) {
@@ -43,14 +36,14 @@ void updateMatrix(int row) {
 	digitalWrite(CS1_PIN, LOW);
 	digitalWrite(digit_pins[digit_counter], HIGH);
 	SPI.setBitOrder(LSBFIRST); //shift registers like LSB
-	updateSevenSegmentDisplay(); //has to happen HERE bc it's part of the shift register 2-byte sequence
+	displayVar->updateSevenSegmentDisplay(); //has to happen HERE bc it's part of the shift register 2-byte sequence
 	SPI.transfer(~byte1); //led matrix
 	digitalWrite(CS1_PIN, HIGH);
 	digitalWrite(digit_pins[digit_counter], LOW);
 
 }
 
-void multiplex_leds() {
+void LedMatrix::multiplex_leds() {
 	if (multiplex > 0) {
 		multiplex = 0;
 
@@ -66,7 +59,7 @@ void multiplex_leds() {
 	}
 }
 
-void blink_step() {
+void LedMatrix::blink_step() {
 	if (step_matrix[selected_step]) {
 		if (blinker > (led_matrix[selected_step] ? 600 : 100)) { //blink long when active
 			blink_led();
@@ -81,6 +74,20 @@ void blink_step() {
 	}
 }
 
-void blink_led() {
+void LedMatrix::blink_led() {
 	led_matrix[selected_step] = !led_matrix[selected_step];
+}
+
+void LedMatrix::reset(){
+	for (int i = 0; i < 16; i++) {
+		led_matrix[i] = 0;
+	}
+}
+
+void LedMatrix::toggleLed(int led){
+	led_matrix[led] = ~led_matrix[led];
+}
+
+
+
 }

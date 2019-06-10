@@ -1,12 +1,25 @@
 #pragma once
 // LEDMatrix.h
+#include "Display.h"
 
-void initializeMatrix();
+namespace supersixteen {
 
-void updateMatrix(int row);
+class LedMatrix{
+    public:
+        void init(Display &display);
 
-void multiplex_leds();
+        void updateMatrix(int row);
 
-void blink_step();
+        void multiplex_leds();
 
-void blink_led();
+        void blink_step();
+
+        void blink_led();
+
+        void reset();
+
+        void toggleLed(int led);
+    
+};
+
+}

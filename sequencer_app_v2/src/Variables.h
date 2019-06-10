@@ -28,14 +28,11 @@ extern uint8_t current_step;
 extern uint8_t active_step;
 extern uint8_t sequence_length;
 
-extern int tempo_millis;
+extern unsigned int tempo_millis;
 extern double tempo_bpm;
 extern bool shift_state;
 extern bool play_active;
 
-const int SEQUENCE_MODE = 0;
-const int CALIBRATE_MODE = 1;
-extern int control_mode;
 
 //float EMA_a = 0.6; //input smoothing coeff
 

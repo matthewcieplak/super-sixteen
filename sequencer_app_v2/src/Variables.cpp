@@ -31,4 +31,3 @@ double tempo_bpm = 120;
 int tempo_millis = 15000 / tempo_bpm; //would be 60000 but we count 4 steps per "beat"
 bool shift_state = 0;
 bool play_active = 1;
-int control_mode = SEQUENCE_MODE;

@@ -1,16 +1,18 @@
 #pragma once
 // Display.h
 
-class Display(){
+namespace supersixteen{
+class Display{
 public:
-    void initializeDisplay();
+    void init();
 
     void updateSevenSegmentDisplay();
 
     void setDisplayNum(int displayNum);
 
-    void setDisplayAlpha(char displayAlpha[3]);
+    void setDisplayAlpha(const char displayAlpha[3]);
 private:
     int digit_display[3];
     int digit_counter;
+};
 }
