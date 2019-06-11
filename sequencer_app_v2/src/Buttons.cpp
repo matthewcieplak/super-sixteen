@@ -26,11 +26,13 @@ void Buttons::init() {
 		ButtonDriver.pinMode(i+8, INPUT_PULLUP);
 		ButtonDriver.pinMode(i+12, INPUT_PULLUP);
 	}
-	ButtonDriver.pinMode(15, OUTPUT);
+	ButtonDriver.pinMode(GLIDE_LED_PIN, OUTPUT);
+	ButtonDriver.pinMode(GLIDE_PIN, INPUT_PULLUP);
 }
 
 void Buttons::poll() {
 	button_toggled = false;
+	button_state = 0;
 	SPI.setBitOrder(MSBFIRST); //MCP23S17 is picky
 	row++;
 	if (row > 3) row = 0;
@@ -45,28 +47,27 @@ void Buttons::poll() {
 		if (value != button_matrix[stepnum]) { //detect when button changes state
 			button_matrix[stepnum] = value; //store button state
 			button_toggled = true;
+			button_state   = !value; 
 			button_pressed = stepnum;
-			button_state   = value; 
+
 		}
 	}
 	ButtonDriver.digitalWrite(row+4, HIGH);
 	
-	buttons_mask = (~buttons_state & 0xFF00); // >> 8;
+	
+	buttons_mask = (~buttons_state & 0xFF80); // exclude glide LED bit
 	if (buttons_mask > 0) {
-		for(int ii = 0; ii<7; ii++){
+		for(int ii = 0; ii<8; ii++){
 			bool function_button_state = (buttons_mask & 0x01 << (ii+8)) >> (ii+8);
 
-			if (function_button_state != function_button_matrix[ii+1]){
-				function_button_matrix[ii+1] = function_button_state;
+			if (function_button_state != function_button_matrix[ii+8]){
+				function_button_matrix[ii+8] = function_button_state;
 				//Serial.write(function_button);
 				button_toggled = true;
 				button_state = function_button_state;
 				button_pressed = function_buttons[ii]+8;
 			}
 		}
-	} else {
-		button_toggled = false;
-		//ButtonDriver.digitalWrite(15, LOW);
 	}
 }
 
@@ -83,7 +84,8 @@ int Buttons::getButtonPressed(){
 }
 
 void Buttons::setGlideLed(bool glide){
-	ButtonDriver.digitalWrite(GLIDE_LED_PIN, glide); //glide LED
+	SPI.setBitOrder(MSBFIRST); //MCP23S17 is picky
+	ButtonDriver.digitalWrite(GLIDE_LED_PIN, glide ? HIGH : LOW);
 }
 
 }

@@ -43,7 +43,7 @@ class Buttons {
     bool button_matrix[16] = { 1,1,1,1, 1,1,1,1, 1,1,1,1, 1,1,1,1 };
     int saveCount = 0;
 
-    bool function_button_matrix[8] = { 0, 0, 0, 0, 0, 0, 0 }; //store status of buttons in/out  -- no idea why but first bit never toggles? works when offset by one - bad memory address?
+    bool function_button_matrix[16]; //store status of buttons in/out  -- no idea why but first bit never toggles? works when offset by one - bad memory address?
 
     int row = 0;
     uint16_t buttons_state;

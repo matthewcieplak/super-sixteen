@@ -62,7 +62,7 @@ void Ui::poll(){
     buttons.poll();
     if (buttons.getButtonToggled()) {
         onButtonToggle(buttons.getButtonPressed(), buttons.getButtonState());
-        buttons.button_toggled = false; // reset state for next poll
+        //buttons.button_toggled = false; // reset state for next poll
     }
 
     int incrementAmount = encoder.poll();
@@ -98,10 +98,9 @@ void Ui::onSaveButton(bool state) { //use as calibrate button for now
 }
 
 void Ui::onButtonToggle(int button, bool button_state) {
-
 	if (button < 16) { //inside button grid
         //display.setDisplayNum(button);
-        if (!button_state) {
+        if (button_state) {
 			switch(ui_mode) {
     	    	case SEQUENCE_MODE: selectStep(button); break;
         		case CALIBRATE_MODE: updateCalibration(button); break;
@@ -120,6 +119,7 @@ void Ui::onButtonToggle(int button, bool button_state) {
 		case REPEAT_PIN: display.setDisplayAlpha("REP"); break;
 		//default: display.setDisplayNum(button);
         }
+		display.setDecimal(!button_state);
     }
 }
 
@@ -133,8 +133,10 @@ void Ui::onEncoderIncrement(int increment_amount) {
 }
 
 void Ui::onGlideButton(bool state){
-	//display.setDisplayAlpha("GLD");
-	if (state) buttons.setGlideLed(sequencerVar2->toggleGlide());
+	if (state) {
+		//display.setDisplayAlpha("GLD");
+		buttons.setGlideLed(sequencerVar2->toggleGlide());
+	}
 }
 
 void Ui::onPlayButton(bool state){
