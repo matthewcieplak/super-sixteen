@@ -74,6 +74,7 @@ void Sequencer::updateClock() {
 		step_incremented = false;
 	}
 	updateGlide();
+	updateGate();
 
 	//todo enable clock in
 	// if (digitalRead(CLOCK_IN_PIN) == LOW) {
@@ -112,7 +113,7 @@ void Sequencer::incrementStep() {
 			dacVar->setOutput(0, GAIN_2, 1, current_note_value);
 
 		}
-
+	
 		//GATE
 		digitalWrite(GATE_PIN, step_matrix[active_step] ? HIGH : LOW);
 		gate_active = step_matrix[active_step];

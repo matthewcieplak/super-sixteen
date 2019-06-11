@@ -12,11 +12,7 @@ const int function_buttons[7] = { SHIFT_PIN, PLAY_PIN, LOAD_PIN, SAVE_PIN, RECOR
 MCP23S17 ButtonDriver(&SPI, CS0_PIN, 0);
 
 void Buttons::init() {
-	pinMode(GATE_PIN, OUTPUT); //gate
-    pinMode(CLOCK_OUT_PIN, OUTPUT); //clock out
-    pinMode(CLOCK_IN_PIN, INPUT_PULLUP); //clock in (external pullup)
-    pinMode(RESET_PIN, INPUT_PULLUP); //reset in (external pullup)
-
+	
 	SPI.setBitOrder(MSBFIRST);
 	ButtonDriver.begin();
 	for (int i = 0; i < 4; i++){
