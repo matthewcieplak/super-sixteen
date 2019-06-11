@@ -10,8 +10,10 @@
 namespace supersixteen{
 
 elapsedMillis multiplex;
+elapsedMillis blinker;
 bool led_matrix[16];
 int step_map[16] = { 3, 2, 1, 0, 0, 1, 2 ,3, 3, 2, 1, 0, 0, 1, 2, 3 }; //rows are wired symmetrically rather than sequentially
+int selected_step_led = 0;
 
 uint8_t byte1;
 uint8_t byte2;
@@ -47,7 +49,7 @@ void LedMatrix::updateMatrix(int row) {
 	displayVar3->nextDigit();
 }
 
-void LedMatrix::multiplex_leds() {
+void LedMatrix::multiplexLeds() {
 	if (multiplex > 0) {
 		multiplex = 0;
 
@@ -63,25 +65,30 @@ void LedMatrix::multiplex_leds() {
 	}
 }
 
-void LedMatrix::blink_step() {
-	//TODO chase LED
-	// if (step_matrix[selected_step]) {
-	// 	if (blinker > (led_matrix[selected_step] ? 600 : 100)) { //blink long when active
-	// 		blink_led();
-	// 		blinker = 0;
-	// 	}
-	// }
-	// else {
-	// 	if (blinker > (led_matrix[selected_step] ? 100 : 600)) { //blink short when inactive
-	// 		blink_led();
-	// 		blinker = 0;
-	// 	}
-	// }
+void LedMatrix::blinkStep() {
+	//if (blinker < 100) return;
+	if (sequencerVar3->getStepOnOff(selected_step_led)) {
+		if (blinker > (led_matrix[selected_step_led] ? 600 : 100)) { //blink long when active
+			blinkLed();
+		}
+	} else {
+		if (blinker > (led_matrix[selected_step_led] ? 100 : 600)) { //blink short when inactive
+			blinkLed();
+		}
+	}
 }
 
-void LedMatrix::blink_led() {
-	//TODO chase leds
-	//led_matrix[selected_step] = !led_matrix[selected_step];
+void LedMatrix::blinkLed() {
+	led_matrix[selected_step_led] = !led_matrix[selected_step_led];
+	blinker = 0;
+}
+
+void LedMatrix::blinkCurrentStep(){
+	int current_step = sequencerVar3->getCurrentStep();
+	led_matrix[current_step] = !led_matrix[current_step]; //reset previous LED
+
+	// int prev_step = sequencerVar3->getPrevStep();
+	// led_matrix[prev_step] = !led_matrix[prev_step];
 }
 
 void LedMatrix::reset(){
@@ -92,6 +99,7 @@ void LedMatrix::reset(){
 
 void LedMatrix::setMatrixFromSequencer(){
 	memcpy(led_matrix, sequencerVar3->getStepMatrix(), sizeof led_matrix); //reset LED matrix to sequence
+	selected_step_led = sequencerVar3->getSelectedStep();
 }
 
 void LedMatrix::toggleLed(int led){

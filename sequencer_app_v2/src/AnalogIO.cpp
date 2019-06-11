@@ -45,8 +45,8 @@ void AnalogIo::poll() {
 	int i = analogMultiplexor;
 	// if (i > 3 || i < 0) return; //sometimes we get desynced by interrupts, and analogRead on a wrong pin is fatal
 	analogValues[i] = analogRead(analog_pins[i]);
-
-	int change_threshold = 100;
+	param_changed = false;
+	int change_threshold = 10;
 	if (display_param == analog_params[i]) {
 		change_threshold = 4; //increase sensitivity when param is selected, decrease otherwise to reduce accidental "bump" changes
 	}
@@ -105,6 +105,10 @@ void AnalogIo::setDisplayNum(int displayNum){
 
 int AnalogIo::getDisplayNum(){
 	return display_num;
+}
+
+bool AnalogIo::paramChanged(){
+	return param_changed;
 }
 
 };

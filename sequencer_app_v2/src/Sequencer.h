@@ -12,10 +12,14 @@ class Sequencer{
         void updateClock();
 
         void incrementStep();
+        bool stepWasIncremented();
 
         void selectStep(int step);
+        bool getStepOnOff(int step);
+        int getCurrentStep();
+        int getPrevStep();
 
-        void incrementTempo(int amount);
+        int incrementTempo(int amount);
 
         void onPlayButton();
 
@@ -32,6 +36,8 @@ class Sequencer{
         int getCv();
 
         bool  *getStepMatrix();
+
+        int getSelectedStep();
         
     private:
         void updateGlide();

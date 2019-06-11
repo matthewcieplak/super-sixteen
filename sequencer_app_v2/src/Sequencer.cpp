@@ -1,3 +1,4 @@
+#include <Arduino.h>
 #include "Variables.h"
 #include "Pinout.h"
 #include "Dac.h"
@@ -15,13 +16,15 @@ bool step_matrix[16] = { 1,0,0,0, 1,1,0,0, 1,1,1,0, 1,1,1,1 };
 bool glide_matrix[16];
 
 int selected_step;
-uint8_t current_step;
+uint8_t current_step = 15;
+uint8_t prev_step = 14;
 uint8_t active_step;
 uint8_t sequence_length;
 
 bool gate_active = false;
 bool clock_out_active = false;
 bool clock_in_active = false;
+bool step_incremented = false;
 
 double tempo_bpm = 120;
 unsigned int tempo_millis = 15000 / tempo_bpm; //would be 60000 but we count 4 steps per "beat"
@@ -46,6 +49,11 @@ void Sequencer::init(Calibration& calibration, Dac& dac) {
 	for (int i = 0; i < 16; i++) {
 		duration_matrix[i] = 80;
 	}
+
+	pinMode(GATE_PIN, OUTPUT);
+	pinMode(CLOCK_OUT_PIN, OUTPUT);
+	pinMode(CLOCK_IN_PIN, INPUT_PULLUP);
+	pinMode(RESET_PIN, INPUT_PULLUP);
 }
 
 void Sequencer::updateClock() {
@@ -62,27 +70,29 @@ void Sequencer::updateClock() {
 		}
 		incrementStep();
 		timekeeper = 0;
+	} else {
+		step_incremented = false;
 	}
-
 	updateGlide();
 
-	
-	if (digitalRead(CLOCK_IN_PIN) == LOW) {
-		if(!clock_in_active) {
-			clock_in_active = true;
-			play_active = false; //read the hardware input, which is normally connected to the hardware output, as the internal clock
-			calculated_tempo = timekeeper;
-			timekeeper = 0;
-			incrementStep();
-		}
-	} else {
-		clock_in_active = false;
-	}
+	//todo enable clock in
+	// if (digitalRead(CLOCK_IN_PIN) == LOW) {
+	// 	if(!clock_in_active) {
+	// 		clock_in_active = true;
+	// 		play_active = false; //read the hardware input, which is normally connected to the hardware output, as the internal clock
+	// 		calculated_tempo = timekeeper;
+	// 		timekeeper = 0;
+	// 		incrementStep();
+	// 	}
+	// } else {
+	// 	clock_in_active = false;
+	// }
 }
 
 void Sequencer::incrementStep() {
 	//TODO chase leds
 	//led_matrix[current_step] = step_matrix[current_step]; //reset previous LED
+	prev_step = current_step;
 	current_step++;
 	if (current_step == 16) {
 		current_step = 0;
@@ -108,9 +118,24 @@ void Sequencer::incrementStep() {
 		gate_active = step_matrix[active_step];
 	}
 
+	step_incremented = true;
+
 	// TEST running display number
 	// setDisplayNum(current_step);
 }
+
+int Sequencer::getCurrentStep(){
+	return current_step;
+}
+
+int Sequencer::getPrevStep(){
+	return prev_step;
+}
+
+bool Sequencer::stepWasIncremented(){
+	return step_incremented;
+}
+
 
 void Sequencer::updateGlide() {
 	if (step_matrix[active_step] && glide_matrix[active_step]) {
@@ -152,13 +177,14 @@ void Sequencer::onPlayButton(){
 	calculated_tempo = tempo_millis;
 }
 
-void Sequencer::incrementTempo(int amount){
+int Sequencer::incrementTempo(int amount){
 	tempo_bpm += amount;
 	if (tempo_bpm < 20) tempo_bpm = 20;
 	if (tempo_bpm > 500) tempo_bpm = 500;
 	//display_param = TEMPO_PARAM;
 	//setDisplayNum(tempo_bpm);
 	tempo_millis = 15000 / tempo_bpm;
+	return tempo_bpm;
 }
 
 void Sequencer::selectStep(int stepnum){
@@ -168,6 +194,10 @@ void Sequencer::selectStep(int stepnum){
 		//led_matrix[stepnum] = step_matrix[stepnum];
     }
     selected_step = stepnum;
+}
+
+bool Sequencer::getStepOnOff(int stepnum){
+	return step_matrix[stepnum];
 }
 
 bool Sequencer::toggleGlide(){
@@ -215,6 +245,10 @@ int Sequencer::getCv(){
 
 bool *Sequencer::getStepMatrix(){
 	return step_matrix;
+}
+
+int Sequencer::getSelectedStep(){
+	return selected_step;
 }
 
 }

@@ -39,10 +39,11 @@ int Calibration::getCalibrationValue(int step){
 	return calibration_values[step];
 }
 
-void Calibration::incrementCalibration(int amt, int step) {
+int Calibration::incrementCalibration(int amt, int step) {
 	if (abs(calibration_values[step] + amt) < 100) { //calibration values stored as 0.0 - 2.0 but displayed as -99 to +99
 		calibration_values[step] += amt;
 	} 
+	return calibration_values[step];
 }
 
 void Calibration::readCalibrationValues() {

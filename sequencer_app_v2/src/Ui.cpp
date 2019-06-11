@@ -51,6 +51,7 @@ void Ui::init(Calibration& calibration, Dac& dac, Sequencer& sequencer){
     analogIo.init(sequencer);
     buttons.init();
     display.init();
+	encoder.init();
     ledMatrix.init(display, sequencer);
 	initializeSequenceMode();
 
@@ -64,23 +65,23 @@ void Ui::poll(){
         buttons.button_toggled = false; // reset state for next poll
     }
 
-    encoder.poll();
-    if (abs(encoder.getIncrementAmount()) > 0) {
-        onEncoderIncrement(encoder.getIncrementAmount());
+    int incrementAmount = encoder.poll();
+    if (abs(incrementAmount) > 0) {
+        onEncoderIncrement(incrementAmount); //encoder.getIncrementAmount());
     }
 
     analogIo.poll();
-
-
-
+	if (analogIo.paramChanged()){
+		display.setDisplayNum(analogIo.getDisplayNum());
+	}
 }
 
 void Ui::multiplex(){
-	ledMatrix.multiplex_leds(); //this also updates the seven segment display on a shared serial line, messy i know
-	ledMatrix.blink_step();
+	ledMatrix.multiplexLeds(); //this also updates the seven segment display on a shared serial line, messy i know
+	//ledMatrix.blinkStep();
 }
 
-void Ui::saveButton(bool state) { //use as calibrate button for now
+void Ui::onSaveButton(bool state) { //use as calibrate button for now
 	display.setDisplayAlpha("SAV");
 	return;
 
@@ -99,43 +100,55 @@ void Ui::saveButton(bool state) { //use as calibrate button for now
 void Ui::onButtonToggle(int button, bool button_state) {
 
 	if (button < 16) { //inside button grid
-        display.setDisplayNum(button);
-        switch(ui_mode) {
-        case SEQUENCE_MODE: selectStep(button); break;
-        case CALIBRATE_MODE: updateCalibration(button); break;
-        }
+        //display.setDisplayNum(button);
+        if (!button_state) {
+			switch(ui_mode) {
+    	    	case SEQUENCE_MODE: selectStep(button); break;
+        		case CALIBRATE_MODE: updateCalibration(button); break;
+			}
+        } else {
+			        //display.setDisplayNum(button*-1);
+		}
     } else {
-        switch (button) {
+        switch (button-8) {
 		case SHIFT_PIN:  display.setDisplayAlpha("SHF"); shift_state = button_state; break;
-		case PLAY_PIN:   display.setDisplayAlpha("PLY"); break;
+		case PLAY_PIN:   onPlayButton(button_state); break;
 		case LOAD_PIN:   display.setDisplayAlpha("LOD"); break;
 		case SAVE_PIN:   display.setDisplayAlpha("SAV"); break;
-		case GLIDE_PIN:  display.setDisplayAlpha("GLD"); break;
+		case GLIDE_PIN:  onGlideButton(button_state); break;
 		case RECORD_PIN: display.setDisplayAlpha("REC"); break;
 		case REPEAT_PIN: display.setDisplayAlpha("REP"); break;
-		default: display.setDisplayNum(button);
+		//default: display.setDisplayNum(button);
         }
     }
 }
 
 void Ui::onEncoderIncrement(int increment_amount) {
-    if (ui_mode == CALIBRATE_MODE) {
-		calibrationVar2->incrementCalibration(increment_amount, calibration_step);
+	if (ui_mode == CALIBRATE_MODE) {
+		display.setDisplayNum(calibrationVar2->incrementCalibration(increment_amount, calibration_step));
         updateCalibration(calibration_step);
 	} else {
-		sequencerVar2->incrementTempo(increment_amount);
+		display.setDisplayNum(sequencerVar2->incrementTempo(increment_amount));
 	}
 }
 
-void Ui::glideButton(){
+void Ui::onGlideButton(bool state){
 	//display.setDisplayAlpha("GLD");
-	buttons.setGlideLed(sequencerVar2->toggleGlide());
+	if (state) buttons.setGlideLed(sequencerVar2->toggleGlide());
 }
 
+void Ui::onPlayButton(bool state){
+	if (state && isSequencing()) {
+		sequencerVar2->onPlayButton();
+	}
+}
 
 void Ui::selectStep(int step){
     sequencerVar2->selectStep(step);
+	ledMatrix.setMatrixFromSequencer();
+	//ledMatrix.blinkLed();
     analogIo.displaySelectedParam();
+	display.setDisplayNum(analogIo.getDisplayNum());
 	buttons.setGlideLed(sequencerVar2->getGlide());
 }
 
@@ -164,6 +177,11 @@ void Ui::initializeSequenceMode(){
 	ledMatrix.setMatrixFromSequencer();
 	analogIo.displaySelectedParam();
 	display.setDisplayNum(analogIo.getDisplayNum());
+}
+
+void Ui::onStepIncremented(){
+	ledMatrix.setMatrixFromSequencer();
+	ledMatrix.blinkCurrentStep();
 }
 
 }

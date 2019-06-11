@@ -75,4 +75,8 @@ void loop() {
 
 void run_sequence() {
 	sequencer.updateClock();
+	if (sequencer.stepWasIncremented()){
+		ui.onStepIncremented();
+	} 
+
 }

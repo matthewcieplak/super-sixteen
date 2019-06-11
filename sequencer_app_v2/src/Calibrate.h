@@ -10,7 +10,7 @@ class Calibration {
 
         int getCalibratedOutput(double pitch);
 
-        void incrementCalibration(int amt, int step);
+        int incrementCalibration(int amt, int step);
 
         void readCalibrationValues();
 

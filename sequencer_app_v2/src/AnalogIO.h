@@ -18,7 +18,7 @@ class AnalogIo{
      
         int display_param;
         int display_num;
-        bool param_changed;
+        bool paramChanged();
 
     private:
 

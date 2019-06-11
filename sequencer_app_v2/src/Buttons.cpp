@@ -46,6 +46,7 @@ void Buttons::poll() {
 			button_matrix[stepnum] = value; //store button state
 			button_toggled = true;
 			button_pressed = stepnum;
+			button_state   = value; 
 		}
 	}
 	ButtonDriver.digitalWrite(row+4, HIGH);
@@ -60,7 +61,7 @@ void Buttons::poll() {
 				//Serial.write(function_button);
 				button_toggled = true;
 				button_state = function_button_state;
-				button_pressed = function_buttons[ii];
+				button_pressed = function_buttons[ii]+8;
 			}
 		}
 	} else {

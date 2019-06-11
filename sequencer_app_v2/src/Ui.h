@@ -10,9 +10,18 @@ class Ui{
         void poll();
         void multiplex();
         bool isSequencing();
+        void onStepIncremented();
 
     private:
-        void saveButton(bool state);
+        void onShiftButton(bool state);
+        void onPlayButton(bool state);
+        void onLoadButton(bool state);
+        void onSaveButton(bool state);
+
+        void onRecButton(bool state);
+        void onRepeatButton(bool state);
+        void onGlideButton(bool state);        
+        
         void onButtonToggle(int button, bool button_state);
         void onEncoderIncrement(int increment_amount);
         void selectStep(int step);

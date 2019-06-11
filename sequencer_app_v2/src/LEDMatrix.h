@@ -11,11 +11,13 @@ class LedMatrix{
 
         void updateMatrix(int row);
 
-        void multiplex_leds();
+        void multiplexLeds();
 
-        void blink_step();
+        void blinkStep();
 
-        void blink_led();
+        void blinkLed();
+
+        void blinkCurrentStep();
 
         void reset();
 
