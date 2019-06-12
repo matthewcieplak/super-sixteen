@@ -1,0 +1,3 @@
+[submodule "sequencer_app_v2/lib/c_queue"]
+	path = sequencer_app_v2/lib/c_queue
+	url = https://github.com/clnhlzmn/c_queue.git
