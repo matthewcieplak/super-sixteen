@@ -15,16 +15,10 @@ class Buttons {
     void init();
     void poll();
 
-    bool getButtonToggled();
-    bool getButtonState();
-    int getButtonPressed();
+    void getQueuedEvent(uint16_t &value);
 
     void setGlideLed(bool glide);
 
-    bool button_toggled = false;
-    bool button_state = false;
-    bool shift_mode = false;
-    int button_pressed = 0;
     
 
   private:

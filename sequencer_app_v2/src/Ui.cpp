@@ -60,8 +60,12 @@ void Ui::init(Calibration& calibration, Dac& dac, Sequencer& sequencer){
 
 void Ui::poll(){
     buttons.poll();
-    if (buttons.getButtonToggled()) {
-        onButtonToggle(buttons.getButtonPressed(), buttons.getButtonState());
+	uint16_t value = 0;
+	buttons.getQueuedEvent(value);
+    if (value) {
+        int button_pressed = value & 0x00FF; //use last 8 bits for button number
+		bool button_state = (value & 0x0100) >> 8; // use first 8 bits (one of them anyway) for button state
+		onButtonToggle(button_pressed, button_state);
         //buttons.button_toggled = false; // reset state for next poll
     }
 
@@ -115,8 +119,8 @@ void Ui::onButtonToggle(int button, bool button_state) {
 		case LOAD_PIN:   display.setDisplayAlpha("LOD"); break;
 		case SAVE_PIN:   display.setDisplayAlpha("SAV"); break;
 		case GLIDE_PIN:  onGlideButton(button_state); break;
-		case RECORD_PIN: display.setDisplayAlpha("REC"); break;
-		case REPEAT_PIN: display.setDisplayAlpha("REP"); break;
+		case RECORD_PIN: display.setDisplayAlpha("ROC"); break;
+		case REPEAT_PIN: display.setDisplayAlpha("RAP"); break;
 		//default: display.setDisplayNum(button);
         }
 		display.setDecimal(!button_state);

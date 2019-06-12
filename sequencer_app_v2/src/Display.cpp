@@ -12,7 +12,7 @@ int digit_display[3] = { 0, 0, 0 };
 int digit_pins[3] = { DIGIT_1_PIN, DIGIT_2_PIN, DIGIT_3_PIN };
 uint8_t alpha_display[3] = { 0, 0, 0 };
 
-bool decimal = 0;
+bool decimal = 1;
 const uint8_t decimalChar = 0x01;
 
 
@@ -73,13 +73,14 @@ void Display::nextDigit(){
 
 void Display::setDecimal(bool decimalState){
 	decimal = decimalState;
+	appendDecimal();
 }
 
 void Display::appendDecimal(){
 	if (decimal) {
-		alpha_display[0] = alpha_display[0] - decimalChar;
-	} else {
 		alpha_display[0] = alpha_display[0] | decimalChar;
+	} else {
+		alpha_display[0] = alpha_display[0] & ~decimalChar;
 	}
 }
 }

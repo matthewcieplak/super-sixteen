@@ -4,12 +4,22 @@
 #include "Calibrate.h"
 #include "Sequencer.h"
 #include <MCP23S17.h>
+#include "../lib/c_queue/queue.h"
 
 namespace supersixteen{	
 	
 const int function_buttons[7] = { SHIFT_PIN, PLAY_PIN, LOAD_PIN, SAVE_PIN, RECORD_PIN, REPEAT_PIN, GLIDE_PIN };
 
 MCP23S17 ButtonDriver(&SPI, CS0_PIN, 0);
+
+
+//define a queue called queue_example 
+//with elements of type int and size 8
+QUEUE(events, uint16_t, 8);
+
+//create an instance of queue_example
+volatile struct queue_events queue;
+
 
 void Buttons::init() {
 	
@@ -27,8 +37,8 @@ void Buttons::init() {
 }
 
 void Buttons::poll() {
-	button_toggled = false;
-	button_state = 0;
+	// button_toggled = false;
+	// button_state = 0;
 	SPI.setBitOrder(MSBFIRST); //MCP23S17 is picky
 	row++;
 	if (row > 3) row = 0;
@@ -42,9 +52,11 @@ void Buttons::poll() {
 		bool value = buttons_mask >> ii; //shift to 0 position
 		if (value != button_matrix[stepnum]) { //detect when button changes state
 			button_matrix[stepnum] = value; //store button state
-			button_toggled = true;
-			button_state   = !value; 
-			button_pressed = stepnum;
+			uint16_t event = stepnum | value << 8;  //condense button number and state into one 16-bit variable
+			queue_events_push(&queue, &event);
+			//button_toggled = true;
+			//button_state   = !value; 
+			//button_pressed = stepnum;
 
 		}
 	}
@@ -54,29 +66,23 @@ void Buttons::poll() {
 	buttons_mask = (~buttons_state & 0xFF80); // exclude glide LED bit
 	if (buttons_mask > 0) {
 		for(int ii = 0; ii<8; ii++){
-			bool function_button_state = (buttons_mask & 0x01 << (ii+8)) >> (ii+8);
+			bool value = (buttons_mask & 0x01 << (ii+8)) >> (ii+8);
 
-			if (function_button_state != function_button_matrix[ii+8]){
-				function_button_matrix[ii+8] = function_button_state;
+			if (value != function_button_matrix[ii]){
+				function_button_matrix[ii] = value;
+				uint16_t event = function_buttons[ii]+8 | (value << 8); //condense button number and state into one 16-bit variable
+				queue_events_push(&queue, &event);
 				//Serial.write(function_button);
-				button_toggled = true;
-				button_state = function_button_state;
-				button_pressed = function_buttons[ii]+8;
+				// button_toggled = true;
+				// button_state = function_button_state;
+				// button_pressed = function_buttons[ii]+8;
 			}
 		}
 	}
 }
 
-bool Buttons::getButtonToggled(){
-	return button_toggled;
-}
-
-bool Buttons::getButtonState(){
-	return button_state;
-}
-
-int Buttons::getButtonPressed(){
-	return button_pressed;
+void Buttons::getQueuedEvent(uint16_t& value){
+    queue_events_pop(&queue, &value);
 }
 
 void Buttons::setGlideLed(bool glide){
