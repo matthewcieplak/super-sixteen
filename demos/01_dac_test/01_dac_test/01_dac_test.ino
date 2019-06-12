@@ -1,6 +1,6 @@
 #include <SPI.h>
  
-const int PIN_CS = 9;
+const int PIN_CS = 1;
 const int GAIN_1 = 0x1;
 const int GAIN_2 = 0x0;
 int output_v = 0;
@@ -52,5 +52,6 @@ void loop()
   setOutput(0, GAIN_2, 1, i);
   setOutput(1, GAIN_2, 1, i);
   //setOutput(i);
+  delay(10);
  }
 }

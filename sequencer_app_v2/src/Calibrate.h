@@ -1,13 +1,22 @@
 #pragma once
 
-void initializeCalibrationMode();
+namespace supersixteen{
 
-void updateCalibration();
+class Calibration {
+    public:
+        void initializeCalibrationMode();
 
-int setCalibratedOutput(double pitch);
+        void updateCalibration();
 
-void incrementCalibration(int amt);
+        int getCalibratedOutput(double pitch);
 
-void readCalibrationValues();
+        int incrementCalibration(int amt, int step);
 
-void writeCalibrationValues();
+        void readCalibrationValues();
+
+        void writeCalibrationValues();
+
+        int getCalibrationValue(int step);
+};
+
+}

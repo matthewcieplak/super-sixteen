@@ -1,27 +1,41 @@
 #pragma once
 
-#define TEMPO_PARAM 0
-#define PITCH_PARAM 1
-#define OCTAVE_PARAM 2
-#define DURATION_PARAM 3
-#define CV_PARAM 4
-#define CALIBRATION_PARAM 5
+#include <Arduino.h>
+#include <stdint.h>
+#include "Sequencer.h"
 
-extern int display_param;
+namespace supersixteen{
 
-//assuming dac single channel, gain=2
-//void setOutput(unsigned int val);
+class AnalogIo{
+    public:
+        void init(Sequencer& sequencer);
 
-void setOutput(uint8_t channel, uint8_t gain, uint8_t shutdown, unsigned int val);
+        void poll();
 
-void read_input();
+        void displaySelectedParam();
 
-void setPitch(int analogValue);
+        int getDisplayNum();
+     
+        int display_param;
+        int display_num;
+        bool paramChanged();
 
-void setOctave(int analogValue);
+    private:
 
-void setDuration(long analogValue);
+        void setPitch(int analogValue);
 
-void setCV(int analogValue);
+        void setOctave(int analogValue);
 
-void displaySelectedParam();
+        void setDuration(long analogValue);
+
+        void setDisplayNum(int displayNum);
+
+        void setCV(int analogValue);
+
+
+        int lastAnalogValues[4];
+        int analogValues[4];
+        int analogMultiplexor = 0;
+};
+
+}

@@ -1,14 +1,30 @@
 #pragma once
 // LEDMatrix.h
+#include "Display.h"
+#include "Sequencer.h"
 
-void initializeMatrix();
+namespace supersixteen {
 
-void updateMatrix(int row);
+class LedMatrix{
+    public:
+        void init(Display &display, Sequencer &sequencer);
 
-void update7SegmentDisplay(int row);
+        void updateMatrix(int row);
 
-void multiplex_leds();
+        void multiplexLeds();
 
-void blink_step();
+        void blinkStep();
 
-void blink_led();
+        void blinkLed();
+
+        void blinkCurrentStep();
+
+        void reset();
+
+        void setMatrixFromSequencer();
+
+        void toggleLed(int led);
+    
+};
+
+}

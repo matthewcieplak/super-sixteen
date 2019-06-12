@@ -1,11 +1,25 @@
 #pragma once
 // Display.h
 
-extern int digit_display[3];
-extern int digit_counter;
+namespace supersixteen{
+class Display{
+public:
+    void init();
 
-void initializeDisplay();
+    void updateSevenSegmentDisplay();
 
-void updateDisplay();
+    void nextDigit();
+    
+    void setDisplayNum(int displayNum);
 
-void setDisplayNum();
+    void setDisplayAlpha(const char displayAlpha[3]);
+
+    void setDecimal(bool decimalOn);
+
+private:
+    void appendDecimal();
+
+    int digit_display[3];
+    int digit_counter;
+};
+}

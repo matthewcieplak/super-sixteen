@@ -1,10 +1,48 @@
 #pragma once
 // Sequencer.h
+#include "Calibrate.h"
+#include "Dac.h"
 
-void update_clock();
+namespace supersixteen {
 
-void increment_step();
+class Sequencer{
+    public:
+        void init(Calibration& calibration, Dac& dac);
 
-void update_glide();
+        void updateClock();
 
-void update_gate();
+        void incrementStep();
+        bool stepWasIncremented();
+
+        void selectStep(int step);
+        bool getStepOnOff(int step);
+        int getCurrentStep();
+        int getPrevStep();
+
+        int incrementTempo(int amount);
+
+        void onPlayButton();
+
+        bool toggleGlide();
+        bool setPitch(int newVal);
+        bool setOctave(int newVal);
+        bool setDuration(int newVal);
+        bool setCv(int newVal);
+
+        bool getGlide();
+        int getPitch();
+        int getOctave();
+        int getDuration();
+        int getCv();
+
+        bool  *getStepMatrix();
+
+        int getSelectedStep();
+        
+    private:
+        void updateGlide();
+        void updateGate();
+
+};
+
+}
