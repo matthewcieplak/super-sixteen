@@ -2550,15 +2550,15 @@ Wire Wire Line
 	3700 2650 2000 2650
 Wire Wire Line
 	2000 2650 2000 2750
-Wire Wire Line
-	1500 2750 3650 2750
 Connection ~ 2500 2950
-Wire Wire Line
-	3650 2550 2500 2550
 Wire Wire Line
 	2000 2750 2000 2950
 Wire Wire Line
 	2500 2550 2500 2950
+Wire Wire Line
+	2500 2550 3700 2550
+Wire Wire Line
+	1500 2750 3700 2750
 Wire Bus Line
 	3050 850  3050 1550
 Wire Bus Line

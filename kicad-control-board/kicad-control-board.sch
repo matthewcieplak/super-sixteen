@@ -1,6 +1,6 @@
 EESchema Schematic File Version 4
 LIBS:kicad-control-board-cache
-EELAYER 26 0
+EELAYER 29 0
 EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
@@ -346,7 +346,7 @@ F 3 "" H 8800 700 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L Device:POT RV2
+L kicad-control-board-rescue:POT-Device RV2
 U 1 1 5B32F1D2
 P 10550 5350
 F 0 "RV2" V 10375 5350 50  0000 C CNN
@@ -357,7 +357,7 @@ F 3 "" H 10550 5350 50  0001 C CNN
 	0    -1   -1   0   
 $EndComp
 $Comp
-L Device:POT RV3
+L kicad-control-board-rescue:POT-Device RV3
 U 1 1 5B32F556
 P 10550 5750
 F 0 "RV3" V 10375 5750 50  0000 C CNN
@@ -368,7 +368,7 @@ F 3 "" H 10550 5750 50  0001 C CNN
 	0    -1   -1   0   
 $EndComp
 $Comp
-L Device:POT RV4
+L kicad-control-board-rescue:POT-Device RV4
 U 1 1 5B32F5FF
 P 10550 6150
 F 0 "RV4" V 10375 6150 50  0000 C CNN
@@ -379,7 +379,7 @@ F 3 "" H 10550 6150 50  0001 C CNN
 	0    -1   -1   0   
 $EndComp
 $Comp
-L Device:POT RV1
+L kicad-control-board-rescue:POT-Device RV1
 U 1 1 5B32F113
 P 10550 4950
 F 0 "RV1" V 10375 4950 50  0000 C CNN
