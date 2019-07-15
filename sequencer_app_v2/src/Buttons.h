@@ -34,7 +34,7 @@ class Buttons {
     void glideButton(bool state);
         
     int button_map[16] = { 12, 13, 14, 15, 11, 10, 9, 8, 4, 5, 6, 7, 3, 2, 1, 0 }; //rows are wired symmetrically rather than sequentially
-    bool button_matrix[16] = { 1,1,1,1, 1,1,1,1, 1,1,1,1, 1,1,1,1 };
+    bool button_matrix[16] = { 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0};
     int saveCount = 0;
 
     bool function_button_matrix[16]; //store status of buttons in/out  -- no idea why but first bit never toggles? works when offset by one - bad memory address?

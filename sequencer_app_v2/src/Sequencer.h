@@ -18,6 +18,7 @@ class Sequencer{
         bool getStepOnOff(int step);
         int getCurrentStep();
         int getPrevStep();
+        int setActiveNote();
 
         int incrementTempo(int amount);
 
@@ -35,13 +36,19 @@ class Sequencer{
         int getDuration();
         int getCv();
 
+
         bool  *getStepMatrix();
 
         int getSelectedStep();
+
+        void setRecordMode(bool state);
+        void setRepeatMode(bool state);
+        void setRepeatLength(uint8_t length);
         
     private:
         void updateGlide();
         void updateGate();
+        uint8_t editedStep();
 
 };
 

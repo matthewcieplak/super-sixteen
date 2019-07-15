@@ -61,6 +61,12 @@ void Display::setDisplayAlpha(const char displayAlpha[]){ //turns 3-character ar
 void Display::updateSevenSegmentDisplay(){
 	digitalWrite(digit_pins[digit_counter], HIGH);
 	SPI.transfer(alpha_display[digit_counter]); 
+	// nextDigit();
+}
+
+void Display::blankSevenSegmentDisplay(){
+	digitalWrite(digit_pins[digit_counter], HIGH);
+	//nextDigit();
 }
 
 void Display::nextDigit(){

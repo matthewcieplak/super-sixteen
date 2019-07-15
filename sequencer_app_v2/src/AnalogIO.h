@@ -13,6 +13,7 @@ class AnalogIo{
         void poll();
 
         void displaySelectedParam();
+        void recordCurrentParam();
 
         int getDisplayNum();
      
@@ -20,7 +21,10 @@ class AnalogIo{
         int display_num;
         bool paramChanged();
 
+
     private:
+
+        void readInput(int i);
 
         void setPitch(int analogValue);
 
@@ -31,11 +35,6 @@ class AnalogIo{
         void setDisplayNum(int displayNum);
 
         void setCV(int analogValue);
-
-
-        int lastAnalogValues[4];
-        int analogValues[4];
-        int analogMultiplexor = 0;
 };
 
 }

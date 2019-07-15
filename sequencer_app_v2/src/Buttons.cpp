@@ -19,6 +19,7 @@ QUEUE(events, uint16_t, 8);
 
 //create an instance of queue_example
 volatile struct queue_events queue;
+bool editing_buttons = false;
 
 
 void Buttons::init() {
@@ -34,6 +35,13 @@ void Buttons::init() {
 	}
 	ButtonDriver.pinMode(GLIDE_LED_PIN, OUTPUT);
 	ButtonDriver.pinMode(GLIDE_PIN, INPUT_PULLUP);
+
+	//init button states
+	poll();
+	poll();
+	poll();
+	poll();
+	editing_buttons = true;
 }
 
 void Buttons::poll() {
@@ -53,7 +61,7 @@ void Buttons::poll() {
 		if (value != button_matrix[stepnum]) { //detect when button changes state
 			button_matrix[stepnum] = value; //store button state
 			uint16_t event = stepnum | value << 8;  //condense button number and state into one 16-bit variable
-			queue_events_push(&queue, &event);
+			if (editing_buttons) queue_events_push(&queue, &event);
 			//button_toggled = true;
 			//button_state   = !value; 
 			//button_pressed = stepnum;
@@ -71,7 +79,7 @@ void Buttons::poll() {
 			if (value != function_button_matrix[ii]){
 				function_button_matrix[ii] = value;
 				uint16_t event = function_buttons[ii]+8 | (value << 8); //condense button number and state into one 16-bit variable
-				queue_events_push(&queue, &event);
+				if (editing_buttons) queue_events_push(&queue, &event);
 				//Serial.write(function_button);
 				// button_toggled = true;
 				// button_state = function_button_state;

@@ -8,6 +8,10 @@ public:
 
     void updateSevenSegmentDisplay();
 
+    void blankSevenSegmentDisplay();
+
+    void blankDigit();
+
     void nextDigit();
     
     void setDisplayNum(int displayNum);

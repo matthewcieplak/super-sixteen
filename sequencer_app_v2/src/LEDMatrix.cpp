@@ -14,6 +14,9 @@ elapsedMillis blinker;
 bool led_matrix[16];
 int step_map[16] = { 3, 2, 1, 0, 0, 1, 2 ,3, 3, 2, 1, 0, 0, 1, 2, 3 }; //rows are wired symmetrically rather than sequentially
 int selected_step_led = 0;
+const int MILLISECONDS_PER_MULTIPLEX = 1;
+const int MILLISECONDS_AFTER_MULTIPLEX = 0;
+bool display_active = 1;
 
 uint8_t byte1;
 uint8_t byte2;
@@ -49,9 +52,25 @@ void LedMatrix::updateMatrix(int row) {
 	displayVar3->nextDigit();
 }
 
+void LedMatrix::blankMatrix(int row) {
+	displayVar3->blankSevenSegmentDisplay();
+	return; //avoid flicker in matrix
+	
+	byte1 = (1 << (7-row)); //turn on row driver
+	byte2 = 0xF0;
+	byte1 += ~byte2;
+	digitalWrite(CS1_PIN, LOW);
+	SPI.setBitOrder(LSBFIRST); //shift registers like LSB
+	displayVar3->blankSevenSegmentDisplay(); //has to happen HERE bc it's part of the shift register 2-byte sequence
+	SPI.transfer(~byte1); //led matrix
+	digitalWrite(CS1_PIN, HIGH);
+	//displayVar3->nextDigit();
+}
+
 void LedMatrix::multiplexLeds() {
-	if (multiplex > 0) {
-		multiplex = 0;
+	//if (!display_active) {
+	  if (multiplex > MILLISECONDS_AFTER_MULTIPLEX) {
+	 	multiplex = 0;
 
 		updateMatrix(row_counter);
 		//readButtons(row_counter);
@@ -62,7 +81,18 @@ void LedMatrix::multiplexLeds() {
 		}
 
 		//updateDisplay();
-	}
+		display_active = true;
+	  }
+	// } else if (multiplex > MILLISECONDS_PER_MULTIPLEX) {
+	// 	multiplex = 0;
+	// 	display_active = false;
+	// 	//blankMatrix(row_counter);
+	// 	row_counter++;
+
+	// 	if (row_counter == 4) {
+	// 		row_counter = 0;
+	// 	}
+	// }
 }
 
 void LedMatrix::blinkStep() {

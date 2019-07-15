@@ -24,6 +24,8 @@ Sequencer *sequencerVar2;
 Dac *dacVar2;
 
 bool shift_state = false;
+bool record_mode = false;
+bool repeat_mode = false;
 
 const int SEQUENCE_MODE = 0;
 const int CALIBRATE_MODE = 1;
@@ -54,8 +56,6 @@ void Ui::init(Calibration& calibration, Dac& dac, Sequencer& sequencer){
 	encoder.init();
     ledMatrix.init(display, sequencer);
 	initializeSequenceMode();
-
-
 }
 
 void Ui::poll(){
@@ -74,15 +74,17 @@ void Ui::poll(){
         onEncoderIncrement(incrementAmount); //encoder.getIncrementAmount());
     }
 
-    analogIo.poll();
-	if (analogIo.paramChanged()){
-		display.setDisplayNum(analogIo.getDisplayNum());
+	if (!record_mode) {
+	    analogIo.poll();
+		if (analogIo.paramChanged()){
+			display.setDisplayNum(analogIo.getDisplayNum());
+		}
 	}
 }
 
 void Ui::multiplex(){
 	ledMatrix.multiplexLeds(); //this also updates the seven segment display on a shared serial line, messy i know
-	//ledMatrix.blinkStep();
+	ledMatrix.blinkStep();
 }
 
 void Ui::onSaveButton(bool state) { //use as calibrate button for now
@@ -119,8 +121,8 @@ void Ui::onButtonToggle(int button, bool button_state) {
 		case LOAD_PIN:   display.setDisplayAlpha("LOD"); break;
 		case SAVE_PIN:   display.setDisplayAlpha("SAV"); break;
 		case GLIDE_PIN:  onGlideButton(button_state); break;
-		case RECORD_PIN: display.setDisplayAlpha("ROC"); break;
-		case REPEAT_PIN: display.setDisplayAlpha("RAP"); break;
+		case RECORD_PIN: onRecButton(button_state); break;
+		case REPEAT_PIN: onRepeatButton(button_state); break;
 		//default: display.setDisplayNum(button);
         }
 		display.setDecimal(!button_state);
@@ -149,7 +151,25 @@ void Ui::onPlayButton(bool state){
 	}
 }
 
+void Ui::onRecButton(bool state){
+	if (isSequencing()){
+		record_mode = state;
+		sequencerVar2->setRecordMode(state);
+	}
+}
+
+void Ui::onRepeatButton(bool state){
+	if (isSequencing()){
+		repeat_mode = state;
+		sequencerVar2->setRepeatMode(state);
+	}
+}
+
 void Ui::selectStep(int step){
+	if (repeat_mode) {
+		sequencerVar2->setRepeatLength(step+1);
+		return;
+	}
     sequencerVar2->selectStep(step);
 	ledMatrix.setMatrixFromSequencer();
 	//ledMatrix.blinkLed();
@@ -188,6 +208,11 @@ void Ui::initializeSequenceMode(){
 void Ui::onStepIncremented(){
 	ledMatrix.setMatrixFromSequencer();
 	ledMatrix.blinkCurrentStep();
+	if (record_mode) {
+		analogIo.recordCurrentParam();
+		display.setDisplayNum(analogIo.getDisplayNum());
+	}
+	sequencerVar2->setActiveNote();
 }
 
 }

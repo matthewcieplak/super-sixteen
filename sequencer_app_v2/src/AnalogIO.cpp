@@ -10,6 +10,8 @@
 
 namespace supersixteen {
 
+elapsedMillis analogMultiplexorInc;
+
 const int analog_pins[4] = { 
 	ANALOG_PIN_1,
 	ANALOG_PIN_2,
@@ -17,15 +19,28 @@ const int analog_pins[4] = {
 	ANALOG_PIN_4
 };
 
-#define TEMPO_PARAM 0
-#define PITCH_PARAM 1
-#define OCTAVE_PARAM 2
-#define DURATION_PARAM 3
-#define CV_PARAM 4
+#define PITCH_PARAM 0
+#define OCTAVE_PARAM 1
+#define DURATION_PARAM 2
+#define CV_PARAM 3
+
+#define DEFAULT_CHANGE_THRESHOLD 10
+#define LOW_CHANGE_THRESHOLD 4
+
 const int analog_params[4] = { PITCH_PARAM, OCTAVE_PARAM, DURATION_PARAM, CV_PARAM };
+bool editing = false;
+
+int lastAnalogValues[4];
+int analogValues[4];
+int analogMultiplexor = 0;
+
 int display_param = PITCH_PARAM;
 int display_num = 0;
 bool param_changed = false;
+
+int change_threshold = DEFAULT_CHANGE_THRESHOLD;
+
+
 
 Sequencer* sequencerVar;
 
@@ -35,6 +50,12 @@ void AnalogIo::init(Sequencer& sequencer){
 	pinMode(ANALOG_PIN_3, INPUT);
 	pinMode(ANALOG_PIN_4, INPUT);
 	sequencerVar = &sequencer;
+	//initialize analog knob positions to avoid weird edits
+	poll();
+	poll();
+	poll();
+	poll();
+	editing = true;
 }
 
 void AnalogIo::poll() {
@@ -42,21 +63,27 @@ void AnalogIo::poll() {
 	if (analogMultiplexor > 3) {
 		analogMultiplexor = 0;
 	}
-	int i = analogMultiplexor;
+	
+	if (display_param == analog_params[analogMultiplexor]) {
+		change_threshold = LOW_CHANGE_THRESHOLD; //increase sensitivity when param is selected, decrease otherwise to reduce accidental "bump" changes
+	} else {
+		change_threshold = DEFAULT_CHANGE_THRESHOLD;
+	}
+	readInput(analogMultiplexor);
+}
+void AnalogIo::readInput(int i){
 	// if (i > 3 || i < 0) return; //sometimes we get desynced by interrupts, and analogRead on a wrong pin is fatal
 	analogValues[i] = analogRead(analog_pins[i]);
 	param_changed = false;
-	int change_threshold = 10;
-	if (display_param == analog_params[i]) {
-		change_threshold = 4; //increase sensitivity when param is selected, decrease otherwise to reduce accidental "bump" changes
-	}
+
 	if (abs(analogValues[i] - lastAnalogValues[i]) > change_threshold) {
 		lastAnalogValues[i] = analogValues[i];
+		if (!editing) return;
 		switch (i) {
-		case 0: setPitch(analogValues[0]); break;
-		case 1: setOctave(analogValues[1]); break;
-		case 2: setDuration(analogValues[2]); break;
-		case 3: setCV(analogValues[3]); break;
+		case PITCH_PARAM: setPitch(analogValues[0]); break;
+		case OCTAVE_PARAM: setOctave(analogValues[1]); break;
+		case DURATION_PARAM: setDuration(analogValues[2]); break;
+		case CV_PARAM: setCV(analogValues[3]); break;
 		}
 	}
 }
@@ -89,18 +116,22 @@ void AnalogIo::setCV(int analogValue) {
 void AnalogIo::displaySelectedParam() {
 	//update display to show currently selected step value if applicable
 	switch (display_param) {
-		//case TEMPO_PARAM: break
 	case PITCH_PARAM:    setDisplayNum(sequencerVar->getPitch()); break;
 	case OCTAVE_PARAM:   setDisplayNum(sequencerVar->getOctave()); break;
 	case DURATION_PARAM: setDisplayNum(sequencerVar->getDuration()); break;
 	case CV_PARAM:       setDisplayNum(sequencerVar->getCv()); break;
-	//case CALIBRATION_PARAM: num_display = calibration_values[selected_step]; break;
 	}
 }
 
 void AnalogIo::setDisplayNum(int displayNum){
 	display_num = displayNum;
 	param_changed = true;
+}
+
+void AnalogIo::recordCurrentParam(){
+	change_threshold = -1;
+	readInput(display_param); // read the currently selected param and write it to the sequence	
+	displaySelectedParam();
 }
 
 int AnalogIo::getDisplayNum(){

@@ -11,6 +11,8 @@ class LedMatrix{
 
         void updateMatrix(int row);
 
+        void blankMatrix(int row);
+
         void multiplexLeds();
 
         void blinkStep();

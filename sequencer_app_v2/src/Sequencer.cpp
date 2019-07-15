@@ -15,11 +15,16 @@ int cv_matrix[16];
 bool step_matrix[16] = { 1,0,0,0, 1,1,0,0, 1,1,1,0, 1,1,1,1 };
 bool glide_matrix[16];
 
-int selected_step;
+int selected_step = 0;
+uint8_t clock_step = 15;
 uint8_t current_step = 15;
 uint8_t prev_step = 14;
 uint8_t active_step;
-uint8_t sequence_length;
+uint8_t sequence_length = 16;
+
+uint8_t repeat_step_origin = 0;
+//uint8_t repeat_step_counter = 0;
+uint8_t repeat_length = 4;
 
 bool gate_active = false;
 bool clock_out_active = false;
@@ -28,7 +33,9 @@ bool step_incremented = false;
 
 double tempo_bpm = 120;
 unsigned int tempo_millis = 15000 / tempo_bpm; //would be 60000 but we count 4 steps per "beat"
-bool play_active = 1;
+bool play_active = 0;
+bool seq_repeat_mode = false;
+bool seq_record_mode = false;
 
 
 int prev_note = 0;
@@ -91,38 +98,63 @@ void Sequencer::updateClock() {
 }
 
 void Sequencer::incrementStep() {
-	//TODO chase leds
-	//led_matrix[current_step] = step_matrix[current_step]; //reset previous LED
-	prev_step = current_step;
-	current_step++;
-	if (current_step == 16) {
-		current_step = 0;
+	clock_step++;
+	if (clock_step == sequence_length) {
+		clock_step = 0;
 	}
-	//led_matrix[current_step] = !step_matrix[current_step]; //set current led
+	prev_step = current_step;
+
+	if (seq_repeat_mode) {
+		//repeat_step_counter++;
+		if (current_step == repeat_step_origin){
+			current_step = current_step - repeat_length + 1;
+			if (current_step < 0) {
+				current_step = sequence_length + current_step;
+			}
+		} else {
+			current_step++;
+			if (current_step == sequence_length) {
+				current_step = 0;
+			}
+		}
+	} else {
+		current_step = clock_step;
+	}
 
 	if (step_matrix[current_step]) {
-		//PITCH/OCTAVE
+		//TODO add motion recording call
 		active_step = current_step;
 		prev_note = active_note;
-		active_note = (octave_matrix[active_step] + 2) * 12 + pitch_matrix[active_step];
+		if (seq_record_mode) {
+			//wait for update from analogIo
+		} else {
+			//setActiveNote(); //this is now done in UI.cpp
+		}
+	}
 
+	step_incremented = true;
+	
+
+	// TEST running display number
+	// setDisplayNum(current_step);
+}
+
+int Sequencer::setActiveNote(){
+	//PITCH/OCTAVE
+	if (step_matrix[current_step]) {
+
+		active_note = (octave_matrix[active_step] + 2) * 12 + pitch_matrix[active_step];
 		if (glide_matrix[active_step]) {
 			updateGlide();
 		} else {
 			current_note_value = calibrationVar->getCalibratedOutput(active_note);
 			dacVar->setOutput(0, GAIN_2, 1, current_note_value);
-
 		}
-	
+
 		//GATE
 		digitalWrite(GATE_PIN, step_matrix[active_step] ? HIGH : LOW);
 		gate_active = step_matrix[active_step];
 	}
-
-	step_incremented = true;
-
-	// TEST running display number
-	// setDisplayNum(current_step);
 }
 
 int Sequencer::getCurrentStep(){
@@ -182,8 +214,6 @@ int Sequencer::incrementTempo(int amount){
 	tempo_bpm += amount;
 	if (tempo_bpm < 20) tempo_bpm = 20;
 	if (tempo_bpm > 500) tempo_bpm = 500;
-	//display_param = TEMPO_PARAM;
-	//setDisplayNum(tempo_bpm);
 	tempo_millis = 15000 / tempo_bpm;
 	return tempo_bpm;
 }
@@ -191,8 +221,6 @@ int Sequencer::incrementTempo(int amount){
 void Sequencer::selectStep(int stepnum){
 	if (selected_step == stepnum || !step_matrix[stepnum]) { //require 2 presses to turn active steps off, so they can be selected/edited without double-tapping //TODO maybe implement hold-to-deactivate
         step_matrix[stepnum] = !step_matrix[stepnum];
-        //todo chase leds
-		//led_matrix[stepnum] = step_matrix[stepnum];
     }
     selected_step = stepnum;
 }
@@ -207,24 +235,28 @@ bool Sequencer::toggleGlide(){
 }
 
 bool Sequencer::setPitch(int newVal){
-	bool changed = pitch_matrix[selected_step] != newVal;
-	pitch_matrix[selected_step] = newVal;
+	bool changed = pitch_matrix[editedStep()] != newVal;
+	pitch_matrix[editedStep()] = newVal;
 	return changed;
 }
 bool Sequencer::setOctave(int newVal){
-	bool changed = octave_matrix[selected_step] != newVal;
-	octave_matrix[selected_step] = newVal;
+	bool changed = octave_matrix[editedStep()] != newVal;
+	octave_matrix[editedStep()] = newVal;
 	return changed;
 }
 bool Sequencer::setDuration(int newVal){
-	bool changed = duration_matrix[selected_step] != newVal;
-	duration_matrix[selected_step] = newVal;
+	bool changed = duration_matrix[editedStep()] != newVal;
+	duration_matrix[editedStep()] = newVal;
 	return changed;
 }
 bool Sequencer::setCv(int newVal){
-	bool changed = cv_matrix[selected_step] != newVal;
-	cv_matrix[selected_step] = newVal;
+	bool changed = cv_matrix[editedStep()] != newVal;
+	cv_matrix[editedStep()] = newVal;
 	return changed;
+}
+
+uint8_t Sequencer::editedStep(){
+	return (seq_record_mode ? active_step : selected_step);
 }
 
 bool Sequencer::getGlide(){
@@ -252,4 +284,17 @@ int Sequencer::getSelectedStep(){
 	return selected_step;
 }
 
+void Sequencer::setRepeatMode(bool state){
+	seq_repeat_mode = state;
+	repeat_step_origin  = current_step;
+}
+
+void Sequencer::setRepeatLength(uint8_t length){
+    repeat_length = length;
+}
+
+
+void Sequencer::setRecordMode(bool state){
+	seq_record_mode = state;
+}
 }
