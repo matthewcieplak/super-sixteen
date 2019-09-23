@@ -18,7 +18,8 @@ class Sequencer{
         bool getStepOnOff(int step);
         int getCurrentStep();
         int getPrevStep();
-        int setActiveNote();
+        
+        void setActiveNote();
 
         int incrementTempo(int amount);
 

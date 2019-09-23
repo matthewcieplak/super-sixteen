@@ -7,24 +7,38 @@
 
 namespace supersixteen{
 
-int pitch_matrix[16];
-int octave_matrix[16];
-int duration_matrix[16];
-int cv_matrix[16];
+struct sequence {
+	int pitch_matrix[16];
+	int octave_matrix[16];
+	int duration_matrix[16];
+	int cv_matrix[16];
 
-bool step_matrix[16] = { 1,0,0,0, 1,1,0,0, 1,1,1,0, 1,1,1,1 };
-bool glide_matrix[16];
+	bool step_matrix[16] = { 1,0,0,0, 1,1,0,0, 1,1,1,0, 1,1,1,1 };
+	bool glide_matrix[16];
+	double glide_length;
+
+	uint8_t sequence_length = 16;
+	uint8_t repeat_length = 4;
+	double sequence_tempo;
+
+	uint8_t bars;
+	uint8_t scale;
+	uint8_t transpose;
+	double swing;
+	uint8_t effect; //mutate = repeat (0), reverse (1), octave shift (2), auto-glide (3), hold  (4)
+};
+
+sequence active_sequence;
+
 
 int selected_step = 0;
 uint8_t clock_step = 15;
 uint8_t current_step = 15;
 uint8_t prev_step = 14;
 uint8_t active_step;
-uint8_t sequence_length = 16;
 
 uint8_t repeat_step_origin = 0;
 //uint8_t repeat_step_counter = 0;
-uint8_t repeat_length = 4;
 
 bool gate_active = false;
 bool clock_out_active = false;
@@ -52,9 +66,10 @@ elapsedMillis timekeeper;
 
 void Sequencer::init(Calibration& calibration, Dac& dac) {
 	calibrationVar = &calibration;
+
 	dacVar = &dac;
 	for (int i = 0; i < 16; i++) {
-		duration_matrix[i] = 80;
+		active_sequence.duration_matrix[i] = 80;
 	}
 
 	pinMode(GATE_PIN, OUTPUT);
@@ -99,7 +114,7 @@ void Sequencer::updateClock() {
 
 void Sequencer::incrementStep() {
 	clock_step++;
-	if (clock_step == sequence_length) {
+	if (clock_step == active_sequence.sequence_length) {
 		clock_step = 0;
 	}
 	prev_step = current_step;
@@ -107,13 +122,13 @@ void Sequencer::incrementStep() {
 	if (seq_repeat_mode) {
 		//repeat_step_counter++;
 		if (current_step == repeat_step_origin){
-			current_step = current_step - repeat_length + 1;
+			current_step = current_step - active_sequence.repeat_length + 1;
 			if (current_step < 0) {
-				current_step = sequence_length + current_step;
+				current_step = active_sequence.sequence_length + current_step;
 			}
 		} else {
 			current_step++;
-			if (current_step == sequence_length) {
+			if (current_step == active_sequence.sequence_length) {
 				current_step = 0;
 			}
 		}
@@ -121,14 +136,14 @@ void Sequencer::incrementStep() {
 		current_step = clock_step;
 	}
 
-	if (step_matrix[current_step]) {
+	if (active_sequence.step_matrix[current_step]) {
 		//TODO add motion recording call
 		active_step = current_step;
 		prev_note = active_note;
 		if (seq_record_mode) {
 			//wait for update from analogIo
 		} else {
-			//setActiveNote(); //this is now done in UI.cpp
+			//(); //this is now done in UI.cpp
 		}
 	}
 
@@ -139,12 +154,12 @@ void Sequencer::incrementStep() {
 	// setDisplayNum(current_step);
 }
 
-int Sequencer::setActiveNote(){
+void Sequencer::setActiveNote(){
 	//PITCH/OCTAVE
-	if (step_matrix[current_step]) {
+	if (active_sequence.step_matrix[current_step]) {
 
-		active_note = (octave_matrix[active_step] + 2) * 12 + pitch_matrix[active_step];
-		if (glide_matrix[active_step]) {
+		active_note = (active_sequence.octave_matrix[active_step] + 2) * 12 + active_sequence.pitch_matrix[active_step];
+		if (active_sequence.glide_matrix[active_step]) {
 			updateGlide();
 		} else {
 			current_note_value = calibrationVar->getCalibratedOutput(active_note);
@@ -152,8 +167,8 @@ int Sequencer::setActiveNote(){
 		}
 
 		//GATE
-		digitalWrite(GATE_PIN, step_matrix[active_step] ? HIGH : LOW);
-		gate_active = step_matrix[active_step];
+		digitalWrite(GATE_PIN, active_sequence.step_matrix[active_step] ? HIGH : LOW);
+		gate_active = active_sequence.step_matrix[active_step];
 	}
 }
 
@@ -171,10 +186,10 @@ bool Sequencer::stepWasIncremented(){
 
 
 void Sequencer::updateGlide() {
-	if (step_matrix[active_step] && glide_matrix[active_step]) {
+	if (active_sequence.step_matrix[active_step] && active_sequence.glide_matrix[active_step]) {
 		int steps_advanced = current_step - active_step;
 		if (steps_advanced < 0) {
-			steps_advanced = current_step + sequence_length - active_step;
+			steps_advanced = current_step + active_sequence.sequence_length - active_step;
 		}
 		int glidekeeper = timekeeper + steps_advanced * calculated_tempo;
 		int glide_time = float(glide_duration) / 100.0 * calculated_tempo;
@@ -192,9 +207,9 @@ void Sequencer::updateGate() {
 	double percent_step = timekeeper / (double)calculated_tempo * 100.0;
 	int steps_advanced = current_step - active_step + 1;
 	if (steps_advanced < 1) {
-		steps_advanced = current_step + sequence_length - active_step + 1;
+		steps_advanced = current_step + active_sequence.sequence_length - active_step + 1;
 	}
-	if (gate_active && duration_matrix[active_step] < percent_step * steps_advanced) {
+	if (gate_active && active_sequence.duration_matrix[active_step] < percent_step * steps_advanced) {
 		digitalWrite(GATE_PIN, LOW);
 		gate_active = false;
 	}
@@ -219,39 +234,39 @@ int Sequencer::incrementTempo(int amount){
 }
 
 void Sequencer::selectStep(int stepnum){
-	if (selected_step == stepnum || !step_matrix[stepnum]) { //require 2 presses to turn active steps off, so they can be selected/edited without double-tapping //TODO maybe implement hold-to-deactivate
-        step_matrix[stepnum] = !step_matrix[stepnum];
+	if (selected_step == stepnum || !active_sequence.step_matrix[stepnum]) { //require 2 presses to turn active steps off, so they can be selected/edited without double-tapping //TODO maybe implement hold-to-deactivate
+        active_sequence.step_matrix[stepnum] = !active_sequence.step_matrix[stepnum];
     }
     selected_step = stepnum;
 }
 
 bool Sequencer::getStepOnOff(int stepnum){
-	return step_matrix[stepnum];
+	return active_sequence.step_matrix[stepnum];
 }
 
 bool Sequencer::toggleGlide(){
-	glide_matrix[selected_step] = !glide_matrix[selected_step];
-	return glide_matrix[selected_step];
+	active_sequence.glide_matrix[selected_step] = !active_sequence.glide_matrix[selected_step];
+	return active_sequence.glide_matrix[selected_step];
 }
 
 bool Sequencer::setPitch(int newVal){
-	bool changed = pitch_matrix[editedStep()] != newVal;
-	pitch_matrix[editedStep()] = newVal;
+	bool changed = active_sequence.pitch_matrix[editedStep()] != newVal;
+	active_sequence.pitch_matrix[editedStep()] = newVal;
 	return changed;
 }
 bool Sequencer::setOctave(int newVal){
-	bool changed = octave_matrix[editedStep()] != newVal;
-	octave_matrix[editedStep()] = newVal;
+	bool changed = active_sequence.octave_matrix[editedStep()] != newVal;
+	active_sequence.octave_matrix[editedStep()] = newVal;
 	return changed;
 }
 bool Sequencer::setDuration(int newVal){
-	bool changed = duration_matrix[editedStep()] != newVal;
-	duration_matrix[editedStep()] = newVal;
+	bool changed = active_sequence.duration_matrix[editedStep()] != newVal;
+	active_sequence.duration_matrix[editedStep()] = newVal;
 	return changed;
 }
 bool Sequencer::setCv(int newVal){
-	bool changed = cv_matrix[editedStep()] != newVal;
-	cv_matrix[editedStep()] = newVal;
+	bool changed = active_sequence.cv_matrix[editedStep()] != newVal;
+	active_sequence.cv_matrix[editedStep()] = newVal;
 	return changed;
 }
 
@@ -260,24 +275,24 @@ uint8_t Sequencer::editedStep(){
 }
 
 bool Sequencer::getGlide(){
-	return glide_matrix[selected_step];
+	return active_sequence.glide_matrix[selected_step];
 }
 
 int Sequencer::getPitch(){
-	return pitch_matrix[selected_step];
+	return active_sequence.pitch_matrix[selected_step];
 }
 int Sequencer::getOctave(){
-	return octave_matrix[selected_step];
+	return active_sequence.octave_matrix[selected_step];
 }
 int Sequencer::getDuration(){
-	return duration_matrix[selected_step];
+	return active_sequence.duration_matrix[selected_step];
 }
 int Sequencer::getCv(){
-	return cv_matrix[selected_step];
+	return active_sequence.cv_matrix[selected_step];
 }
 
 bool *Sequencer::getStepMatrix(){
-	return step_matrix;
+	return active_sequence.step_matrix;
 }
 
 int Sequencer::getSelectedStep(){
@@ -290,7 +305,7 @@ void Sequencer::setRepeatMode(bool state){
 }
 
 void Sequencer::setRepeatLength(uint8_t length){
-    repeat_length = length;
+    active_sequence.repeat_length = length;
 }
 
 
