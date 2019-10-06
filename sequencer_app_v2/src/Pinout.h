@@ -21,7 +21,7 @@ namespace supersixteen{
 #define CS0_PIN  10 //MCP23S17 for buttons, aux LEDS
 #define CS1_PIN  9  //Display/matrix shift registers
 #define CS2_PIN  8  //Flash memory
-#define CS3_PIN  PD1  //DAC
+#define CS3_PIN  1  //DAC PD1
 
   //DIGIT DISPLAY PINS
 #define DIGIT_1_PIN PD5
