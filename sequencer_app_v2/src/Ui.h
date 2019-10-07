@@ -17,6 +17,7 @@ class Ui{
         void onPlayButton(bool state);
         void onLoadButton(bool state);
         void onSaveButton(bool state);
+        void finishSaving();
 
         void onRecButton(bool state);
         void onRepeatButton(bool state);
@@ -29,5 +30,6 @@ class Ui{
         void initializeSequenceMode();
         void initializeCalibrationMode();
         void updateCalibration(int step);
+
 };
 }

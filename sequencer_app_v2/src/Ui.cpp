@@ -5,10 +5,12 @@
 #include "Display.h"
 #include "Encoder.h"
 #include "LEDMatrix.h"
+#include "Memory.h"
 #include "Sequencer.h"
 #include "Variables.h"
 #include "Pinout.h"
 #include "Ui.h"
+#include <Arduino.h>
 
 namespace supersixteen{
 
@@ -17,6 +19,7 @@ AnalogIo analogIo;
 Display display;
 Encoder encoder;
 LedMatrix ledMatrix;
+Memory memory;
 
 //initialized by main.cpp
 Calibration *calibrationVar2;
@@ -26,15 +29,16 @@ Dac *dacVar2;
 bool shift_state = false;
 bool record_mode = false;
 bool repeat_mode = false;
+bool saving = false;
 
-const int SEQUENCE_MODE = 0;
-const int CALIBRATE_MODE = 1;
-const int LOAD_MODE = 2;
-const int SAVE_MODE = 3 ;
-const int SCALE_MODE = 4;
-int ui_mode = SEQUENCE_MODE;
+const byte SEQUENCE_MODE = 0;
+const byte CALIBRATE_MODE = 1;
+const byte LOAD_MODE = 2;
+const byte SAVE_MODE = 3 ;
+const byte SCALE_MODE = 4;
+byte ui_mode = SEQUENCE_MODE;
 
-int calibration_step = 0;
+byte calibration_step = 0;
 
 
 void Ui::init(Calibration& calibration, Dac& dac, Sequencer& sequencer){
@@ -55,10 +59,17 @@ void Ui::init(Calibration& calibration, Dac& dac, Sequencer& sequencer){
     display.init();
 	encoder.init();
     ledMatrix.init(display, sequencer);
+	if (!memory.init(sequencer)) {
+		display.setDisplayAlpha("MEM");
+		return;
+	}
 	initializeSequenceMode();
 }
 
 void Ui::poll(){
+	if (saving) {
+		finishSaving();
+	}
     buttons.poll();
 	uint16_t value = 0;
 	buttons.getQueuedEvent(value);
@@ -87,19 +98,49 @@ void Ui::multiplex(){
 	ledMatrix.blinkStep();
 }
 
-void Ui::onSaveButton(bool state) { //use as calibrate button for now
-	display.setDisplayAlpha("SAV");
-	return;
-
+void Ui::onSaveButton(bool state) {
 	if (state == 0) { //only toggle on input
 		if (ui_mode == CALIBRATE_MODE) {
 			ui_mode = SEQUENCE_MODE;
 			calibrationVar2->writeCalibrationValues();
 			initializeSequenceMode();
+		} else {
+			if (saving) return;
+
+			if (shift_state) {
+				initializeCalibrationMode();
+			} else {
+
+				byte saveStatus = memory.save(01);
+				if (saveStatus = 1 || saveStatus == 2) { //saved
+					saving = true; 
+				} else if (saveStatus == 0) {
+					display.setDisplayAlpha("ERR");
+				}
+			}
 		}
-		else {
-			initializeCalibrationMode();
+	}
+}
+
+void Ui::finishSaving(){
+	if (memory.finishSaving()) {
+		saving = false;
+	}
+}
+
+
+void Ui::onLoadButton(bool state) {
+	if (state == 0) { //only toggle on input
+		if (saving) return;
+
+		
+		if (memory.load(01)) {
+			display.setDisplayAlpha("LOD");
+		} else {
+			display.setDisplayAlpha("ERR");
 		}
+		
+		ledMatrix.setMatrixFromSequencer();
 	}
 }
 
@@ -116,10 +157,10 @@ void Ui::onButtonToggle(int button, bool button_state) {
 		}
     } else {
         switch (button-8) {
-		case SHIFT_PIN:  display.setDisplayAlpha("SHF"); shift_state = button_state; break;
+		case SHIFT_PIN:  shift_state = button_state; break;
 		case PLAY_PIN:   onPlayButton(button_state); break;
-		case LOAD_PIN:   display.setDisplayAlpha("LOD"); break;
-		case SAVE_PIN:   display.setDisplayAlpha("SAV"); break;
+		case LOAD_PIN:   onLoadButton(button_state); break;
+		case SAVE_PIN:   onSaveButton(button_state); break;
 		case GLIDE_PIN:  onGlideButton(button_state); break;
 		case RECORD_PIN: onRecButton(button_state); break;
 		case REPEAT_PIN: onRepeatButton(button_state); break;

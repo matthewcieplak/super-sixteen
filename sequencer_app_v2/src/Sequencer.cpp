@@ -7,29 +7,9 @@
 
 namespace supersixteen{
 
-struct sequence {
-	int pitch_matrix[16];
-	int octave_matrix[16];
-	int duration_matrix[16];
-	int cv_matrix[16];
-
-	bool step_matrix[16] = { 1,0,0,0, 1,1,0,0, 1,1,1,0, 1,1,1,1 };
-	bool glide_matrix[16];
-	double glide_length;
-
-	uint8_t sequence_length = 16;
-	uint8_t repeat_length = 4;
-	double sequence_tempo;
-
-	uint8_t bars;
-	uint8_t scale;
-	uint8_t transpose;
-	double swing;
-	uint8_t effect; //mutate = repeat (0), reverse (1), octave shift (2), auto-glide (3), hold  (4)
-};
+const byte SEQUENCE_MAX_LENGTH = 16;
 
 sequence active_sequence;
-
 
 int selected_step = 0;
 uint8_t clock_step = 15;
@@ -45,7 +25,7 @@ bool clock_out_active = false;
 bool clock_in_active = false;
 bool step_incremented = false;
 
-double tempo_bpm = 120;
+byte tempo_bpm = 120;
 unsigned int tempo_millis = 15000 / tempo_bpm; //would be 60000 but we count 4 steps per "beat"
 bool play_active = 0;
 bool seq_repeat_mode = false;
@@ -68,7 +48,7 @@ void Sequencer::init(Calibration& calibration, Dac& dac) {
 	calibrationVar = &calibration;
 
 	dacVar = &dac;
-	for (int i = 0; i < 16; i++) {
+	for (byte i = 0; i < 16; i++) {
 		active_sequence.duration_matrix[i] = 80;
 	}
 
@@ -122,7 +102,7 @@ void Sequencer::incrementStep() {
 	if (seq_repeat_mode) {
 		//repeat_step_counter++;
 		if (current_step == repeat_step_origin){
-			current_step = current_step - active_sequence.repeat_length + 1;
+			current_step = current_step - active_sequence.effect_depth + 1;
 			if (current_step < 0) {
 				current_step = active_sequence.sequence_length + current_step;
 			}
@@ -228,8 +208,9 @@ void Sequencer::onPlayButton(){
 int Sequencer::incrementTempo(int amount){
 	tempo_bpm += amount;
 	if (tempo_bpm < 20) tempo_bpm = 20;
-	if (tempo_bpm > 500) tempo_bpm = 500;
+	if (tempo_bpm > 255) tempo_bpm = 255;
 	tempo_millis = 15000 / tempo_bpm;
+	active_sequence.sequence_tempo = tempo_bpm;
 	return tempo_bpm;
 }
 
@@ -254,12 +235,12 @@ bool Sequencer::setPitch(int newVal){
 	active_sequence.pitch_matrix[editedStep()] = newVal;
 	return changed;
 }
-bool Sequencer::setOctave(int newVal){
+bool Sequencer::setOctave(int8_t newVal){
 	bool changed = active_sequence.octave_matrix[editedStep()] != newVal;
 	active_sequence.octave_matrix[editedStep()] = newVal;
 	return changed;
 }
-bool Sequencer::setDuration(int newVal){
+bool Sequencer::setDuration(uint16_t newVal){
 	bool changed = active_sequence.duration_matrix[editedStep()] != newVal;
 	active_sequence.duration_matrix[editedStep()] = newVal;
 	return changed;
@@ -305,11 +286,16 @@ void Sequencer::setRepeatMode(bool state){
 }
 
 void Sequencer::setRepeatLength(uint8_t length){
-    active_sequence.repeat_length = length;
+    active_sequence.effect_depth = length;
 }
 
 
 void Sequencer::setRecordMode(bool state){
 	seq_record_mode = state;
 }
+
+sequence& Sequencer::getActiveSequence(){
+	return active_sequence;
+}
+
 }
