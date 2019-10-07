@@ -45,8 +45,6 @@ void Buttons::init() {
 }
 
 void Buttons::poll() {
-	// button_toggled = false;
-	// button_state = 0;
 	SPI.setBitOrder(MSBFIRST); //MCP23S17 is picky
 	row++;
 	if (row > 3) row = 0;
@@ -62,29 +60,19 @@ void Buttons::poll() {
 			button_matrix[stepnum] = value; //store button state
 			uint16_t event = stepnum | value << 8;  //condense button number and state into one 16-bit variable
 			if (editing_buttons) queue_events_push(&queue, &event);
-			//button_toggled = true;
-			//button_state   = !value; 
-			//button_pressed = stepnum;
 
 		}
 	}
 	ButtonDriver.digitalWrite(row+4, HIGH);
 	
-	
-	buttons_mask = (~buttons_state & 0xFF80); // exclude glide LED bit
-	if (buttons_mask > 0) {
-		for(int ii = 0; ii<8; ii++){
-			bool value = (buttons_mask & 0x01 << (ii+8)) >> (ii+8);
+	buttons_mask = (~buttons_state >> 8 & B01111111); // exclude glide LED bit
+	for(int ii = 0; ii<7; ii++){
+		bool value = (buttons_mask & 0x01 << (ii)); // >> (ii+8);
 
-			if (value != function_button_matrix[ii]){
-				function_button_matrix[ii] = value;
-				uint16_t event = function_buttons[ii]+8 | (value << 8); //condense button number and state into one 16-bit variable
-				if (editing_buttons) queue_events_push(&queue, &event);
-				//Serial.write(function_button);
-				// button_toggled = true;
-				// button_state = function_button_state;
-				// button_pressed = function_buttons[ii]+8;
-			}
+		if (value != function_button_matrix[ii]){
+			function_button_matrix[ii] = value;
+			uint16_t event = function_buttons[ii]+8 | (value << 8); //condense button number and state into one 16-bit variable
+			if (editing_buttons) queue_events_push(&queue, &event);
 		}
 	}
 }
