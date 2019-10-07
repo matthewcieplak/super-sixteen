@@ -26,7 +26,7 @@ struct sequence {
 	uint8_t effect_depth = 4;
     uint8_t sequence_tempo = 120;
 
-    int transpose = 0;
+    int8_t transpose = 0;
 
 
 	
@@ -74,10 +74,15 @@ class Sequencer{
         void setRepeatMode(bool state);
         void setRepeatLength(uint8_t length);
 
+        void setTempoFromSequence();
+
         void serialize(DynamicJsonDocument& doc);
         void deserialize(DynamicJsonDocument& doc);
 
+
+
         sequence& getActiveSequence();
+        sequence * getSequence();
         
     private:
         void updateGlide();

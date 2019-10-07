@@ -251,6 +251,11 @@ bool Sequencer::setCv(int newVal){
 	return changed;
 }
 
+void Sequencer::setTempoFromSequence(){
+	if (play_active) return;
+	tempo_millis = 15000 / active_sequence.sequence_tempo;
+}
+
 uint8_t Sequencer::editedStep(){
 	return (seq_record_mode ? active_step : selected_step);
 }
@@ -296,6 +301,10 @@ void Sequencer::setRecordMode(bool state){
 
 sequence& Sequencer::getActiveSequence(){
 	return active_sequence;
+}
+
+sequence * Sequencer::getSequence(){
+	return &active_sequence;
 }
 
 }
