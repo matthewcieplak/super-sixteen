@@ -39,6 +39,7 @@ int display_num = 0;
 bool param_changed = false;
 
 int change_threshold = DEFAULT_CHANGE_THRESHOLD;
+bool recording = false;
 
 
 
@@ -92,25 +93,25 @@ void AnalogIo::setPitch(int analogValue) {
 	display_param = PITCH_PARAM;
 	//calibration_value = (float(analogValues[1]) + 1024.0) / 1500.0 ; //11.60
 	int newVal = analogValue / 42.1 - 12.1; //convert from 0_1024 to 0_88 to -12_0_12
-	if (sequencerVar->setPitch(newVal)) setDisplayNum(newVal);
+	if (recording || sequencerVar->setPitch(newVal)) setDisplayNum(newVal);
 }
 
 void AnalogIo::setOctave(int analogValue) {
 	display_param = OCTAVE_PARAM;
 	int newVal = analogValue / 120 - 4; //convert from 0-1024 to -4_0_4
-	if (sequencerVar->setOctave(newVal)) setDisplayNum(newVal);
+	if (recording || sequencerVar->setOctave(newVal)) setDisplayNum(newVal);
 }
 
 void AnalogIo::setDuration(long analogValue) { //need extra bits for exponent operation
 	display_param = DURATION_PARAM;
 	int newVal = analogValue * analogValue / 2615; //convert from 0-1024 to 0-400 with exponential curve
-	if (sequencerVar->setDuration(newVal)) setDisplayNum(newVal);
+	if (recording || sequencerVar->setDuration(newVal)) setDisplayNum(newVal);
 }
 
 void AnalogIo::setCV(int analogValue) {
 	display_param = CV_PARAM;
 	int newVal = analogValue / 10.23; //convert from 0-1024 to 0-100
-	if (sequencerVar->setCv(newVal)) setDisplayNum(newVal);
+	if (recording || sequencerVar->setCv(newVal)) setDisplayNum(newVal);
 }
 
 void AnalogIo::displaySelectedParam() {
@@ -128,10 +129,13 @@ void AnalogIo::setDisplayNum(int displayNum){
 	param_changed = true;
 }
 
+void AnalogIo::setRecordMode(bool onOff) {
+	recording = onOff;
+}
+
 void AnalogIo::recordCurrentParam(){
 	change_threshold = -1;
 	readInput(display_param); // read the currently selected param and write it to the sequence	
-	displaySelectedParam();
 }
 
 int AnalogIo::getDisplayNum(){

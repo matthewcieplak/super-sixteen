@@ -117,14 +117,8 @@ void Sequencer::incrementStep() {
 	}
 
 	if (active_sequence.step_matrix[current_step]) {
-		//TODO add motion recording call
 		active_step = current_step;
 		prev_note = active_note;
-		if (seq_record_mode) {
-			//wait for update from analogIo
-		} else {
-			//(); //this is now done in UI.cpp
-		}
 	}
 
 	step_incremented = true;

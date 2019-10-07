@@ -20,6 +20,7 @@ class AnalogIo{
         int display_param;
         int display_num;
         bool paramChanged();
+        void setRecordMode(bool mode);
 
 
     private:

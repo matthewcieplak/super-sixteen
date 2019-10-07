@@ -87,12 +87,12 @@ void Ui::poll(){
     }
 
 	if (ui_mode == SEQUENCE_MODE) {
-		if (!record_mode) {
-			analogIo.poll();
-			if (analogIo.paramChanged()){
+		analogIo.poll();
+		//if (!record_mode) {
+			if (record_mode || analogIo.paramChanged()){
 				display.setDisplayNum(analogIo.getDisplayNum());
 			}
-		}
+		//}
 	}
 }
 
@@ -288,7 +288,6 @@ void Ui::onStepIncremented(){
 	ledMatrix.blinkCurrentStep();
 	if (record_mode) {
 		analogIo.recordCurrentParam();
-		display.setDisplayNum(analogIo.getDisplayNum());
 	}
 	sequencerVar2->setActiveNote();
 }

@@ -7,7 +7,7 @@
 namespace supersixteen{
 
 int digit_counter = 0;
-int num_display = 0;
+int num_display = 999;
 int digit_display[3] = { 0, 0, 0 };
 int digit_pins[3] = { DIGIT_1_PIN, DIGIT_2_PIN, DIGIT_3_PIN };
 uint8_t alpha_display[3] = { 0, 0, 0 };
@@ -29,9 +29,11 @@ void Display::init(){
 	digitalWrite(DIGIT_1_PIN, LOW);
 	digitalWrite(DIGIT_2_PIN, LOW);
 	digitalWrite(DIGIT_3_PIN, LOW);
+	setDisplayNum(0);
 }
 
 void Display::setDisplayNum(int displayNum){
+	if (num_display == displayNum) return;
 	num_display	= displayNum;
 	digit_display[2] = abs(num_display) % 10;
 	digit_display[1] = abs(num_display) / 10 % 10;
