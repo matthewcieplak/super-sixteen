@@ -14,6 +14,7 @@ void setup()
 {
   pinMode(PIN_CS, OUTPUT);
   pinMode(3, OUTPUT); //LDAC
+  pinMode(PD0, OUTPUT);
   digitalWrite(3, LOW);
   SPI.begin();  
   SPI.setClockDivider(SPI_CLOCK_DIV2);
@@ -46,6 +47,7 @@ void setOutput(byte channel, byte gain, byte shutdown, unsigned int val)
 
 void loop()
 {
+ digitalWrite(PD0, HIGH);
  //high-res triangular wave
  for (int i=0; i < 4096; i+=32)   
  {
@@ -54,4 +56,7 @@ void loop()
   //setOutput(i);
   delay(10);
  }
+ digitalWrite(PD0, LOW);
+ delay(1000);
+ 
 }
