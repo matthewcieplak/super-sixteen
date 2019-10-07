@@ -20,6 +20,8 @@ public:
 
     void setDecimal(bool decimalOn);
 
+    void blinkDisplay(bool blinking, int interval, int timeout);
+
 private:
     void appendDecimal();
 

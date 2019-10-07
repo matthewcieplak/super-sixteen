@@ -37,8 +37,9 @@ const byte LOAD_MODE = 2;
 const byte SAVE_MODE = 3 ;
 const byte SCALE_MODE = 4;
 byte ui_mode = SEQUENCE_MODE;
-
 byte calibration_step = 0;
+byte current_patch = 1;
+byte selected_patch = 1;
 
 
 void Ui::init(Calibration& calibration, Dac& dac, Sequencer& sequencer){
@@ -85,10 +86,12 @@ void Ui::poll(){
         onEncoderIncrement(incrementAmount); //encoder.getIncrementAmount());
     }
 
-	if (!record_mode) {
-	    analogIo.poll();
-		if (analogIo.paramChanged()){
-			display.setDisplayNum(analogIo.getDisplayNum());
+	if (ui_mode == SEQUENCE_MODE) {
+		if (!record_mode) {
+			analogIo.poll();
+			if (analogIo.paramChanged()){
+				display.setDisplayNum(analogIo.getDisplayNum());
+			}
 		}
 	}
 }
@@ -99,24 +102,34 @@ void Ui::multiplex(){
 }
 
 void Ui::onSaveButton(bool state) {
-	if (state == 0) { //only toggle on input
+	if (state) { //only toggle on input
 		if (ui_mode == CALIBRATE_MODE) {
 			ui_mode = SEQUENCE_MODE;
 			calibrationVar2->writeCalibrationValues();
 			initializeSequenceMode();
-		} else {
-			if (saving) return;
+		} else if (ui_mode == SAVE_MODE) {
+
+			//actually save the patch!!
+			byte saveStatus = memory.save(selected_patch);
+			current_patch = selected_patch;
+			if (saveStatus = 1 || saveStatus == 2) { //saved
+				saving = true; 
+				//TODO display something, like rapid flashing?
+				display.blinkDisplay(true, 100, 5);
+				ui_mode = SEQUENCE_MODE;
+			} else if (saveStatus == 0) {
+				display.setDisplayAlpha("ERR");
+			}
+		} else { //sequencing, presumably
+			if (saving) return; //disallow double-presses
 
 			if (shift_state) {
 				initializeCalibrationMode();
 			} else {
-
-				byte saveStatus = memory.save(01);
-				if (saveStatus = 1 || saveStatus == 2) { //saved
-					saving = true; 
-				} else if (saveStatus == 0) {
-					display.setDisplayAlpha("ERR");
-				}
+				ui_mode = SAVE_MODE;
+				selected_patch = current_patch;
+				display.setDisplayNum(selected_patch);
+				display.blinkDisplay(true, 300, 0);				
 			}
 		}
 	}
@@ -130,17 +143,26 @@ void Ui::finishSaving(){
 
 
 void Ui::onLoadButton(bool state) {
-	if (state == 0) { //only toggle on input
+	if (state) { //only toggle on input
 		if (saving) return;
 
-		
-		if (memory.load(01)) {
-			display.setDisplayAlpha("LOD");
-		} else {
-			display.setDisplayAlpha("ERR");
+		if (ui_mode == LOAD_MODE) {
+			//actually load patch
+			if (memory.load(selected_patch)) {
+				display.blinkDisplay(true, 100, 5);
+			} else {
+				display.setDisplayAlpha("ERR");
+			}
+			ui_mode = SEQUENCE_MODE;
+			current_patch = selected_patch;	
+			ledMatrix.setMatrixFromSequencer();
+			//TODO set sequencer current step by length of active sequence!
+		} else if (ui_mode == SEQUENCE_MODE){
+			ui_mode = LOAD_MODE;
+			selected_patch = current_patch;
+			display.setDisplayNum(selected_patch);
+			display.blinkDisplay(true, 300, 0);	
 		}
-		
-		ledMatrix.setMatrixFromSequencer();
 	}
 }
 
@@ -157,7 +179,7 @@ void Ui::onButtonToggle(int button, bool button_state) {
 		}
     } else {
         switch (button-8) {
-		case SHIFT_PIN:  shift_state = button_state; break;
+		case SHIFT_PIN:  onShiftButton(button_state); break;
 		case PLAY_PIN:   onPlayButton(button_state); break;
 		case LOAD_PIN:   onLoadButton(button_state); break;
 		case SAVE_PIN:   onSaveButton(button_state); break;
@@ -170,11 +192,23 @@ void Ui::onButtonToggle(int button, bool button_state) {
     }
 }
 
+void Ui::onShiftButton(bool button_state){
+	shift_state = button_state;
+	if (button_state) {
+		cancelSaveOrLoad();
+	}
+}
+
 void Ui::onEncoderIncrement(int increment_amount) {
 	if (ui_mode == CALIBRATE_MODE) {
 		display.setDisplayNum(calibrationVar2->incrementCalibration(increment_amount, calibration_step));
         updateCalibration(calibration_step);
-	} else {
+	} else if (ui_mode == SAVE_MODE or ui_mode == LOAD_MODE) {
+		selected_patch += increment_amount;
+		if (selected_patch < 1) selected_patch = 99;
+		if (selected_patch > 99) selected_patch = 1;
+		display.setDisplayNum(selected_patch);
+	} else { //sequencing, presumably
 		display.setDisplayNum(sequencerVar2->incrementTempo(increment_amount));
 	}
 }
@@ -188,6 +222,7 @@ void Ui::onGlideButton(bool state){
 
 void Ui::onPlayButton(bool state){
 	if (state && isSequencing()) {
+		cancelSaveOrLoad();
 		sequencerVar2->onPlayButton();
 	}
 }
@@ -207,6 +242,7 @@ void Ui::onRepeatButton(bool state){
 }
 
 void Ui::selectStep(int step){
+	cancelSaveOrLoad();
 	if (repeat_mode) {
 		sequencerVar2->setRepeatLength(step+1);
 		return;
@@ -221,6 +257,7 @@ void Ui::selectStep(int step){
 
 
 void Ui::initializeCalibrationMode() {
+	cancelSaveOrLoad();
 	ui_mode = CALIBRATE_MODE;
 	calibrationVar2->readCalibrationValues();
 	updateCalibration(calibration_step);
@@ -254,6 +291,15 @@ void Ui::onStepIncremented(){
 		display.setDisplayNum(analogIo.getDisplayNum());
 	}
 	sequencerVar2->setActiveNote();
+}
+
+bool Ui::cancelSaveOrLoad(){
+	if (ui_mode == LOAD_MODE || ui_mode == SAVE_MODE) {
+		display.blinkDisplay(false, 100, 0);
+		ui_mode = SEQUENCE_MODE;
+		return true;
+	}
+	return false;
 }
 
 }

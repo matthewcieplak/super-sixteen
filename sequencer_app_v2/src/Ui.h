@@ -30,6 +30,7 @@ class Ui{
         void initializeSequenceMode();
         void initializeCalibrationMode();
         void updateCalibration(int step);
+        bool cancelSaveOrLoad();
 
 };
 }

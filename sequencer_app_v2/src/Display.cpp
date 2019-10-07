@@ -13,7 +13,13 @@ int digit_pins[3] = { DIGIT_1_PIN, DIGIT_2_PIN, DIGIT_3_PIN };
 uint8_t alpha_display[3] = { 0, 0, 0 };
 
 bool decimal = 1;
+bool blinking = false;
+bool blink_state = true;
 const uint8_t decimalChar = 0x01;
+elapsedMillis display_blinker;
+int blink_interval;
+int blink_cycles_elapsed;
+int blink_cycles_timeout;
 
 
 void Display::init(){
@@ -74,7 +80,20 @@ void Display::nextDigit(){
 	if (digit_counter == 3) {
 		digit_counter = 0;
 	}
-	digitalWrite(digit_pins[digit_counter], LOW);
+	if (blinking && display_blinker > blink_interval) {
+		if (display_blinker > blink_interval * 2) {
+			display_blinker = 0;
+			blink_cycles_elapsed += 1;
+			
+			if (blink_cycles_timeout > 0 && blink_cycles_elapsed > blink_cycles_timeout) {
+				blinking = false;
+				blink_cycles_elapsed = 0;
+			}
+		}
+		//leave digit inactive
+	} else {
+		digitalWrite(digit_pins[digit_counter], LOW);
+	}
 }
 
 void Display::setDecimal(bool decimalState){
@@ -88,5 +107,12 @@ void Display::appendDecimal(){
 	} else {
 		alpha_display[0] = alpha_display[0] & ~decimalChar;
 	}
+}
+
+void Display::blinkDisplay(bool is_blinking, int interval, int cycles){
+	blinking = is_blinking;
+	display_blinker = 0;
+	blink_interval = interval;
+	blink_cycles_timeout = cycles;
 }
 }

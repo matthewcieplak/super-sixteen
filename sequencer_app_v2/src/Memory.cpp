@@ -34,7 +34,7 @@ char* Memory::getFileName(int patch){
     itoa(patch, filenum, 10);
     memset(&filename[0], 0, sizeof(filename));
     strcpy(filename, filenum);
-    strcpy(filename, ".bin");
+    strcat(filename, ".bin");
     return filename;
 }
 
