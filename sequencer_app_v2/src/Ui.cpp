@@ -11,6 +11,8 @@
 #include "Pinout.h"
 #include "Ui.h"
 #include <Arduino.h>
+#include <avr/pgmspace.h>
+
 
 namespace supersixteen{
 
@@ -35,11 +37,21 @@ const byte SEQUENCE_MODE = 0;
 const byte CALIBRATE_MODE = 1;
 const byte LOAD_MODE = 2;
 const byte SAVE_MODE = 3 ;
-const byte SCALE_MODE = 4;
+const byte EDIT_PARAM_MODE = 4;
+
+const byte PARAM_BARS = 8;
+const byte PARAM_STEPS = 9;
+const byte PARAM_SCALE = 10;
+const byte PARAM_SWING = 11;
+const byte PARAM_TRANSPOSE = 12;
+
+byte current_param = PARAM_BARS;
 byte ui_mode = SEQUENCE_MODE;
 byte calibration_step = 0;
 byte current_patch = 1;
 byte selected_patch = 1;
+char scalename[10];
+
 
 
 void Ui::init(Calibration& calibration, Dac& dac, Sequencer& sequencer){
@@ -112,8 +124,8 @@ void Ui::onSaveButton(bool state) {
 			//actually save the patch!!
 			byte saveStatus = memory.save(selected_patch);
 			current_patch = selected_patch;
-			if (saveStatus = 1 || saveStatus == 2) { //saved
-				saving = true; 
+			if (saveStatus == 1 || saveStatus == 2) { //saved
+				saving = true;
 				//TODO display something, like rapid flashing?
 				display.blinkDisplay(true, 100, 5);
 				ui_mode = SEQUENCE_MODE;
@@ -123,14 +135,11 @@ void Ui::onSaveButton(bool state) {
 		} else { //sequencing, presumably
 			if (saving) return; //disallow double-presses
 
-			if (shift_state) {
-				initializeCalibrationMode();
-			} else {
-				ui_mode = SAVE_MODE;
-				selected_patch = current_patch;
-				display.setDisplayNum(selected_patch);
-				display.blinkDisplay(true, 300, 0);				
-			}
+
+			ui_mode = SAVE_MODE;
+			selected_patch = current_patch;
+			display.setDisplayNum(selected_patch);
+			display.blinkDisplay(true, 300, 0);
 		}
 	}
 }
@@ -154,14 +163,14 @@ void Ui::onLoadButton(bool state) {
 				display.setDisplayAlpha("ERR");
 			}
 			ui_mode = SEQUENCE_MODE;
-			current_patch = selected_patch;	
+			current_patch = selected_patch;
 			ledMatrix.setMatrixFromSequencer();
 			//TODO set sequencer current step by length of active sequence!
 		} else if (ui_mode == SEQUENCE_MODE){
 			ui_mode = LOAD_MODE;
 			selected_patch = current_patch;
 			display.setDisplayNum(selected_patch);
-			display.blinkDisplay(true, 300, 0);	
+			display.blinkDisplay(true, 300, 0);
 		}
 	}
 }
@@ -170,9 +179,14 @@ void Ui::onButtonToggle(int button, bool button_state) {
 	if (button < 16) { //inside button grid
         //display.setDisplayNum(button);
         if (button_state) {
-			switch(ui_mode) {
-    	    	case SEQUENCE_MODE: selectStep(button); break;
-        		case CALIBRATE_MODE: updateCalibration(button); break;
+			if (ui_mode == CALIBRATE_MODE) {
+				updateCalibration(button);
+			} else {
+				if (shift_state) {
+					shiftFunction(button);
+				} else {
+					selectStep(button);
+				}
 			}
         } else {
 			        //display.setDisplayNum(button*-1);
@@ -199,16 +213,52 @@ void Ui::onShiftButton(bool button_state){
 	}
 }
 
+void Ui::shiftFunction(int button) {
+	if (button < 8) {
+		//todo implement multi-bar sequence
+	} else {
+		switch (button) {
+			case 14: break;//clear sequence; break;
+			//case 13: initializeCalibrationMode(); break;
+			case PARAM_BARS: //select bars?
+			case PARAM_STEPS:
+			case PARAM_SCALE:
+			case PARAM_SWING:
+			case PARAM_TRANSPOSE:
+			  ui_mode = EDIT_PARAM_MODE;
+			  current_param = button;
+			  onEncoderIncrement(0);
+
+
+		}
+	}
+}
+
 void Ui::onEncoderIncrement(int increment_amount) {
 	if (ui_mode == CALIBRATE_MODE) {
 		display.setDisplayNum(calibrationVar2->incrementCalibration(increment_amount, calibration_step));
         updateCalibration(calibration_step);
-	} else if (ui_mode == SAVE_MODE or ui_mode == LOAD_MODE) {
+	} else if (ui_mode == SAVE_MODE || ui_mode == LOAD_MODE) {
 		selected_patch += increment_amount;
 		if (selected_patch < 1) selected_patch = 99;
 		if (selected_patch > 99) selected_patch = 1;
 		display.setDisplayNum(selected_patch);
-	} else { //sequencing, presumably
+	} else if (ui_mode == EDIT_PARAM_MODE) {
+		int param = 0;
+		if (current_param == PARAM_SCALE) {
+			param = sequencerVar2->incrementScale(increment_amount);
+			strcpy_P(scalename, (char *)pgm_read_word(&(scale_names[param])));  // Necessary casts and dereferencing, just copy (for PROGMEM keywords in flash)
+			display.setDisplayAlpha(scalename);
+		} else {
+			switch(current_param) {
+				case PARAM_BARS:  param = sequencerVar2->incrementBars(increment_amount); break;
+				case PARAM_STEPS: param = sequencerVar2->incrementSteps(increment_amount); break;
+				case PARAM_SWING: param = sequencerVar2->incrementSwing(increment_amount); break;
+				case PARAM_TRANSPOSE: param = sequencerVar2->incrementTranspose(increment_amount); break;
+			}
+			display.setDisplayNum(param);
+		}
+	} else {//sequencing, presumably
 		display.setDisplayNum(sequencerVar2->incrementTempo(increment_amount));
 	}
 }
@@ -221,6 +271,9 @@ void Ui::onGlideButton(bool state){
 }
 
 void Ui::onPlayButton(bool state){
+	if (shift_state) {
+		sequencerVar2->onReset();
+	}
 	if (state && isSequencing()) {
 		cancelSaveOrLoad();
 		sequencerVar2->onPlayButton();
@@ -261,6 +314,7 @@ void Ui::initializeCalibrationMode() {
 	ui_mode = CALIBRATE_MODE;
 	calibrationVar2->readCalibrationValues();
 	updateCalibration(calibration_step);
+	
 }
 
 void Ui::updateCalibration(int step) {
@@ -293,10 +347,13 @@ void Ui::onStepIncremented(){
 }
 
 bool Ui::cancelSaveOrLoad(){
-	if (ui_mode == LOAD_MODE || ui_mode == SAVE_MODE) {
+	if (ui_mode == LOAD_MODE || ui_mode == SAVE_MODE || ui_mode == EDIT_PARAM_MODE) {
 		display.blinkDisplay(false, 100, 0);
 		ui_mode = SEQUENCE_MODE;
+		analogIo.displaySelectedParam();
+		display.setDisplayNum(analogIo.getDisplayNum());
 		return true;
+		
 	}
 	return false;
 }

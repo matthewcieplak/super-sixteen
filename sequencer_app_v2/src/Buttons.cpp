@@ -71,7 +71,7 @@ void Buttons::poll() {
 
 		if (value != function_button_matrix[ii]){
 			function_button_matrix[ii] = value;
-			uint16_t event = function_buttons[ii]+8 | (value << 8); //condense button number and state into one 16-bit variable
+			uint16_t event = (function_buttons[ii]+8) | (value << 8); //condense button number and state into one 16-bit variable
 			if (editing_buttons) queue_events_push(&queue, &event);
 		}
 	}

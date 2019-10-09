@@ -116,9 +116,6 @@ void LedMatrix::blinkLed() {
 void LedMatrix::blinkCurrentStep(){
 	int current_step = sequencerVar3->getCurrentStep();
 	led_matrix[current_step] = !led_matrix[current_step]; //reset previous LED
-
-	// int prev_step = sequencerVar3->getPrevStep();
-	// led_matrix[prev_step] = !led_matrix[prev_step];
 }
 
 void LedMatrix::reset(){

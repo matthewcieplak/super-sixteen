@@ -14,7 +14,6 @@ sequence active_sequence;
 int selected_step = 0;
 uint8_t clock_step = 15;
 uint8_t current_step = 15;
-uint8_t prev_step = 14;
 uint8_t active_step;
 
 uint8_t repeat_step_origin = 0;
@@ -97,7 +96,7 @@ void Sequencer::incrementStep() {
 	if (clock_step == active_sequence.sequence_length) {
 		clock_step = 0;
 	}
-	prev_step = current_step;
+	//prev_step = current_step;
 
 	if (seq_repeat_mode) {
 		//repeat_step_counter++;
@@ -150,10 +149,6 @@ int Sequencer::getCurrentStep(){
 	return current_step;
 }
 
-int Sequencer::getPrevStep(){
-	return prev_step;
-}
-
 bool Sequencer::stepWasIncremented(){
 	return step_incremented;
 }
@@ -199,20 +194,51 @@ void Sequencer::onPlayButton(){
 	calculated_tempo = tempo_millis;
 }
 
+void Sequencer::onReset(){
+	timekeeper = 0;
+	current_step = active_sequence.sequence_length;
+}
+
 int Sequencer::incrementTempo(int amount){
-	tempo_bpm += amount;
-	if (tempo_bpm < 20) tempo_bpm = 20;
-	if (tempo_bpm > 255) tempo_bpm = 255;
+	tempo_bpm = setMinMaxParam(tempo_bpm, amount, 20, 250);
 	tempo_millis = 15000 / tempo_bpm;
 	active_sequence.sequence_tempo = tempo_bpm;
 	return tempo_bpm;
 }
+
+int Sequencer::incrementScale(int amount){
+	return active_sequence.scale = setMinMaxParam(active_sequence.scale, amount, 0, 9);
+}
+
+int Sequencer::incrementSteps(int amount){
+	return active_sequence.sequence_length = setMinMaxParam(active_sequence.sequence_length, amount, 1, 16);
+}
+
+int Sequencer::incrementBars(int amount){
+	return active_sequence.bars = setMinMaxParam(active_sequence.bars, amount, 1, 4);
+}
+
+int Sequencer::incrementSwing(int amount){
+	return active_sequence.swing = setMinMaxParam(active_sequence.swing, amount, 10, 90);
+}
+
+int Sequencer::incrementTranspose(int amount){
+	return active_sequence.transpose = setMinMaxParam(active_sequence.transpose, amount, -36, 36);
+}
+
 
 void Sequencer::selectStep(int stepnum){
 	if (selected_step == stepnum || !active_sequence.step_matrix[stepnum]) { //require 2 presses to turn active steps off, so they can be selected/edited without double-tapping //TODO maybe implement hold-to-deactivate
         active_sequence.step_matrix[stepnum] = !active_sequence.step_matrix[stepnum];
     }
     selected_step = stepnum;
+}
+
+int Sequencer::setMinMaxParam(int param, int increment, int min, int max) {
+	param += increment;
+	if (param > max) param = max;
+	else if (param < min) param = min;
+	return param;
 }
 
 bool Sequencer::getStepOnOff(int stepnum){

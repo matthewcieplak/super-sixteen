@@ -31,6 +31,7 @@ class Ui{
         void initializeCalibrationMode();
         void updateCalibration(int step);
         bool cancelSaveOrLoad();
+        void shiftFunction(int button);
 
 };
 }
