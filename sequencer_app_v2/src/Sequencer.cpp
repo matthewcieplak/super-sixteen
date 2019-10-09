@@ -4,7 +4,7 @@
 #include "Dac.h"
 #include "Calibrate.h"
 #include "Sequencer.h"
-
+#include "Scales.h"
 namespace supersixteen{
 
 const byte SEQUENCE_MAX_LENGTH = 16;
@@ -29,10 +29,12 @@ unsigned int tempo_millis = 15000 / tempo_bpm; //would be 60000 but we count 4 s
 bool play_active = 0;
 bool seq_repeat_mode = false;
 bool seq_record_mode = false;
+bool current_scale_tones[13];
 
 
 int prev_note = 0;
 int active_note = 0;
+int active_pitch = 0;
 int glide_duration = 50;
 int calculated_tempo = tempo_millis;
 double current_note_value = 0;
@@ -47,7 +49,7 @@ void Sequencer::init(Calibration& calibration, Dac& dac) {
 	calibrationVar = &calibration;
 
 	dacVar = &dac;
-	for (byte i = 0; i < 16; i++) {
+	for (byte i = 0; i < SEQUENCE_MAX_LENGTH; i++) {
 		active_sequence.duration_matrix[i] = 80;
 	}
 
@@ -55,6 +57,9 @@ void Sequencer::init(Calibration& calibration, Dac& dac) {
 	pinMode(CLOCK_OUT_PIN, OUTPUT);
 	pinMode(CLOCK_IN_PIN, INPUT_PULLUP);
 	pinMode(RESET_PIN, INPUT_PULLUP);
+
+    active_sequence.scale = 0;
+	incrementScale(1);
 }
 
 void Sequencer::updateClock() {
@@ -130,8 +135,8 @@ void Sequencer::incrementStep() {
 void Sequencer::setActiveNote(){
 	//PITCH/OCTAVE
 	if (active_sequence.step_matrix[current_step]) {
-
-		active_note = (active_sequence.octave_matrix[active_step] + 2) * 12 + active_sequence.pitch_matrix[active_step];
+		quantizeActivePitch();
+		active_note = (active_sequence.octave_matrix[active_step] + 2) * 12 + active_pitch;
 		if (active_sequence.glide_matrix[active_step]) {
 			updateGlide();
 		} else {
@@ -142,6 +147,13 @@ void Sequencer::setActiveNote(){
 		//GATE
 		digitalWrite(GATE_PIN, active_sequence.step_matrix[active_step] ? HIGH : LOW);
 		gate_active = active_sequence.step_matrix[active_step];
+	}
+}
+
+void Sequencer::quantizeActivePitch(){
+	active_pitch = active_sequence.pitch_matrix[active_step];
+	if (current_scale_tones[active_pitch >= 0 ? active_pitch : active_pitch + 12] == false) {
+		active_pitch += quantize_map[active_pitch >= 0 ? active_pitch : active_pitch + 12];
 	}
 }
 
@@ -195,8 +207,9 @@ void Sequencer::onPlayButton(){
 }
 
 void Sequencer::onReset(){
-	timekeeper = 0;
-	current_step = active_sequence.sequence_length;
+	timekeeper = tempo_millis;
+	clock_step = active_sequence.sequence_length-1;
+	step_incremented = false;
 }
 
 int Sequencer::incrementTempo(int amount){
@@ -207,7 +220,9 @@ int Sequencer::incrementTempo(int amount){
 }
 
 int Sequencer::incrementScale(int amount){
-	return active_sequence.scale = setMinMaxParam(active_sequence.scale, amount, 0, 9);
+	active_sequence.scale = setMinMaxParam(active_sequence.scale, amount, 0, 9);
+	loadScale(active_sequence.scale);
+	return active_sequence.scale;
 }
 
 int Sequencer::incrementSteps(int amount){
@@ -251,6 +266,9 @@ bool Sequencer::toggleGlide(){
 }
 
 bool Sequencer::setPitch(int newVal){
+	//quantize pitches to scale
+	if (current_scale_tones[newVal >= 0 ? newVal : newVal + 12] == false) return false;
+
 	bool changed = active_sequence.pitch_matrix[editedStep()] != newVal;
 	active_sequence.pitch_matrix[editedStep()] = newVal;
 	return changed;
@@ -325,6 +343,12 @@ sequence& Sequencer::getActiveSequence(){
 
 sequence * Sequencer::getSequence(){
 	return &active_sequence;
+}
+
+void Sequencer::loadScale(uint8_t scale){
+	for (byte k = 0; k < 13; k++) {
+    	current_scale_tones[k] = (bool)pgm_read_byte_near(scale_tones[scale] + k);
+  	}
 }
 
 }

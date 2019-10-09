@@ -7,6 +7,7 @@
 #include "LEDMatrix.h"
 #include "Memory.h"
 #include "Sequencer.h"
+#include "Scales.h"
 #include "Variables.h"
 #include "Pinout.h"
 #include "Ui.h"
@@ -248,6 +249,7 @@ void Ui::onEncoderIncrement(int increment_amount) {
 		if (current_param == PARAM_SCALE) {
 			param = sequencerVar2->incrementScale(increment_amount);
 			strcpy_P(scalename, (char *)pgm_read_word(&(scale_names[param])));  // Necessary casts and dereferencing, just copy (for PROGMEM keywords in flash)
+			display.setDisplayNum(999); //prime variable for cancel/change
 			display.setDisplayAlpha(scalename);
 		} else {
 			switch(current_param) {
@@ -273,6 +275,7 @@ void Ui::onGlideButton(bool state){
 void Ui::onPlayButton(bool state){
 	if (shift_state) {
 		sequencerVar2->onReset();
+		return;
 	}
 	if (state && isSequencing()) {
 		cancelSaveOrLoad();
@@ -348,10 +351,12 @@ void Ui::onStepIncremented(){
 
 bool Ui::cancelSaveOrLoad(){
 	if (ui_mode == LOAD_MODE || ui_mode == SAVE_MODE || ui_mode == EDIT_PARAM_MODE) {
-		display.blinkDisplay(false, 100, 0);
 		ui_mode = SEQUENCE_MODE;
 		analogIo.displaySelectedParam();
 		display.setDisplayNum(analogIo.getDisplayNum());
+		// display.setDisplayAlpha("WOT");
+		// display.setDisplayNum(0); //analogIo.getDisplayNum());
+		display.blinkDisplay(true, 100, 2);
 		return true;
 		
 	}
