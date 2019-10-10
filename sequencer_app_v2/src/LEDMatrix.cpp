@@ -11,12 +11,13 @@ namespace supersixteen{
 
 elapsedMillis multiplex;
 elapsedMillis blinker;
-bool led_matrix[16];
-int step_map[16] = { 3, 2, 1, 0, 0, 1, 2 ,3, 3, 2, 1, 0, 0, 1, 2, 3 }; //rows are wired symmetrically rather than sequentially
+bool led_matrix[17];
+int step_map[17] = { 3, 2, 1, 0, 0, 1, 2 ,3, 3, 2, 1, 0, 0, 1, 2, 3, 0 }; //rows are wired symmetrically rather than sequentially
 int selected_step_led = 0;
 const int MILLISECONDS_PER_MULTIPLEX = 1;
 const int MILLISECONDS_AFTER_MULTIPLEX = 0;
 bool display_active = 1;
+byte visible_bar = 0;
 
 uint8_t byte1;
 uint8_t byte2;
@@ -97,7 +98,7 @@ void LedMatrix::multiplexLeds() {
 
 void LedMatrix::blinkStep() {
 	//if (blinker < 100) return;
-	if (sequencerVar3->getStepOnOff(selected_step_led)) {
+	if (sequencerVar3->getStepOnOff(selected_step_led+visible_bar*16)) {
 		if (blinker > (led_matrix[selected_step_led] ? 600 : 100)) { //blink long when active
 			blinkLed();
 		}
@@ -115,7 +116,10 @@ void LedMatrix::blinkLed() {
 
 void LedMatrix::blinkCurrentStep(){
 	int current_step = sequencerVar3->getCurrentStep();
-	led_matrix[current_step] = !led_matrix[current_step]; //reset previous LED
+	byte visible_step = current_step % 16;
+	if (current_step >= visible_bar*16 && current_step < (visible_bar+1)*16) {
+		led_matrix[visible_step] = !led_matrix[visible_step];
+	}
 }
 
 void LedMatrix::reset(){
@@ -124,9 +128,15 @@ void LedMatrix::reset(){
 	}
 }
 
-void LedMatrix::setMatrixFromSequencer(){
-	memcpy(led_matrix, sequencerVar3->getStepMatrix(), sizeof led_matrix); //reset LED matrix to sequence
+void LedMatrix::setMatrixFromSequencer(byte bar){
+	visible_bar = bar;
+	memcpy(led_matrix, sequencerVar3->getStepMatrix()+bar*16, 16); //reset LED matrix to sequence
 	selected_step_led = sequencerVar3->getSelectedStep();
+	if (selected_step_led < bar*16 || selected_step_led > bar*16+16) {
+		selected_step_led = 16; //null step is outside LED matrix
+	} else {
+		selected_step_led = selected_step_led % 16; //find relative step in current bar
+	}
 }
 
 void LedMatrix::toggleLed(int led){

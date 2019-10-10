@@ -12,7 +12,7 @@ struct sequence {
 	int8_t octave_matrix[64];
 	uint16_t duration_matrix[64];
 	int8_t cv_matrix[64];
-    bool step_matrix[64] = { 1,0,0,0, 1,1,0,0, 1,1,1,0, 1,1,1,1 };
+    bool step_matrix[64] = { 1,0,0,0, 1,1,0,0, 1,1,1,0, 1,1,1,1, 0,1,0,0, 0,1,1,0, 0,1,1,1, 0,0,0,1 };
 	bool glide_matrix[64];
 
 	uint8_t glide_length = 50;
@@ -44,7 +44,7 @@ class Sequencer{
         
         int incrementTempo(int amount);
         int incrementBars(int amount);
-        int incrementSteps(int amount);
+        int incrementSteps(int amount, bool shiftState);
         int incrementSwing(int amount);
         int incrementScale(int amount);
         int incrementTranspose(int amount);
@@ -76,6 +76,7 @@ class Sequencer{
 
         void setTempoFromSequence();
         void loadScale(uint8_t scale);
+        void onBarSelect(byte bar);
 
 
         sequence& getActiveSequence();

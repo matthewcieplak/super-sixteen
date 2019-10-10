@@ -51,6 +51,7 @@ byte ui_mode = SEQUENCE_MODE;
 byte calibration_step = 0;
 byte current_patch = 1;
 byte selected_patch = 1;
+byte current_bar = 0;
 char scalename[10];
 
 
@@ -165,7 +166,8 @@ void Ui::onLoadButton(bool state) {
 			}
 			ui_mode = SEQUENCE_MODE;
 			current_patch = selected_patch;
-			ledMatrix.setMatrixFromSequencer();
+			current_bar = 0;
+			ledMatrix.setMatrixFromSequencer(current_bar);
 			//TODO set sequencer current step by length of active sequence!
 		} else if (ui_mode == SEQUENCE_MODE){
 			ui_mode = LOAD_MODE;
@@ -216,7 +218,11 @@ void Ui::onShiftButton(bool button_state){
 
 void Ui::shiftFunction(int button) {
 	if (button < 8) {
-		//todo implement multi-bar sequence
+		if (button < 4) {
+			current_bar = button;
+			sequencerVar2->onBarSelect(current_bar);
+			ledMatrix.setMatrixFromSequencer(current_bar);
+		}
 	} else {
 		switch (button) {
 			case 14: break;//clear sequence; break;
@@ -254,7 +260,7 @@ void Ui::onEncoderIncrement(int increment_amount) {
 		} else {
 			switch(current_param) {
 				case PARAM_BARS:  param = sequencerVar2->incrementBars(increment_amount); break;
-				case PARAM_STEPS: param = sequencerVar2->incrementSteps(increment_amount); break;
+				case PARAM_STEPS: param = sequencerVar2->incrementSteps(increment_amount, shift_state); break;
 				case PARAM_SWING: param = sequencerVar2->incrementSwing(increment_amount); break;
 				case PARAM_TRANSPOSE: param = sequencerVar2->incrementTranspose(increment_amount); break;
 			}
@@ -303,8 +309,8 @@ void Ui::selectStep(int step){
 		sequencerVar2->setRepeatLength(step+1);
 		return;
 	}
-    sequencerVar2->selectStep(step);
-	ledMatrix.setMatrixFromSequencer();
+    sequencerVar2->selectStep(step+current_bar*16);
+	ledMatrix.setMatrixFromSequencer(current_bar);
 	//ledMatrix.blinkLed();
     analogIo.displaySelectedParam();
 	display.setDisplayNum(analogIo.getDisplayNum());
@@ -335,13 +341,13 @@ bool Ui::isSequencing(){
 
 void Ui::initializeSequenceMode(){
 	ledMatrix.reset();
-	ledMatrix.setMatrixFromSequencer();
+	ledMatrix.setMatrixFromSequencer(current_bar);
 	analogIo.displaySelectedParam();
 	display.setDisplayNum(analogIo.getDisplayNum());
 }
 
 void Ui::onStepIncremented(){
-	ledMatrix.setMatrixFromSequencer();
+	ledMatrix.setMatrixFromSequencer(current_bar);
 	ledMatrix.blinkCurrentStep();
 	if (record_mode) {
 		analogIo.recordCurrentParam();

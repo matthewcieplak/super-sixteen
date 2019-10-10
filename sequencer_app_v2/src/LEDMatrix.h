@@ -15,7 +15,7 @@ class LedMatrix{
 
         void multiplexLeds();
 
-        void blinkStep();
+        void blinkStep(); 
 
         void blinkLed();
 
@@ -23,7 +23,7 @@ class LedMatrix{
 
         void reset();
 
-        void setMatrixFromSequencer();
+        void setMatrixFromSequencer(byte bar);
 
         void toggleLed(int led);
     

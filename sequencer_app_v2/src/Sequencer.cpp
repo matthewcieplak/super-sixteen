@@ -7,14 +7,16 @@
 #include "Scales.h"
 namespace supersixteen{
 
-const byte SEQUENCE_MAX_LENGTH = 16;
+const byte SEQUENCE_MAX_LENGTH = 64;
 
 sequence active_sequence;
 
+int8_t step_presets[] = { 4, 8, 12, 16, 24, 32, 48, 64 };
+
 int selected_step = 0;
-uint8_t clock_step = 15;
-uint8_t current_step = 15;
-uint8_t active_step;
+int8_t clock_step = -1;
+int8_t current_step = -1;
+int8_t active_step;
 
 uint8_t repeat_step_origin = 0;
 //uint8_t repeat_step_counter = 0;
@@ -104,7 +106,7 @@ void Sequencer::updateClock() {
 
 void Sequencer::incrementStep() {
 	clock_step++;
-	if (clock_step == active_sequence.sequence_length) {
+	if (clock_step >= active_sequence.sequence_length) {
 		clock_step = 0;
 	}
 	//prev_step = current_step;
@@ -208,14 +210,22 @@ void Sequencer::updateGate() {
 
 void Sequencer::onPlayButton(){
 	play_active = !play_active;
+	if (!play_active) { 	
+		digitalWrite(GATE_PIN, LOW);
+		gate_active = false;
+	}
 	timekeeper = 0;
 	calculated_tempo = tempo_millis;
 }
 
 void Sequencer::onReset(){
 	timekeeper = tempo_millis;
-	clock_step = active_sequence.sequence_length-1;
+	clock_step = -1;
 	step_incremented = false;
+}
+
+void Sequencer::onBarSelect(byte bar){
+
 }
 
 int Sequencer::incrementTempo(int amount){
@@ -233,8 +243,14 @@ int Sequencer::incrementScale(int amount){
 	return active_sequence.scale;
 }
 
-int Sequencer::incrementSteps(int amount){
-	return active_sequence.sequence_length = setMinMaxParam(active_sequence.sequence_length, amount, 1, 16);
+int Sequencer::incrementSteps(int amount, bool shift_state){
+	if (shift_state && amount != 0) {
+		byte i = 1;
+		while (active_sequence.sequence_length > step_presets[i] && i < sizeof(step_presets)/sizeof(step_presets[0])-2) { i++; }
+		return active_sequence.sequence_length = step_presets[amount > 0 ? i+1 : i-1];
+	} else {
+		return active_sequence.sequence_length = setMinMaxParam(active_sequence.sequence_length, amount, 1, SEQUENCE_MAX_LENGTH);
+	}
 }
 
 int Sequencer::incrementBars(int amount){
