@@ -371,6 +371,27 @@ sequence * Sequencer::getSequence(){
 	return &active_sequence;
 }
 
+void Sequencer::clearSequence(){
+	for (byte i = 0; i < SEQUENCE_MAX_LENGTH; i++) {
+		active_sequence.pitch_matrix[i] = 0;
+		active_sequence.octave_matrix[i] = 0;
+		active_sequence.duration_matrix[i] = 80;
+		active_sequence.cv_matrix[i] = 0;
+		active_sequence.step_matrix[i] = false;
+		active_sequence.glide_matrix[i] = false;
+	}
+	active_sequence.glide_length = 50;
+	active_sequence.sequence_length = 16;
+	active_sequence.bars = 1;
+	active_sequence.scale = 1;
+
+	active_sequence.swing = 50;
+	active_sequence.effect = 0; //mutate = repeat (0), reverse (1), octave shift (2), auto-glide (3), hold  (4)
+	active_sequence.effect_depth = 4;
+    //active_sequence.sequence_tempo = 120; //might be done in real time? probably not a good idea to change
+    active_sequence.transpose = 0;
+}
+
 void Sequencer::loadScale(uint8_t scale){
 	for (byte k = 0; k < 13; k++) {
     	current_scale_tones[k] = (bool)pgm_read_byte_near(scale_tones[scale] + k);

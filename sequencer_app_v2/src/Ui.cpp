@@ -120,6 +120,7 @@ void Ui::onSaveButton(bool state) {
 		if (ui_mode == CALIBRATE_MODE) {
 			ui_mode = SEQUENCE_MODE;
 			calibrationVar2->writeCalibrationValues();
+			digitalWrite(GATE_PIN, LOW);
 			initializeSequenceMode();
 		} else if (ui_mode == SAVE_MODE) {
 
@@ -160,9 +161,11 @@ void Ui::onLoadButton(bool state) {
 		if (ui_mode == LOAD_MODE) {
 			//actually load patch
 			if (memory.load(selected_patch)) {
-				display.blinkDisplay(true, 100, 5);
+				display.blinkDisplay(true, 100, 3);
 			} else {
+				display.setDisplayNum(999); //prime for change
 				display.setDisplayAlpha("ERR");
+				display.blinkDisplay(true, 100, 3);
 			}
 			ui_mode = SEQUENCE_MODE;
 			current_patch = selected_patch;
@@ -220,13 +223,15 @@ void Ui::shiftFunction(int button) {
 	if (button < 8) {
 		if (button < 4) {
 			current_bar = button;
+			const char barname[4] = {char(36+55), char(11+55), char(button+55)}; //goofy way of writing " b4" with ad-hoc ascii table conversion
+			display.setDisplayAlpha(barname);
 			sequencerVar2->onBarSelect(current_bar);
 			ledMatrix.setMatrixFromSequencer(current_bar);
 		}
 	} else {
 		switch (button) {
-			case 14: break;//clear sequence; break;
-			//case 13: initializeCalibrationMode(); break;
+			case 14: clearSequence(); break;
+			case 13: initializeCalibrationMode(); break;
 			case PARAM_BARS: //select bars?
 			case PARAM_STEPS:
 			case PARAM_SCALE:
@@ -323,7 +328,17 @@ void Ui::initializeCalibrationMode() {
 	ui_mode = CALIBRATE_MODE;
 	calibrationVar2->readCalibrationValues();
 	updateCalibration(calibration_step);
-	
+	display.setDisplayNum(999); //prime for change
+	display.setDisplayAlpha("CAL");
+	digitalWrite(GATE_PIN, HIGH); //to make signals audible
+}
+
+void Ui::clearSequence(){
+	display.setDisplayNum(999); //prime for change
+	display.setDisplayAlpha("CLR");
+	sequencerVar2->clearSequence();
+	current_bar = 0;
+	ledMatrix.setMatrixFromSequencer(current_bar);
 }
 
 void Ui::updateCalibration(int step) {
@@ -340,6 +355,7 @@ bool Ui::isSequencing(){
 }
 
 void Ui::initializeSequenceMode(){
+	ui_mode = SEQUENCE_MODE;
 	ledMatrix.reset();
 	ledMatrix.setMatrixFromSequencer(current_bar);
 	analogIo.displaySelectedParam();
@@ -356,13 +372,14 @@ void Ui::onStepIncremented(){
 }
 
 bool Ui::cancelSaveOrLoad(){
-	if (ui_mode == LOAD_MODE || ui_mode == SAVE_MODE || ui_mode == EDIT_PARAM_MODE) {
-		ui_mode = SEQUENCE_MODE;
-		analogIo.displaySelectedParam();
-		display.setDisplayNum(analogIo.getDisplayNum());
-		// display.setDisplayAlpha("WOT");
-		// display.setDisplayNum(0); //analogIo.getDisplayNum());
-		display.blinkDisplay(true, 100, 2);
+	if (ui_mode == LOAD_MODE || ui_mode == SAVE_MODE || ui_mode == EDIT_PARAM_MODE || ui_mode == CALIBRATE_MODE) {
+		if (ui_mode == CALIBRATE_MODE) {
+			digitalWrite(GATE_PIN, LOW);
+		}
+		initializeSequenceMode();
+		display.blinkDisplay(true, 100, 1);
+		
+		
 		return true;
 		
 	}

@@ -77,6 +77,7 @@ class Sequencer{
         void setTempoFromSequence();
         void loadScale(uint8_t scale);
         void onBarSelect(byte bar);
+        void clearSequence();
 
 
         sequence& getActiveSequence();
