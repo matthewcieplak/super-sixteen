@@ -37,6 +37,9 @@ int active_note = 0;
 int active_pitch = 0;
 int glide_duration = 50;
 int calculated_tempo = tempo_millis;
+double tempo_millis_swing_odd;
+double tempo_millis_swing_even;
+
 double current_note_value = 0;
 Calibration *calibrationVar;
 Dac *dacVar;
@@ -59,28 +62,31 @@ void Sequencer::init(Calibration& calibration, Dac& dac) {
 	pinMode(RESET_PIN, INPUT_PULLUP);
 
     active_sequence.scale = 0;
-	incrementScale(1);
+	incrementScale(0);
+	incrementTempo(0);
 }
 
 void Sequencer::updateClock() {
-	if (play_active && timekeeper > tempo_millis) {
-		//CLOCK
-		//increment_step();
-		if (clock_out_active) {
-			digitalWrite(CLOCK_OUT_PIN, LOW);
-			clock_out_active = false;
+	if (play_active) {
+		if (timekeeper > (clock_step % 2 == 1 ? tempo_millis_swing_even : tempo_millis_swing_odd)) {
+			//CLOCK
+			//increment_step();
+			if (clock_out_active) {
+				digitalWrite(CLOCK_OUT_PIN, LOW);
+				clock_out_active = false;
+			}
+			else {
+				digitalWrite(CLOCK_OUT_PIN, HIGH);
+				clock_out_active = true;
+			}
+			incrementStep();
+			timekeeper = 0;
+		} else {
+			step_incremented = false;
 		}
-		else {
-			digitalWrite(CLOCK_OUT_PIN, HIGH);
-			clock_out_active = true;
-		}
-		incrementStep();
-		timekeeper = 0;
-	} else {
-		step_incremented = false;
+		updateGlide();
+		updateGate();
 	}
-	updateGlide();
-	updateGate();
 
 	//todo enable clock in
 	// if (digitalRead(CLOCK_IN_PIN) == LOW) {
@@ -136,7 +142,7 @@ void Sequencer::setActiveNote(){
 	//PITCH/OCTAVE
 	if (active_sequence.step_matrix[current_step]) {
 		quantizeActivePitch();
-		active_note = (active_sequence.octave_matrix[active_step] + 2) * 12 + active_pitch;
+		active_note = (active_sequence.octave_matrix[active_step] + 2) * 12 + active_pitch + active_sequence.transpose;
 		if (active_sequence.glide_matrix[active_step]) {
 			updateGlide();
 		} else {
@@ -215,6 +221,8 @@ void Sequencer::onReset(){
 int Sequencer::incrementTempo(int amount){
 	tempo_bpm = setMinMaxParam(tempo_bpm, amount, 20, 250);
 	tempo_millis = 15000 / tempo_bpm;
+	tempo_millis_swing_odd = tempo_millis * float(active_sequence.swing) / 50.0;
+	tempo_millis_swing_even = tempo_millis * 2 - tempo_millis_swing_odd;
 	active_sequence.sequence_tempo = tempo_bpm;
 	return tempo_bpm;
 }
@@ -234,7 +242,9 @@ int Sequencer::incrementBars(int amount){
 }
 
 int Sequencer::incrementSwing(int amount){
-	return active_sequence.swing = setMinMaxParam(active_sequence.swing, amount, 10, 90);
+	active_sequence.swing = setMinMaxParam(active_sequence.swing, amount, 10, 90);
+	incrementTempo(0);
+	return active_sequence.swing;
 }
 
 int Sequencer::incrementTranspose(int amount){
