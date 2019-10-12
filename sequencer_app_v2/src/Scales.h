@@ -14,6 +14,7 @@ const bool scaletones_9[] PROGMEM = {1,0,1,0,1,0,1,0,1,0,1,0,1};// whole tone
 
 const bool *const scale_tones[] = {scaletones_0, scaletones_1, scaletones_2, scaletones_3, scaletones_4, scaletones_5, scaletones_6, scaletones_7, scaletones_8, scaletones_9 };
 
+
 const char scale_0[] PROGMEM = "CHR"; //chromatic
 const char scale_1[] PROGMEM = "MAJ"; //major
 const char scale_2[] PROGMEM = "MIN"; //minor
@@ -27,6 +28,26 @@ const char scale_9[] PROGMEM = "WHO"; //whole tone
 
 const char *const scale_names[] PROGMEM = { scale_0, scale_1, scale_2, scale_3, scale_4, scale_5, scale_6, scale_7, scale_8, scale_9 };
 
-                              //  C  Db  D  Eb  E   F  Gb G  Ab   A  Bb  B  C
-const int8_t quantize_map[13] = { 0, 1, -1, 1, -1, -1, 1, 0, 1,  -1, 1, -1, 0 }; //steps required to move to altered/diatonic scale degree when out of quantization
+
+const char effect_0[] PROGMEM = "REP"; //repeat
+const char effect_1[] PROGMEM = "REV"; //reverse
+const char effect_2[] PROGMEM = "OCT"; //octave shift
+const char effect_3[] PROGMEM = "GLD"; //auto-glide
+const char effect_4[] PROGMEM = "FRZ"; //freeze
+const char effect_5[] PROGMEM = "STP"; //freeze
+
+static const uint8_t EFFECT_REPEAT  = 0;
+static const uint8_t EFFECT_REVERSE = 1;
+static const uint8_t EFFECT_OCTAVE  = 2;
+static const uint8_t EFFECT_GLIDE   = 3;
+static const uint8_t EFFECT_FREEZE  = 4;
+static const uint8_t EFFECT_STOP    = 5;
+
+
+
+const char *const effect_names[] PROGMEM = { effect_0, effect_1, effect_2, effect_3, effect_4, effect_5 };
+
+
+                              //  C  Db  D  Eb  E   F  Gb  G  Ab   A  Bb  B  C
+const int8_t quantize_map[13] = { 0, 1, -1, 1, -1, -1, 1, -1, 1,  -1, 1, -1, 0 }; //steps required to move to altered/diatonic scale degree when out of quantization
 }

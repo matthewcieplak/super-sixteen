@@ -48,6 +48,9 @@ class Sequencer{
         int incrementSwing(int amount);
         int incrementScale(int amount);
         int incrementTranspose(int amount);
+        int incrementEffect(int amount);
+        int incrementEffectDepth(int amount);
+
 
         void onPlayButton();
         void onReset();
@@ -71,9 +74,8 @@ class Sequencer{
         int getSelectedStep();
 
         void setRecordMode(bool state);
-        void setRepeatMode(bool state);
-        void setRepeatLength(uint8_t length);
-
+        void setEffectMode(bool state);
+        
         void setTempoFromSequence();
         void loadScale(uint8_t scale);
         void onBarSelect(byte bar);
@@ -84,7 +86,9 @@ class Sequencer{
         sequence * getSequence();
         
     private:
-        int setMinMaxParam(int param, int increment_amount, int min, int max);
+        int getMinMaxParam(int param, int increment_amount, int min, int max);
+        uint8_t setMinMaxParamUnsigned(uint8_t& param, int8_t increment_amount, uint8_t min, uint8_t max);
+        int8_t setMinMaxParam(int8_t& param, int8_t increment_amount, int8_t min, int8_t max);
         void updateGlide();
         void updateGate();
         uint8_t editedStep();

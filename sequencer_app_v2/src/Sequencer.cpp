@@ -29,7 +29,7 @@ bool step_incremented = false;
 byte tempo_bpm = 120;
 unsigned int tempo_millis = 15000 / tempo_bpm; //would be 60000 but we count 4 steps per "beat"
 bool play_active = 0;
-bool seq_repeat_mode = false;
+bool seq_effect_mode = false;
 bool seq_record_mode = false;
 bool current_scale_tones[13];
 
@@ -111,7 +111,7 @@ void Sequencer::incrementStep() {
 	}
 	//prev_step = current_step;
 
-	if (seq_repeat_mode) {
+	if (seq_effect_mode && active_sequence.effect == EFFECT_REPEAT) {
 		//repeat_step_counter++;
 		if (current_step == repeat_step_origin){
 			current_step = current_step - active_sequence.effect_depth + 1;
@@ -145,6 +145,9 @@ void Sequencer::setActiveNote(){
 	if (active_sequence.step_matrix[current_step]) {
 		quantizeActivePitch();
 		active_note = (active_sequence.octave_matrix[active_step] + 2) * 12 + active_pitch + active_sequence.transpose;
+		if (seq_effect_mode && active_sequence.effect == EFFECT_OCTAVE) {
+			active_note += (active_sequence.effect_depth - 4) * 12;
+		}
 		if (active_sequence.glide_matrix[active_step]) {
 			updateGlide();
 		} else {
@@ -229,7 +232,7 @@ void Sequencer::onBarSelect(byte bar){
 }
 
 int Sequencer::incrementTempo(int amount){
-	tempo_bpm = setMinMaxParam(tempo_bpm, amount, 20, 250);
+	tempo_bpm = getMinMaxParam(tempo_bpm, amount, 20, 250);
 	tempo_millis = 15000 / tempo_bpm;
 	tempo_millis_swing_odd = tempo_millis * float(active_sequence.swing) / 50.0;
 	tempo_millis_swing_even = tempo_millis * 2 - tempo_millis_swing_odd;
@@ -238,9 +241,31 @@ int Sequencer::incrementTempo(int amount){
 }
 
 int Sequencer::incrementScale(int amount){
-	active_sequence.scale = setMinMaxParam(active_sequence.scale, amount, 0, 9);
+	active_sequence.scale = getMinMaxParam(active_sequence.scale, amount, 0, 9);
 	loadScale(active_sequence.scale);
 	return active_sequence.scale;
+}
+
+int Sequencer::incrementEffect(int amount){
+	uint8_t &effect = active_sequence.effect;
+	setMinMaxParamUnsigned(effect, amount, 0, 5);	
+	incrementEffectDepth(0);
+	return active_sequence.effect;
+}
+
+
+int Sequencer::incrementEffectDepth(int amount){
+	uint8_t &depth = active_sequence.effect_depth;
+	switch(active_sequence.effect) {
+		case EFFECT_REPEAT:  setMinMaxParamUnsigned(depth, amount, 1, 16); break;
+		case EFFECT_OCTAVE:  setMinMaxParamUnsigned(depth, amount, 0, 8); return active_sequence.effect_depth - 4; break;//this is displayed as -4/+4 in UI
+		case EFFECT_GLIDE:   setMinMaxParamUnsigned(depth, amount, 1, 100); break;
+		case EFFECT_REVERSE: setMinMaxParamUnsigned(depth, amount, 0, 1); break;
+		case EFFECT_STOP:    setMinMaxParamUnsigned(depth, amount, 10, 100); break;
+		case EFFECT_FREEZE:  setMinMaxParamUnsigned(depth, amount, 0, 1); break;
+
+	}
+	return active_sequence.effect_depth;
 }
 
 int Sequencer::incrementSteps(int amount, bool shift_state){
@@ -249,22 +274,22 @@ int Sequencer::incrementSteps(int amount, bool shift_state){
 		while (active_sequence.sequence_length > step_presets[i] && i < sizeof(step_presets)/sizeof(step_presets[0])-2) { i++; }
 		return active_sequence.sequence_length = step_presets[amount > 0 ? i+1 : i-1];
 	} else {
-		return active_sequence.sequence_length = setMinMaxParam(active_sequence.sequence_length, amount, 1, SEQUENCE_MAX_LENGTH);
+		return active_sequence.sequence_length = getMinMaxParam(active_sequence.sequence_length, amount, 1, SEQUENCE_MAX_LENGTH);
 	}
 }
 
 int Sequencer::incrementBars(int amount){
-	return active_sequence.bars = setMinMaxParam(active_sequence.bars, amount, 1, 4);
+	return active_sequence.bars = getMinMaxParam(active_sequence.bars, amount, 1, 4);
 }
 
 int Sequencer::incrementSwing(int amount){
-	active_sequence.swing = setMinMaxParam(active_sequence.swing, amount, 10, 90);
+	active_sequence.swing = getMinMaxParam(active_sequence.swing, amount, 10, 90);
 	incrementTempo(0);
 	return active_sequence.swing;
 }
 
 int Sequencer::incrementTranspose(int amount){
-	return active_sequence.transpose = setMinMaxParam(active_sequence.transpose, amount, -36, 36);
+	return active_sequence.transpose = getMinMaxParam(active_sequence.transpose, amount, -36, 36);
 }
 
 
@@ -275,12 +300,28 @@ void Sequencer::selectStep(int stepnum){
     selected_step = stepnum;
 }
 
-int Sequencer::setMinMaxParam(int param, int increment, int min, int max) {
+int Sequencer::getMinMaxParam(int param, int increment, int min, int max) {
 	param += increment;
 	if (param > max) param = max;
 	else if (param < min) param = min;
 	return param;
 }
+
+uint8_t Sequencer::setMinMaxParamUnsigned(uint8_t& param, int8_t increment, uint8_t min, uint8_t max) {
+	if (param == 0 && increment < 0) return param;
+	param += increment;
+	if (param > max) param = max;
+	else if (param < min) param = min;
+	return param;
+}
+
+int8_t Sequencer::setMinMaxParam(int8_t& param, int8_t increment, int8_t min, int8_t max) {
+	param += increment;
+	if (param > max) param = max;
+	else if (param < min) param = min;
+	return param;
+}
+
 
 bool Sequencer::getStepOnOff(int stepnum){
 	return active_sequence.step_matrix[stepnum];
@@ -349,13 +390,9 @@ int Sequencer::getSelectedStep(){
 	return selected_step;
 }
 
-void Sequencer::setRepeatMode(bool state){
-	seq_repeat_mode = state;
+void Sequencer::setEffectMode(bool state){
+	seq_effect_mode = state;
 	repeat_step_origin  = current_step;
-}
-
-void Sequencer::setRepeatLength(uint8_t length){
-    active_sequence.effect_depth = length;
 }
 
 

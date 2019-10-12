@@ -31,7 +31,7 @@ Dac *dacVar2;
 
 bool shift_state = false;
 bool record_mode = false;
-bool repeat_mode = false;
+bool effect_mode = false;
 bool saving = false;
 
 const byte SEQUENCE_MODE = 0;
@@ -45,6 +45,8 @@ const byte PARAM_STEPS = 9;
 const byte PARAM_SCALE = 10;
 const byte PARAM_SWING = 11;
 const byte PARAM_TRANSPOSE = 12;
+const byte PARAM_EFFECT = 21;
+const byte PARAM_EFFECT_DEPTH = 25; //
 
 byte current_param = PARAM_BARS;
 byte ui_mode = SEQUENCE_MODE;
@@ -52,8 +54,8 @@ byte calibration_step = 0;
 byte current_patch = 1;
 byte selected_patch = 1;
 byte current_bar = 0;
-char scalename[10];
-
+char scalename[4];
+char effectname[4];
 
 
 void Ui::init(Calibration& calibration, Dac& dac, Sequencer& sequencer){
@@ -100,7 +102,7 @@ void Ui::poll(){
         onEncoderIncrement(incrementAmount); //encoder.getIncrementAmount());
     }
 
-	if (ui_mode == SEQUENCE_MODE) {
+	if (ui_mode == SEQUENCE_MODE || ui_mode == EDIT_PARAM_MODE) {
 		analogIo.poll();
 		//if (!record_mode) {
 			if (record_mode || analogIo.paramChanged()){
@@ -223,7 +225,7 @@ void Ui::shiftFunction(int button) {
 	if (button < 8) {
 		if (button < 4) {
 			current_bar = button;
-			const char barname[4] = {char(36+55), char(11+55), char(button+55)}; //goofy way of writing " b4" with ad-hoc ascii table conversion
+			const char barname[4] = {char(36+55), char(11+55), char(button+1+55)}; //goofy way of writing " b4" with ad-hoc ascii table conversion
 			display.setDisplayAlpha(barname);
 			sequencerVar2->onBarSelect(current_bar);
 			ledMatrix.setMatrixFromSequencer(current_bar);
@@ -262,8 +264,14 @@ void Ui::onEncoderIncrement(int increment_amount) {
 			strcpy_P(scalename, (char *)pgm_read_word(&(scale_names[param])));  // Necessary casts and dereferencing, just copy (for PROGMEM keywords in flash)
 			display.setDisplayNum(999); //prime variable for cancel/change
 			display.setDisplayAlpha(scalename);
+		} else if (current_param == PARAM_EFFECT) {
+			param = sequencerVar2->incrementEffect(increment_amount);
+			strcpy_P(effectname, (char *)pgm_read_word(&(effect_names[param])));  // Necessary casts and dereferencing, just copy (for PROGMEM keywords in flash)
+			display.setDisplayNum(999); //prime variable for cancel/change
+			display.setDisplayAlpha(effectname);
 		} else {
 			switch(current_param) {
+				case PARAM_EFFECT_DEPTH: param = sequencerVar2->incrementEffectDepth(increment_amount); break;
 				case PARAM_BARS:  param = sequencerVar2->incrementBars(increment_amount); break;
 				case PARAM_STEPS: param = sequencerVar2->incrementSteps(increment_amount, shift_state); break;
 				case PARAM_SWING: param = sequencerVar2->incrementSwing(increment_amount); break;
@@ -303,18 +311,27 @@ void Ui::onRecButton(bool state){
 
 void Ui::onRepeatButton(bool state){
 	if (isSequencing()){
-		repeat_mode = state;
-		sequencerVar2->setRepeatMode(state);
+		if (shift_state) {
+			ui_mode = EDIT_PARAM_MODE;
+			current_param = PARAM_EFFECT;
+			onEncoderIncrement(0);
+		} else {
+			effect_mode = state;
+			if (effect_mode) {
+				ui_mode = EDIT_PARAM_MODE;
+				current_param = PARAM_EFFECT_DEPTH;
+				onEncoderIncrement(0);
+			} else {
+				ui_mode = SEQUENCE_MODE;
+			}
+			sequencerVar2->setEffectMode(state);
+		} 
 	}
 }
 
 void Ui::selectStep(int step){
 	cancelSaveOrLoad();
-	if (repeat_mode) {
-		sequencerVar2->setRepeatLength(step+1);
-		return;
-	}
-    sequencerVar2->selectStep(step+current_bar*16);
+	sequencerVar2->selectStep(step+current_bar*16);
 	ledMatrix.setMatrixFromSequencer(current_bar);
 	//ledMatrix.blinkLed();
     analogIo.displaySelectedParam();
