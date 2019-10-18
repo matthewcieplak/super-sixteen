@@ -166,7 +166,7 @@ void Sequencer::setActiveNote(){
 			}
 		} else {
 			quantizeActivePitch();
-			active_note = (active_sequence.octave_matrix[active_step] + 2) * 12 + active_pitch + active_sequence.transpose + 12 * random_octave;
+			active_note = (active_sequence.octave_matrix[active_step] + 3) * 12 + active_pitch + active_sequence.transpose + 12 * random_octave;
 			if (seq_effect_mode && active_sequence.effect == EFFECT_OCTAVE) {
 				active_note += (active_sequence.effect_depth - 4) * 12;
 			}
@@ -179,7 +179,8 @@ void Sequencer::setActiveNote(){
 
 			digitalWrite(GATE_PIN, active_sequence.step_matrix[active_step] ? HIGH : LOW);
 			gate_active = active_sequence.step_matrix[active_step];
-			
+			int cv_out =  active_sequence.cv_matrix[active_step] * 40;
+			dacVar->setOutput(1, GAIN_2, 1, cv_out);
 		}
 	} else if(seq_effect_mode && active_sequence.effect == EFFECT_STUTTER) {
 		digitalWrite(GATE_PIN, HIGH);
@@ -315,6 +316,7 @@ int Sequencer::incrementTempo(int amount){
 	tempo_millis_swing_odd = tempo_millis * float(active_sequence.swing) / 50.0;
 	tempo_millis_swing_even = tempo_millis * 2 - tempo_millis_swing_odd;
 	active_sequence.sequence_tempo = tempo_bpm;
+	updateRollCalc();
 	return tempo_bpm;
 }
 
@@ -445,11 +447,14 @@ bool Sequencer::setCv(int newVal){
 }
 
 void Sequencer::setTempoFromSequence(){
-	if (play_active) return;
-	tempo_millis = 15000 / active_sequence.sequence_tempo;
-	calculated_tempo = tempo_millis;
+	if (!play_active) { //if sequence is already playing, continue in time
+		tempo_millis = 15000 / active_sequence.sequence_tempo;
+		calculated_tempo = tempo_millis;
+	}
 	incrementTempo(0); //sets swing params
 	updateGlideCalc();
+	incrementScale(0);
+	incrementEffectDepth(0);
 }
 
 void Sequencer::updateGlideCalc(){
