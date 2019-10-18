@@ -40,7 +40,6 @@ class Sequencer{
         void selectStep(int step);
         bool getStepOnOff(int step);
         int getCurrentStep();        
-        void setActiveNote();
         
         int incrementTempo(int amount);
         int incrementBars(int amount);
@@ -98,6 +97,7 @@ class Sequencer{
         void updateRollCalc();
         int getGlideKeeper(int step);
         void onClockIn();
+        void setActiveNote();
 
 };
 

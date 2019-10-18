@@ -385,7 +385,6 @@ void Ui::onStepIncremented(){
 	if (record_mode) {
 		analogIo.recordCurrentParam();
 	}
-	sequencerVar2->setActiveNote();
 }
 
 bool Ui::cancelSaveOrLoad(){

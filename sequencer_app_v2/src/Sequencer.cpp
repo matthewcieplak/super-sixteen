@@ -170,6 +170,8 @@ void Sequencer::incrementStep() {
 	}
 
 	step_incremented = true;
+	setActiveNote();
+
 	
 
 	// TEST running display number
@@ -188,6 +190,7 @@ void Sequencer::setActiveNote(){
 				gate_active = active_sequence.step_matrix[active_step];
 			}
 		} else {
+			note_reached = false;
 			quantizeActivePitch();
 			active_note = (active_sequence.octave_matrix[active_step] + 3) * 12 + active_pitch + active_sequence.transpose + 12 * random_octave;
 			if (seq_effect_mode && active_sequence.effect == EFFECT_OCTAVE) {
@@ -250,11 +253,13 @@ void Sequencer::updateGlide() {
 	} else if ((active_sequence.step_matrix[active_step] && active_sequence.glide_matrix[active_step]) || (seq_effect_mode && active_sequence.effect == EFFECT_GLIDE)) {
 		int glidekeeper = getGlideKeeper(active_step);
 		if (glidekeeper < glide_time) {
-			note_reached = false;
+			//if (!note_reached) {
+				note_reached = false;
 			//double instantaneous_pitch = ((active_note * timekeeper) + prev_note * (tempo - timekeeper)) / double(tempo);
-			double instantaneous_pitch = ((active_note * glidekeeper) + prev_note * (glide_time - glidekeeper)) / double(glide_time);
-			current_note_value = calibrationVar->getCalibratedOutput(instantaneous_pitch);
-			dacVar->setOutput(0, GAIN_2, 1, current_note_value);
+				double instantaneous_pitch = ((active_note * glidekeeper) + prev_note * (glide_time - glidekeeper)) / double(glide_time);
+				current_note_value = calibrationVar->getCalibratedOutput(instantaneous_pitch);
+				dacVar->setOutput(0, GAIN_2, 1, current_note_value);
+			//}
 		} else if (!note_reached) {
 			current_note_value = calibrationVar->getCalibratedOutput(active_note);
 			dacVar->setOutput(0, GAIN_2, 1, current_note_value);
