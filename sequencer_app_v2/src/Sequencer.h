@@ -95,6 +95,7 @@ class Sequencer{
         void quantizeActivePitch();
         void initializeSerializedSequence();
         void updateGlideCalc();
+        void updateRollCalc();
         int getGlideKeeper(int step);
 
 };

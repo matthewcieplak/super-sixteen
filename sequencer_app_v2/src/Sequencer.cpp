@@ -39,6 +39,7 @@ int prev_note = 0;
 int active_note = 0;
 int active_pitch = 0;
 int calculated_tempo = tempo_millis;
+int calculated_roll;
 double tempo_millis_swing_odd;
 double tempo_millis_swing_even;
 int glide_duration = 50;
@@ -49,6 +50,7 @@ double current_note_value = 0;
 Calibration *calibrationVar;
 Dac *dacVar;
 
+static const int ROLL_PAUSE_DURATION = 5;
 const int CLOCK_PULSE_DURATION = 10; //milliseconds pulse width of clock output
 elapsedMillis timekeeper;
 
@@ -192,7 +194,7 @@ void Sequencer::quantizeActivePitch(){
 		active_pitch += rand() % active_sequence.effect_depth;
 		if (active_pitch > 12) random_octave = 1;
 		else if (active_pitch < 12) random_octave = -1;
-		active_pitch = (active_pitch + 12) % 24 - 12; //trim excess octaves
+		active_pitch = ((active_pitch + 12) % 24) - 12; //trim excess octaves
 	}
 	if (current_scale_tones[active_pitch >= 0 ? active_pitch : active_pitch + 12] == false) {
 		active_pitch += quantize_map[active_pitch >= 0 ? active_pitch : active_pitch + 12];
@@ -250,8 +252,22 @@ void Sequencer::updateGate() {
 		digitalWrite(CLOCK_OUT_PIN, LOW);
 	}
 	
-	if (seq_effect_mode && active_sequence.effect == EFFECT_FREEZE) return;
-	if (seq_effect_mode && note_reached && active_sequence.effect == EFFECT_STOP) return;
+	if (seq_effect_mode) {
+		if (active_sequence.effect == EFFECT_FREEZE) return;
+		if (note_reached && active_sequence.effect == EFFECT_STOP) return;
+		if (active_sequence.effect == EFFECT_ROLL) {
+			for (byte i = 1; i <= active_sequence.effect_depth; i++) {
+				if (gate_active && timekeeper > (calculated_roll * i) - ROLL_PAUSE_DURATION && timekeeper < (calculated_roll * i)) {
+					digitalWrite(GATE_PIN, LOW);
+					gate_active = false;
+				} else if (!gate_active && timekeeper >= calculated_roll * i) {
+					digitalWrite(GATE_PIN, HIGH);
+					gate_active = true;
+				}
+			}
+			return;
+		}
+	}
 	if (!gate_active) return;
 
 	double percent_step = timekeeper / (double)calculated_tempo * 100.0;
@@ -317,7 +333,7 @@ int Sequencer::incrementEffect(int amount){
 		case EFFECT_REPEAT: active_sequence.effect_depth = 4; break;
 		case EFFECT_STOP: active_sequence.effect_depth = 8; break;
 		case EFFECT_STUTTER: active_sequence.effect_depth = 80; break;
-		case EFFECT_ROLL: active_sequence.effect_depth = 4; break;
+		case EFFECT_ROLL: active_sequence.effect_depth = 2; break;
 	}
 	incrementEffectDepth(0);
 	return active_sequence.effect;
@@ -335,7 +351,7 @@ int Sequencer::incrementEffectDepth(int amount){
 		case EFFECT_FREEZE:  setMinMaxParamUnsigned(depth, amount, 0, 1); break;
 		case EFFECT_RANDOM:  setMinMaxParamUnsigned(depth, amount, 1, 50); break;
 		case EFFECT_STUTTER: setMinMaxParamUnsigned(depth, amount, 1, 100); break;
-		case EFFECT_ROLL:    setMinMaxParamUnsigned(depth, amount, 1, 8); break;
+		case EFFECT_ROLL:    setMinMaxParamUnsigned(depth, amount, 1, 8); updateRollCalc(); break;
 	}
 	return active_sequence.effect_depth;
 }
@@ -443,6 +459,10 @@ void Sequencer::updateGlideCalc(){
 		glide_duration = active_sequence.glide_length;
 	}
 	glide_time = float(glide_duration) / 100.0 * calculated_tempo;
+}
+
+void Sequencer::updateRollCalc(){
+	calculated_roll = calculated_tempo / active_sequence.effect_depth;
 }
 
 uint8_t Sequencer::editedStep(){
