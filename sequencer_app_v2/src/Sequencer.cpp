@@ -132,6 +132,8 @@ void Sequencer::incrementStep() {
 		if (current_step < 0) {
 			current_step = active_sequence.sequence_length - 1;
 		}
+	} else if (seq_effect_mode && active_sequence.effect == EFFECT_FREEZE) {
+		//don't increment step
 	} else {
 		current_step = clock_step;
 	}
@@ -150,22 +152,32 @@ void Sequencer::incrementStep() {
 
 void Sequencer::setActiveNote(){
 	//PITCH/OCTAVE
-	if (active_sequence.step_matrix[current_step]) {
-		quantizeActivePitch();
-		active_note = (active_sequence.octave_matrix[active_step] + 2) * 12 + active_pitch + active_sequence.transpose;
-		if (seq_effect_mode && active_sequence.effect == EFFECT_OCTAVE) {
-			active_note += (active_sequence.effect_depth - 4) * 12;
-		}
-		if (active_sequence.glide_matrix[active_step]) {
-			updateGlide();
-		} else {
-			current_note_value = calibrationVar->getCalibratedOutput(active_note);
-			dacVar->setOutput(0, GAIN_2, 1, current_note_value);
-		}
 
-		//GATE
-		digitalWrite(GATE_PIN, active_sequence.step_matrix[active_step] ? HIGH : LOW);
-		gate_active = active_sequence.step_matrix[active_step];
+
+	if (active_sequence.step_matrix[current_step]) {
+		if (seq_effect_mode && active_sequence.effect == EFFECT_STOP) {
+			updateGlide(); 
+			if (!note_reached) { //stop gate after glide reaches zero
+				digitalWrite(GATE_PIN, active_sequence.step_matrix[active_step] ? HIGH : LOW);
+				gate_active = active_sequence.step_matrix[active_step];
+			}
+		} else {
+			quantizeActivePitch();
+			active_note = (active_sequence.octave_matrix[active_step] + 2) * 12 + active_pitch + active_sequence.transpose;
+			if (seq_effect_mode && active_sequence.effect == EFFECT_OCTAVE) {
+				active_note += (active_sequence.effect_depth - 4) * 12;
+			}
+			if (active_sequence.glide_matrix[active_step]) {
+				updateGlide();
+			} else {
+				current_note_value = calibrationVar->getCalibratedOutput(active_note);
+				dacVar->setOutput(0, GAIN_2, 1, current_note_value);
+			}
+
+			//GATE
+			digitalWrite(GATE_PIN, active_sequence.step_matrix[active_step] ? HIGH : LOW);
+			gate_active = active_sequence.step_matrix[active_step];
+		}
 	}
 }
 
@@ -186,12 +198,20 @@ bool Sequencer::stepWasIncremented(){
 
 
 void Sequencer::updateGlide() {
-	if ((active_sequence.step_matrix[active_step] && active_sequence.glide_matrix[active_step]) || (seq_effect_mode && active_sequence.effect == EFFECT_GLIDE)) {
-		int steps_advanced = current_step - active_step;
-		if (steps_advanced < 0) {
-			steps_advanced = current_step + active_sequence.sequence_length - active_step;
+	if (seq_effect_mode && active_sequence.effect == EFFECT_STOP) {
+		if (note_reached) return;
+		double glidekeeper = getGlideKeeper(repeat_step_origin);
+		double stopTime = active_sequence.effect_depth * calculated_tempo;
+		double instantaneous_pitch = active_note * (stopTime - glidekeeper) / stopTime;
+		note_reached = (instantaneous_pitch < 1);
+		current_note_value = calibrationVar->getCalibratedOutput(instantaneous_pitch);
+		dacVar->setOutput(0, GAIN_2, 1, current_note_value);
+		if (note_reached) {
+			digitalWrite(GATE_PIN, LOW);
+			gate_active = false;
 		}
-		int glidekeeper = timekeeper + steps_advanced * calculated_tempo;
+	} else if ((active_sequence.step_matrix[active_step] && active_sequence.glide_matrix[active_step]) || (seq_effect_mode && active_sequence.effect == EFFECT_GLIDE)) {
+		int glidekeeper = getGlideKeeper(active_step);
 		if (glidekeeper < glide_time) {
 			note_reached = false;
 			//double instantaneous_pitch = ((active_note * timekeeper) + prev_note * (tempo - timekeeper)) / double(tempo);
@@ -203,10 +223,25 @@ void Sequencer::updateGlide() {
 			dacVar->setOutput(0, GAIN_2, 1, current_note_value);
 			note_reached = true;
 		}
+	} 
+}
+
+int Sequencer::getGlideKeeper(int step){
+	int steps_advanced = current_step - step;
+	if (steps_advanced < 0) {
+		steps_advanced = current_step + active_sequence.sequence_length - step;
 	}
+	return(timekeeper + steps_advanced * calculated_tempo);
 }
 
 void Sequencer::updateGate() {
+	if (clock_out_active && timekeeper > CLOCK_PULSE_DURATION) {
+		digitalWrite(CLOCK_OUT_PIN, LOW);
+	}
+	
+	if (seq_effect_mode && active_sequence.effect == EFFECT_FREEZE) return;
+	if (seq_effect_mode && note_reached && active_sequence.effect == EFFECT_STOP) return;
+
 	double percent_step = timekeeper / (double)calculated_tempo * 100.0;
 	int steps_advanced = current_step - active_step + 1;
 	if (steps_advanced < 1) {
@@ -217,9 +252,7 @@ void Sequencer::updateGate() {
 		gate_active = false;
 	}
 
-	if (clock_out_active && timekeeper > CLOCK_PULSE_DURATION) {
-		digitalWrite(CLOCK_OUT_PIN, LOW);
-	}
+
 }
 
 void Sequencer::onPlayButton(){
@@ -264,6 +297,7 @@ int Sequencer::incrementEffect(int amount){
 		case EFFECT_GLIDE: active_sequence.effect_depth = active_sequence.glide_length; break; //set useful default rather than zero 
 		case EFFECT_OCTAVE: active_sequence.effect_depth = 5; break;//actually zero with offset
 		case EFFECT_REPEAT: active_sequence.effect_depth = 4; break;
+		case EFFECT_STOP: active_sequence.effect_depth = 4; break;
 	}
 	incrementEffectDepth(0);
 	return active_sequence.effect;
@@ -275,9 +309,9 @@ int Sequencer::incrementEffectDepth(int amount){
 	switch(active_sequence.effect) {
 		case EFFECT_REPEAT:  setMinMaxParamUnsigned(depth, amount, 1, 16); break;
 		case EFFECT_OCTAVE:  setMinMaxParamUnsigned(depth, amount, 0, 8); return active_sequence.effect_depth - 4; break;//this is displayed as -4/+4 in UI
-		case EFFECT_GLIDE:   setMinMaxParamUnsigned(depth, amount, 1, 100); updateGlideCalc(); return active_sequence.effect_depth * 4; break;
+		case EFFECT_GLIDE:   setMinMaxParamUnsigned(depth, amount, 1, 100); updateGlideCalc(); return active_sequence.effect_depth * 4; break; //multiply to get bigger range
 		case EFFECT_REVERSE: setMinMaxParamUnsigned(depth, amount, 0, 1); break;
-		case EFFECT_STOP:    setMinMaxParamUnsigned(depth, amount, 10, 100); break;
+		case EFFECT_STOP:    setMinMaxParamUnsigned(depth, amount, 1, 16); break;
 		case EFFECT_FREEZE:  setMinMaxParamUnsigned(depth, amount, 0, 1); break;
 
 	}
@@ -422,6 +456,10 @@ void Sequencer::setEffectMode(bool state){
 	repeat_step_origin  = current_step;
 	if (active_sequence.effect == EFFECT_GLIDE) {
 		updateGlideCalc();
+	} else if (active_sequence.effect == EFFECT_FREEZE) {
+		digitalWrite(GATE_PIN, state ? HIGH : LOW);
+	}  else if (active_sequence.effect == EFFECT_STOP) {
+		note_reached = false;
 	}
 }
 
