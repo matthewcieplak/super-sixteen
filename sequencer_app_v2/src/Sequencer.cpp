@@ -32,15 +32,17 @@ bool play_active = 0;
 bool seq_effect_mode = false;
 bool seq_record_mode = false;
 bool current_scale_tones[13];
+bool note_reached;
 
 
 int prev_note = 0;
 int active_note = 0;
 int active_pitch = 0;
-int glide_duration = 50;
 int calculated_tempo = tempo_millis;
 double tempo_millis_swing_odd;
 double tempo_millis_swing_even;
+int glide_duration = 50;
+int glide_time; //
 
 double current_note_value = 0;
 Calibration *calibrationVar;
@@ -66,6 +68,7 @@ void Sequencer::init(Calibration& calibration, Dac& dac) {
     active_sequence.scale = 0;
 	incrementScale(0);
 	incrementTempo(0);
+	updateGlideCalc();
 }
 
 void Sequencer::updateClock() {
@@ -124,6 +127,11 @@ void Sequencer::incrementStep() {
 				current_step = 0;
 			}
 		}
+	} else if (seq_effect_mode && active_sequence.effect == EFFECT_REVERSE) {
+		current_step--;
+		if (current_step < 0) {
+			current_step = active_sequence.sequence_length - 1;
+		}
 	} else {
 		current_step = clock_step;
 	}
@@ -178,19 +186,22 @@ bool Sequencer::stepWasIncremented(){
 
 
 void Sequencer::updateGlide() {
-	if (active_sequence.step_matrix[active_step] && active_sequence.glide_matrix[active_step]) {
+	if ((active_sequence.step_matrix[active_step] && active_sequence.glide_matrix[active_step]) || (seq_effect_mode && active_sequence.effect == EFFECT_GLIDE)) {
 		int steps_advanced = current_step - active_step;
 		if (steps_advanced < 0) {
 			steps_advanced = current_step + active_sequence.sequence_length - active_step;
 		}
 		int glidekeeper = timekeeper + steps_advanced * calculated_tempo;
-		int glide_time = float(glide_duration) / 100.0 * calculated_tempo;
 		if (glidekeeper < glide_time) {
+			note_reached = false;
 			//double instantaneous_pitch = ((active_note * timekeeper) + prev_note * (tempo - timekeeper)) / double(tempo);
 			double instantaneous_pitch = ((active_note * glidekeeper) + prev_note * (glide_time - glidekeeper)) / double(glide_time);
 			current_note_value = calibrationVar->getCalibratedOutput(instantaneous_pitch);
 			dacVar->setOutput(0, GAIN_2, 1, current_note_value);
-
+		} else if (!note_reached) {
+			current_note_value = calibrationVar->getCalibratedOutput(active_note);
+			dacVar->setOutput(0, GAIN_2, 1, current_note_value);
+			note_reached = true;
 		}
 	}
 }
@@ -249,6 +260,11 @@ int Sequencer::incrementScale(int amount){
 int Sequencer::incrementEffect(int amount){
 	uint8_t &effect = active_sequence.effect;
 	setMinMaxParamUnsigned(effect, amount, 0, 5);	
+	switch (active_sequence.effect) {
+		case EFFECT_GLIDE: active_sequence.effect_depth = active_sequence.glide_length; break; //set useful default rather than zero 
+		case EFFECT_OCTAVE: active_sequence.effect_depth = 5; break;//actually zero with offset
+		case EFFECT_REPEAT: active_sequence.effect_depth = 4; break;
+	}
 	incrementEffectDepth(0);
 	return active_sequence.effect;
 }
@@ -259,7 +275,7 @@ int Sequencer::incrementEffectDepth(int amount){
 	switch(active_sequence.effect) {
 		case EFFECT_REPEAT:  setMinMaxParamUnsigned(depth, amount, 1, 16); break;
 		case EFFECT_OCTAVE:  setMinMaxParamUnsigned(depth, amount, 0, 8); return active_sequence.effect_depth - 4; break;//this is displayed as -4/+4 in UI
-		case EFFECT_GLIDE:   setMinMaxParamUnsigned(depth, amount, 1, 100); break;
+		case EFFECT_GLIDE:   setMinMaxParamUnsigned(depth, amount, 1, 100); updateGlideCalc(); return active_sequence.effect_depth * 4; break;
 		case EFFECT_REVERSE: setMinMaxParamUnsigned(depth, amount, 0, 1); break;
 		case EFFECT_STOP:    setMinMaxParamUnsigned(depth, amount, 10, 100); break;
 		case EFFECT_FREEZE:  setMinMaxParamUnsigned(depth, amount, 0, 1); break;
@@ -359,6 +375,17 @@ bool Sequencer::setCv(int newVal){
 void Sequencer::setTempoFromSequence(){
 	if (play_active) return;
 	tempo_millis = 15000 / active_sequence.sequence_tempo;
+	calculated_tempo = tempo_millis;
+	updateGlideCalc();
+}
+
+void Sequencer::updateGlideCalc(){
+	if (seq_effect_mode && active_sequence.effect == EFFECT_GLIDE) {
+		glide_duration = active_sequence.effect_depth * 4;
+	} else {
+		glide_duration = active_sequence.glide_length;
+	}
+	glide_time = float(glide_duration) / 100.0 * calculated_tempo;
 }
 
 uint8_t Sequencer::editedStep(){
@@ -393,6 +420,9 @@ int Sequencer::getSelectedStep(){
 void Sequencer::setEffectMode(bool state){
 	seq_effect_mode = state;
 	repeat_step_origin  = current_step;
+	if (active_sequence.effect == EFFECT_GLIDE) {
+		updateGlideCalc();
+	}
 }
 
 

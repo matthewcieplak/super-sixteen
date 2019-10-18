@@ -94,6 +94,7 @@ class Sequencer{
         uint8_t editedStep();
         void quantizeActivePitch();
         void initializeSerializedSequence();
+        void updateGlideCalc();
 
 };
 
