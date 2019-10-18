@@ -24,6 +24,7 @@ uint8_t repeat_step_origin = 0;
 bool gate_active = false;
 bool clock_out_active = false;
 bool clock_in_active = false;
+bool reset_in_active = false;
 bool step_incremented = false;
 
 byte tempo_bpm = 120;
@@ -89,25 +90,47 @@ void Sequencer::updateClock() {
 			}
 			incrementStep();
 			timekeeper = 0;
+			return;
 		} else {
 			step_incremented = false;
 		}
-		updateGlide();
-		updateGate();
 	}
 
+	
+	updateGlide();
+	updateGate();
+
+	bool clock = digitalRead(CLOCK_IN_PIN);
+	bool reset = digitalRead(RESET_PIN);
+	if (reset == LOW) {
+		if (!reset_in_active) {
+			reset_in_active = true;
+			onReset(clock == LOW);
+			if (clock == LOW) {
+				onClockIn(); //duplicated here to fix sync issues on simultaneous signals
+			}
+		}
+	} else {
+		reset_in_active = false;
+	}
+
+
 	//todo enable clock in
-	// if (digitalRead(CLOCK_IN_PIN) == LOW) {
-	// 	if(!clock_in_active) {
-	// 		clock_in_active = true;
-	// 		play_active = false; //read the hardware input, which is normally connected to the hardware output, as the internal clock
-	// 		calculated_tempo = timekeeper;
-	// 		timekeeper = 0;
-	// 		incrementStep();
-	// 	}
-	// } else {
-	// 	clock_in_active = false;
-	// }
+	if (clock == LOW) {
+		if(!clock_in_active) {
+			onClockIn();
+		}
+	} else {
+		clock_in_active = false;
+	}
+}
+
+void Sequencer::onClockIn(){
+	clock_in_active = true;
+	incrementStep();
+	calculated_tempo = timekeeper;
+	timekeeper = 0;
+	play_active = false;
 }
 
 void Sequencer::incrementStep() {
@@ -300,9 +323,10 @@ void Sequencer::onPlayButton(){
 	calculated_tempo = tempo_millis;
 }
 
-void Sequencer::onReset(){
+void Sequencer::onReset(bool clock_active){
 	timekeeper = tempo_millis;
-	clock_step = -1;
+	clock_step = -1; //clock_active ? -1 : active_sequence.sequence_length - 1;
+	current_step = -1;
 	step_incremented = false;
 }
 

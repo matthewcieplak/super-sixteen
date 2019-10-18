@@ -293,7 +293,7 @@ void Ui::onGlideButton(bool state){
 
 void Ui::onPlayButton(bool state){
 	if (shift_state) {
-		sequencerVar2->onReset();
+		sequencerVar2->onReset(false);
 		return;
 	}
 	if (state && isSequencing()) {

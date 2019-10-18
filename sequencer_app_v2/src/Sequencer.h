@@ -53,7 +53,7 @@ class Sequencer{
 
 
         void onPlayButton();
-        void onReset();
+        void onReset(bool clock_active);
 
         bool toggleGlide();
         bool setPitch(int newVal);
@@ -97,6 +97,7 @@ class Sequencer{
         void updateGlideCalc();
         void updateRollCalc();
         int getGlideKeeper(int step);
+        void onClockIn();
 
 };
 
