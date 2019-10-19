@@ -26,6 +26,7 @@ class Ui{
         void onButtonToggle(int button, bool button_state);
         void onEncoderIncrement(int increment_amount);
         void selectStep(int step);
+        void selectBar(byte bar);
         void glideButton();
         void initializeSequenceMode();
         void initializeCalibrationMode();

@@ -33,6 +33,7 @@ bool shift_state = false;
 bool record_mode = false;
 bool effect_mode = false;
 bool saving = false;
+bool copy_state = false;
 
 const byte SEQUENCE_MODE = 0;
 const byte CALIBRATE_MODE = 1;
@@ -89,8 +90,7 @@ void Ui::poll(){
 	}
     buttons.poll();
 	uint16_t value = 0;
-	buttons.getQueuedEvent(value);
-    if (value) {
+	if (buttons.getQueuedEvent(value) == 0){
         int button_pressed = value & 0x00FF; //use last 8 bits for button number
 		bool button_state = (value & 0x0100) >> 8; // use first 8 bits (one of them anyway) for button state
 		onButtonToggle(button_pressed, button_state);
@@ -165,7 +165,6 @@ void Ui::onLoadButton(bool state) {
 			if (memory.load(selected_patch)) {
 				display.blinkDisplay(true, 100, 3);
 			} else {
-				display.setDisplayNum(999); //prime for change
 				display.setDisplayAlpha("ERR");
 				display.blinkDisplay(true, 100, 3);
 			}
@@ -197,7 +196,8 @@ void Ui::onButtonToggle(int button, bool button_state) {
 				}
 			}
         } else {
-			        //display.setDisplayNum(button*-1);
+			copy_state = false;
+			//display.setDisplayNum(button*-1);
 		}
     } else {
         switch (button-8) {
@@ -218,18 +218,14 @@ void Ui::onShiftButton(bool button_state){
 	shift_state = button_state;
 	if (button_state) {
 		cancelSaveOrLoad();
+	} else {
+		copy_state = false;
 	}
 }
 
 void Ui::shiftFunction(int button) {
 	if (button < 8) {
-		if (button < 4) {
-			current_bar = button;
-			const char barname[4] = {char(36+55), char(11+55), char(button+1+55)}; //goofy way of writing " b4" with ad-hoc ascii table conversion
-			display.setDisplayAlpha(barname);
-			sequencerVar2->onBarSelect(current_bar);
-			ledMatrix.setMatrixFromSequencer(current_bar);
-		}
+		if (button < 4)	selectBar(button);
 	} else {
 		switch (button) {
 			case 14: clearSequence(); break;
@@ -248,6 +244,23 @@ void Ui::shiftFunction(int button) {
 	}
 }
 
+void Ui::selectBar(byte bar){
+	if (copy_state) {
+		sequencerVar2->paste(current_bar, bar);
+		display.setDisplayAlpha("CPY");
+		display.blinkDisplay(true, 100, 1);
+		copy_state = false;
+	} else {
+		const char barname[4] = {char(36+55), char(11+55), char(bar+1+55)}; //goofy way of writing " b4" with ad-hoc ascii table conversion
+		display.setDisplayAlpha(barname);
+		copy_state = true;
+	}
+	
+	current_bar = bar;
+	sequencerVar2->onBarSelect(current_bar);
+	ledMatrix.setMatrixFromSequencer(current_bar);
+}
+
 void Ui::onEncoderIncrement(int increment_amount) {
 	if (ui_mode == CALIBRATE_MODE) {
 		display.setDisplayNum(calibrationVar2->incrementCalibration(increment_amount, calibration_step));
@@ -262,12 +275,10 @@ void Ui::onEncoderIncrement(int increment_amount) {
 		if (current_param == PARAM_SCALE) {
 			param = sequencerVar2->incrementScale(increment_amount);
 			strcpy_P(scalename, (char *)pgm_read_word(&(scale_names[param])));  // Necessary casts and dereferencing, just copy (for PROGMEM keywords in flash)
-			display.setDisplayNum(999); //prime variable for cancel/change
 			display.setDisplayAlpha(scalename);
 		} else if (current_param == PARAM_EFFECT) {
 			param = sequencerVar2->incrementEffect(increment_amount);
 			strcpy_P(effectname, (char *)pgm_read_word(&(effect_names[param])));  // Necessary casts and dereferencing, just copy (for PROGMEM keywords in flash)
-			display.setDisplayNum(999); //prime variable for cancel/change
 			display.setDisplayAlpha(effectname);
 		} else {
 			switch(current_param) {
@@ -345,13 +356,11 @@ void Ui::initializeCalibrationMode() {
 	ui_mode = CALIBRATE_MODE;
 	calibrationVar2->readCalibrationValues();
 	updateCalibration(calibration_step);
-	display.setDisplayNum(999); //prime for change
 	display.setDisplayAlpha("CAL");
 	digitalWrite(GATE_PIN, HIGH); //to make signals audible
 }
 
 void Ui::clearSequence(){
-	display.setDisplayNum(999); //prime for change
 	display.setDisplayAlpha("CLR");
 	sequencerVar2->clearSequence();
 	current_bar = 0;

@@ -15,7 +15,7 @@ class Buttons {
     void init();
     void poll();
 
-    void getQueuedEvent(uint16_t &value);
+    int getQueuedEvent(uint16_t &value);
 
     void setGlideLed(bool glide);
 

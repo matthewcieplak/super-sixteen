@@ -55,6 +55,7 @@ void Display::setDisplayNum(int displayNum){
 }
 
 void Display::setDisplayAlpha(const char displayAlpha[]){ //turns 3-character array "MAJ" into ascii indexes that correspond to abbreviated font
+	num_display = 999; //prime variable for easy reset when changed again
 	digit_display[0] = displayAlpha[0] - 55;
 	digit_display[1] = displayAlpha[1] - 55;
 	digit_display[2] = displayAlpha[2] - 55;

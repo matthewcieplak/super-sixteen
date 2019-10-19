@@ -55,7 +55,7 @@ void Buttons::poll() {
 		//bool value = ButtonDriver.digitalRead(button_map[stepnum]); //read one pin at a time
 		buttons_mask = buttons_state & 0x000F; //mask off only bits 1-4, the button matrix columns
 		buttons_mask = buttons_mask & 0x01 << ii; //select one bit to scan
-		bool value = buttons_mask >> ii; //shift to 0 position
+		bool value = !(buttons_mask >> ii); //shift to 0 position
 		if (value != button_matrix[stepnum]) { //detect when button changes state
 			button_matrix[stepnum] = value; //store button state
 			uint16_t event = stepnum | value << 8;  //condense button number and state into one 16-bit variable
@@ -77,8 +77,8 @@ void Buttons::poll() {
 	}
 }
 
-void Buttons::getQueuedEvent(uint16_t& value){
-    queue_events_pop(&queue, &value);
+int Buttons::getQueuedEvent(uint16_t& value){
+    return queue_events_pop(&queue, &value);
 }
 
 void Buttons::setGlideLed(bool glide){

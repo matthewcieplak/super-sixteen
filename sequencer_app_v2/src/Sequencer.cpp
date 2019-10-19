@@ -596,6 +596,17 @@ void Sequencer::pickupPositionInNewSequence(){
 		}
 		prev_sequence_length = active_sequence.sequence_length;
 	}
+
+
+}
+
+void Sequencer::paste(byte bar1, byte bar2) {
+	memcpy(active_sequence.step_matrix+bar2*16, active_sequence.step_matrix+bar1*16, 16);
+	memcpy(active_sequence.octave_matrix+bar2*16, active_sequence.octave_matrix+bar1*16, 16);
+	memcpy(active_sequence.pitch_matrix+bar2*16, active_sequence.pitch_matrix+bar1*16, 16);
+	memcpy(active_sequence.duration_matrix+bar2*16, active_sequence.duration_matrix+bar1*16, 32);
+	memcpy(active_sequence.cv_matrix+bar2*16, active_sequence.cv_matrix+bar1*16, 16);
+	memcpy(active_sequence.glide_matrix+bar2*16, active_sequence.glide_matrix+bar1*16, 16);
 }
 
 }
