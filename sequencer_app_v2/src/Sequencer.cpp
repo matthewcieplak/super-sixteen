@@ -18,6 +18,7 @@ int8_t clock_step = -1;
 int8_t current_step = -1;
 int8_t active_step;
 
+uint8_t prev_sequence_length = active_sequence.sequence_length;
 uint8_t repeat_step_origin = 0;
 //uint8_t repeat_step_counter = 0;
 
@@ -40,7 +41,7 @@ int prev_note = 0;
 int active_note = 0;
 int active_pitch = 0;
 int calculated_tempo = tempo_millis;
-int calculated_roll;
+unsigned int calculated_roll;
 double tempo_millis_swing_odd;
 double tempo_millis_swing_even;
 int glide_duration = 50;
@@ -70,6 +71,7 @@ void Sequencer::init(Calibration& calibration, Dac& dac) {
 	pinMode(RESET_PIN, INPUT_PULLUP);
 
     active_sequence.scale = 0;
+	prev_sequence_length = active_sequence.sequence_length;
 	incrementScale(0);
 	incrementTempo(0);
 	updateGlideCalc();
@@ -395,10 +397,11 @@ int Sequencer::incrementSteps(int amount, bool shift_state){
 	if (shift_state && amount != 0) {
 		byte i = 1;
 		while (active_sequence.sequence_length > step_presets[i] && i < sizeof(step_presets)/sizeof(step_presets[0])-2) { i++; }
-		return active_sequence.sequence_length = step_presets[amount > 0 ? i+1 : i-1];
+		active_sequence.sequence_length = step_presets[amount > 0 ? i+1 : i-1];
 	} else {
-		return active_sequence.sequence_length = getMinMaxParam(active_sequence.sequence_length, amount, 1, SEQUENCE_MAX_LENGTH);
+		active_sequence.sequence_length = getMinMaxParam(active_sequence.sequence_length, amount, 1, SEQUENCE_MAX_LENGTH);
 	}
+	return prev_sequence_length = active_sequence.sequence_length;
 }
 
 int Sequencer::incrementBars(int amount){
@@ -583,6 +586,16 @@ void Sequencer::loadScale(uint8_t scale){
 	for (byte k = 0; k < 13; k++) {
     	current_scale_tones[k] = (bool)pgm_read_byte_near(scale_tones[scale] + k);
   	}
+}
+
+void Sequencer::pickupPositionInNewSequence(){
+	if (prev_sequence_length != active_sequence.sequence_length) {
+		clock_step = active_sequence.sequence_length - (prev_sequence_length - clock_step);
+		if (clock_step < 0) {
+			clock_step = active_sequence.sequence_length + clock_step;
+		}
+		prev_sequence_length = active_sequence.sequence_length;
+	}
 }
 
 }

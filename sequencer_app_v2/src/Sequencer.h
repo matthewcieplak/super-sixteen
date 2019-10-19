@@ -80,6 +80,8 @@ class Sequencer{
         void onBarSelect(byte bar);
         void clearSequence();
         void setActiveNote();
+        void memoizeSequenceLength();
+        void pickupPositionInNewSequence();
 
 
 

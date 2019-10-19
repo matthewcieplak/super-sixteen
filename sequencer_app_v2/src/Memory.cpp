@@ -152,6 +152,7 @@ bool Memory::load(int patch){
 
     seq->transpose        = misc2[0];
     sequencerVar4->setTempoFromSequence();
+    sequencerVar4->pickupPositionInNewSequence();
 
 
 
