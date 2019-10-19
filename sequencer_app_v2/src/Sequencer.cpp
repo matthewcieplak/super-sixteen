@@ -119,9 +119,12 @@ void Sequencer::updateClock() {
 	if (clock == LOW) {
 		if(!clock_in_active) {
 			onClockIn();
+		} else {
+			step_incremented = false;
 		}
 	} else {
 		clock_in_active = false;
+		step_incremented = false;
 	}
 }
 
@@ -170,7 +173,7 @@ void Sequencer::incrementStep() {
 	}
 
 	step_incremented = true;
-	setActiveNote();
+	//setActiveNote();
 
 	
 
@@ -242,6 +245,7 @@ void Sequencer::updateGlide() {
 		if (note_reached) return;
 		double glidekeeper = getGlideKeeper(repeat_step_origin);
 		double stopTime = active_sequence.effect_depth * calculated_tempo;
+
 		double instantaneous_pitch = active_note * (stopTime - glidekeeper) / stopTime;
 		note_reached = (instantaneous_pitch < 1);
 		current_note_value = calibrationVar->getCalibratedOutput(instantaneous_pitch);
@@ -255,11 +259,10 @@ void Sequencer::updateGlide() {
 		if (glidekeeper < glide_time) {
 			//if (!note_reached) {
 				note_reached = false;
-			//double instantaneous_pitch = ((active_note * timekeeper) + prev_note * (tempo - timekeeper)) / double(tempo);
 				double instantaneous_pitch = ((active_note * glidekeeper) + prev_note * (glide_time - glidekeeper)) / double(glide_time);
 				current_note_value = calibrationVar->getCalibratedOutput(instantaneous_pitch);
 				dacVar->setOutput(0, GAIN_2, 1, current_note_value);
-			//}
+			// }
 		} else if (!note_reached) {
 			current_note_value = calibrationVar->getCalibratedOutput(active_note);
 			dacVar->setOutput(0, GAIN_2, 1, current_note_value);
@@ -279,6 +282,7 @@ int Sequencer::getGlideKeeper(int step){
 void Sequencer::updateGate() {
 	if (clock_out_active && timekeeper > CLOCK_PULSE_DURATION) {
 		digitalWrite(CLOCK_OUT_PIN, LOW);
+		clock_out_active = false;
 	}
 	
 	if (seq_effect_mode) {
@@ -535,6 +539,7 @@ void Sequencer::setEffectMode(bool state){
 		updateGlideCalc();
 	} else if (active_sequence.effect == EFFECT_FREEZE) {
 		digitalWrite(GATE_PIN, state ? HIGH : LOW);
+		gate_active = state;
 	}  else if (active_sequence.effect == EFFECT_STOP) {
 		note_reached = false;
 	}

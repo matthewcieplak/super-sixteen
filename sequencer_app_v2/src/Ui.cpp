@@ -385,6 +385,7 @@ void Ui::onStepIncremented(){
 	if (record_mode) {
 		analogIo.recordCurrentParam();
 	}
+	sequencerVar2->setActiveNote(); //takes place here to enable real-time recording to be heard immediately
 }
 
 bool Ui::cancelSaveOrLoad(){

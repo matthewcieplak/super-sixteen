@@ -79,6 +79,8 @@ class Sequencer{
         void loadScale(uint8_t scale);
         void onBarSelect(byte bar);
         void clearSequence();
+        void setActiveNote();
+
 
 
         sequence& getActiveSequence();
@@ -97,7 +99,6 @@ class Sequencer{
         void updateRollCalc();
         int getGlideKeeper(int step);
         void onClockIn();
-        void setActiveNote();
 
 };
 
