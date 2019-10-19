@@ -42,7 +42,6 @@ int change_threshold = DEFAULT_CHANGE_THRESHOLD;
 bool recording = false;
 
 
-
 Sequencer* sequencerVar;
 
 void AnalogIo::init(Sequencer& sequencer){
@@ -72,6 +71,7 @@ void AnalogIo::poll() {
 	}
 	readInput(analogMultiplexor);
 }
+
 void AnalogIo::readInput(int i){
 	// if (i > 3 || i < 0) return; //sometimes we get desynced by interrupts, and analogRead on a wrong pin is fatal
 	analogValues[i] = analogRead(analog_pins[i]);
@@ -129,13 +129,19 @@ void AnalogIo::setDisplayNum(int displayNum){
 	param_changed = true;
 }
 
-void AnalogIo::setRecordMode(bool onOff) {
-	recording = onOff;
-}
 
 void AnalogIo::recordCurrentParam(){
-	change_threshold = -1;
-	readInput(display_param); // read the currently selected param and write it to the sequence	
+	if (sequencerVar->currentStepActive()) {
+		recording = false; //temporarily flip to enable one-step record
+		change_threshold = -1; //record regarless of motion
+		readInput(display_param); // read the currently selected param and write it to the sequence	
+		// change_threshold = DEFAULT_CHANGE_THRESHOLD;
+		recording = true;
+	}
+}
+
+void AnalogIo::setRecordMode(bool state){
+	recording = state;
 }
 
 int AnalogIo::getDisplayNum(){

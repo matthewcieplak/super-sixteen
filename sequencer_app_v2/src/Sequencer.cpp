@@ -510,6 +510,10 @@ uint8_t Sequencer::editedStep(){
 	return (seq_record_mode ? active_step : selected_step);
 }
 
+bool Sequencer::currentStepActive(){
+	return current_step == active_step;
+}
+
 bool Sequencer::getGlide(){
 	return active_sequence.glide_matrix[selected_step];
 }

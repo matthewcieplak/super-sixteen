@@ -105,9 +105,9 @@ void Ui::poll(){
 	if (ui_mode == SEQUENCE_MODE || ui_mode == EDIT_PARAM_MODE) {
 		analogIo.poll();
 		//if (!record_mode) {
-			if (record_mode || analogIo.paramChanged()){
-				display.setDisplayNum(analogIo.getDisplayNum());
-			}
+		if (analogIo.paramChanged()){
+			display.setDisplayNum(analogIo.getDisplayNum());
+		}
 		//}
 	}
 }
@@ -317,6 +317,7 @@ void Ui::onRecButton(bool state){
 	if (isSequencing()){
 		record_mode = state;
 		sequencerVar2->setRecordMode(state);
+		analogIo.setRecordMode(state);
 	}
 }
 
