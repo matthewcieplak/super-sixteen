@@ -413,6 +413,7 @@ int Sequencer::incrementBars(int amount){
 	return active_sequence.bars = getMinMaxParam(active_sequence.bars, amount, 1, 4);
 }
 
+
 int Sequencer::incrementSwing(int amount){
 	active_sequence.swing = getMinMaxParam(active_sequence.swing, amount, 10, 90);
 	incrementTempo(0);
@@ -421,6 +422,12 @@ int Sequencer::incrementSwing(int amount){
 
 int Sequencer::incrementTranspose(int amount){
 	return active_sequence.transpose = getMinMaxParam(active_sequence.transpose, amount, -36, 36);
+}
+
+int Sequencer::incrementGlide(int amount){
+	active_sequence.glide_length = getMinMaxParam(active_sequence.glide_length, amount, 1, 255);
+	updateGlideCalc();
+	return active_sequence.glide_length;
 }
 
 

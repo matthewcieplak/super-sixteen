@@ -41,15 +41,16 @@ const byte LOAD_MODE = 2;
 const byte SAVE_MODE = 3 ;
 const byte EDIT_PARAM_MODE = 4;
 
-const byte PARAM_BARS = 8;
+const byte PARAM_TEMPO = 8;
 const byte PARAM_STEPS = 9;
 const byte PARAM_SCALE = 10;
 const byte PARAM_SWING = 11;
 const byte PARAM_TRANSPOSE = 12;
 const byte PARAM_EFFECT = 21;
 const byte PARAM_EFFECT_DEPTH = 25; //
+const byte PARAM_GLIDE = 26;
 
-byte current_param = PARAM_BARS;
+byte current_param = PARAM_TEMPO;
 byte ui_mode = SEQUENCE_MODE;
 byte calibration_step = 0;
 byte current_patch = 1;
@@ -233,7 +234,7 @@ void Ui::shiftFunction(int button) {
 		switch (button) {
 			case 14: clearSequence(); break;
 			case 13: initializeCalibrationMode(); break;
-			case PARAM_BARS: //select bars?
+			case PARAM_TEMPO: //select bars?
 			case PARAM_STEPS:
 			case PARAM_SCALE:
 			case PARAM_SWING:
@@ -286,22 +287,32 @@ void Ui::onEncoderIncrement(int increment_amount) {
 		} else {
 			switch(current_param) {
 				case PARAM_EFFECT_DEPTH: param = sequencerVar2->incrementEffectDepth(increment_amount); break;
-				case PARAM_BARS:  param = sequencerVar2->incrementBars(increment_amount); break;
+				case PARAM_TEMPO: param = sequencerVar2->incrementTempo(increment_amount); break; //sequencerVar2->incrementBars(increment_amount); break;
 				case PARAM_STEPS: param = sequencerVar2->incrementSteps(increment_amount, shift_state); break;
 				case PARAM_SWING: param = sequencerVar2->incrementSwing(increment_amount); break;
+				case PARAM_GLIDE: param = sequencerVar2->incrementGlide(increment_amount); break;
 				case PARAM_TRANSPOSE: param = sequencerVar2->incrementTranspose(increment_amount); break;
 			}
 			display.setDisplayNum(param);
 		}
-	} else {//sequencing, presumably
+	} else {
+
+		//TODO consider using default encoder value to queue up a patch to load??
+		//sequencing, presumably
 		display.setDisplayNum(sequencerVar2->incrementTempo(increment_amount));
 	}
 }
 
 void Ui::onGlideButton(bool state){
 	if (state) {
+		if (shift_state) {
+			ui_mode = EDIT_PARAM_MODE;
+			current_param = PARAM_GLIDE;
+			onEncoderIncrement(0);
+		} else {
 		//display.setDisplayAlpha("GLD");
-		buttons.setGlideLed(sequencerVar2->toggleGlide());
+			buttons.setGlideLed(sequencerVar2->toggleGlide());
+		}
 	}
 }
 
