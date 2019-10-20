@@ -84,6 +84,7 @@ class Sequencer{
         void pickupPositionInNewSequence();
         void paste(byte bar1, byte bar2);
         bool currentStepActive();
+        void setStepRecordingMode(bool state);
 
 
         sequence& getActiveSequence();

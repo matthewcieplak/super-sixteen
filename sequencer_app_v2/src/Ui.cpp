@@ -315,9 +315,15 @@ void Ui::onPlayButton(bool state){
 
 void Ui::onRecButton(bool state){
 	if (isSequencing()){
-		record_mode = state;
-		sequencerVar2->setRecordMode(state);
-		analogIo.setRecordMode(state);
+		if (state && shift_state) {
+			//activate current step
+			sequencerVar2->setStepRecordingMode(true);
+		} else {
+			record_mode = state;
+			sequencerVar2->setRecordMode(state);
+			analogIo.setRecordMode(state);
+			sequencerVar2->setStepRecordingMode(false);
+		}
 	}
 }
 

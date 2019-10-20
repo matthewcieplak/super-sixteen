@@ -27,6 +27,7 @@ bool clock_out_active = false;
 bool clock_in_active = false;
 bool reset_in_active = false;
 bool step_incremented = false;
+bool step_recording_mode = false;
 
 byte tempo_bpm = 120;
 unsigned int tempo_millis = 15000 / tempo_bpm; //would be 60000 but we count 4 steps per "beat"
@@ -167,6 +168,10 @@ void Sequencer::incrementStep() {
 		//don't increment step
 	} else {
 		current_step = clock_step;
+	}
+
+	if (step_recording_mode) {
+		active_sequence.step_matrix[current_step] = true;
 	}
 
 	if (active_sequence.step_matrix[current_step]) {
@@ -611,6 +616,11 @@ void Sequencer::paste(byte bar1, byte bar2) {
 	memcpy(active_sequence.duration_matrix+bar2*16, active_sequence.duration_matrix+bar1*16, 32);
 	memcpy(active_sequence.cv_matrix+bar2*16, active_sequence.cv_matrix+bar1*16, 16);
 	memcpy(active_sequence.glide_matrix+bar2*16, active_sequence.glide_matrix+bar1*16, 16);
+}
+
+void Sequencer::setStepRecordingMode(bool state){
+	if (state) active_sequence.step_matrix[current_step] = true;
+	step_recording_mode = state;
 }
 
 }
