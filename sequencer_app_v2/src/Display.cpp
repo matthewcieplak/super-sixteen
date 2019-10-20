@@ -21,6 +21,20 @@ int blink_interval;
 int blink_cycles_elapsed;
 int blink_cycles_timeout;
 
+// static const byte startup_sequence[16] = {
+// 	0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80, 0x00, 0x00, 0x00 //, 0x08, 0x10, 0x20, 0x40, 0x80, 0x91, 0xA2, 0xF4, 0xF8
+// };
+
+static const byte startup_sequence[16] = {
+	0x10, 0x10, 0x10, 0x20, 0x40, 0x80, 0x80, 0x80, 0x04,
+	 0x08, 0x10, 0x10, 0x10, 0x00//0x02, 0x02, 0x02, 0x00
+};
+
+static const byte startup_digits[16] = {
+    0x01, 0x02, 0x04, 0x04, 0x04, 0x04, 0x02, 0x01, 0x01,
+	 0x01, 0x01, 0x02, 0x04, 0x00
+};
+
 
 void Display::init(){
 	pinMode(DIGIT_1_PIN, OUTPUT);
@@ -118,4 +132,23 @@ void Display::blinkDisplay(bool is_blinking, int interval, int cycles){
 	blink_interval = interval;
 	blink_cycles_timeout = cycles;
 }
+
+
+
+void Display::startupSequence(){
+		for (byte i = 0; i < 14; i++) {
+			digitalWrite(CS1_PIN, LOW);
+			digitalWrite(digit_pins[0], (startup_digits[i] & 0x01) == 0 ? HIGH : LOW);
+			digitalWrite(digit_pins[2], (startup_digits[i] & 0x02) == 0 ? HIGH : LOW);
+			digitalWrite(digit_pins[1], (startup_digits[i] & 0x04) == 0 ? HIGH : LOW);
+			SPI.setBitOrder(LSBFIRST); //shift registers like LSB
+			SPI.transfer(~startup_sequence[i]);
+			SPI.transfer(0x00); //led matrix
+			digitalWrite(CS1_PIN, HIGH);
+			delay(70);
+		}
+		delay(100);
+	
+}
+
 }

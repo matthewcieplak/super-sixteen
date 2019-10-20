@@ -22,6 +22,8 @@ public:
 
     void blinkDisplay(bool blinking, int interval, int timeout);
 
+    void startupSequence();
+
 private:
     void appendDecimal();
 

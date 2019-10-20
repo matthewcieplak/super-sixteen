@@ -77,6 +77,9 @@ void Ui::init(Calibration& calibration, Dac& dac, Sequencer& sequencer){
     display.init();
 	encoder.init();
     ledMatrix.init(display, sequencer);
+
+	display.startupSequence();
+
 	if (!memory.init(sequencer)) {
 		display.setDisplayAlpha("MEM");
 		return;
