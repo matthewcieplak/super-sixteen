@@ -1,6 +1,6 @@
 EESchema Schematic File Version 4
 LIBS:kicad-cpu-board-cache
-EELAYER 26 0
+EELAYER 29 0
 EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
@@ -126,8 +126,8 @@ L Device:L L101
 U 1 1 5CB7AFF8
 P 2625 1400
 F 0 "L101" V 2575 1400 50  0000 C CNN
-F 1 "L" V 2700 1400 50  0000 C CNN
-F 2 "Inductors_THT:L_Axial_L5.3mm_D2.2mm_P7.62mm_Horizontal_Vishay_IM-1" H 2625 1400 50  0001 C CNN
+F 1 "220uH" V 2700 1400 50  0000 C CNN
+F 2 "Inductors_THT:L_Axial_L6.6mm_D2.7mm_P10.16mm_Horizontal_Vishay_IM-2" H 2625 1400 50  0001 C CNN
 F 3 "" H 2625 1400 50  0001 C CNN
 	1    2625 1400
 	0    1    1    0   
@@ -157,12 +157,12 @@ $EndComp
 $Comp
 L Device:C C106
 U 1 1 5CE4BC80
-P 3075 1850
-F 0 "C106" H 3225 1825 50  0000 L CNN
-F 1 "100nF" H 3100 1750 50  0000 L CNN
-F 2 "Capacitors_THT:C_Disc_D5.0mm_W2.5mm_P2.50mm" H 3113 1700 50  0001 C CNN
-F 3 "" H 3075 1850 50  0001 C CNN
-	1    3075 1850
+P 3375 1550
+F 0 "C106" H 3525 1525 50  0000 L CNN
+F 1 "100nF" H 3400 1450 50  0000 L CNN
+F 2 "Capacitors_THT:C_Disc_D5.0mm_W2.5mm_P2.50mm" H 3413 1400 50  0001 C CNN
+F 3 "" H 3375 1550 50  0001 C CNN
+	1    3375 1550
 	1    0    0    -1  
 $EndComp
 $Comp
@@ -207,10 +207,6 @@ $EndComp
 Connection ~ 2625 1700
 Wire Wire Line
 	2375 1700 2625 1700
-Wire Wire Line
-	2875 1700 2875 2000
-Wire Wire Line
-	2875 2000 3075 2000
 Connection ~ 2875 1400
 Wire Wire Line
 	2775 1400 2875 1400
@@ -247,21 +243,16 @@ Wire Wire Line
 $Comp
 L power:PWR_FLAG #FLG0101
 U 1 1 5B3B3D9E
-P 3025 1350
-F 0 "#FLG0101" H 3025 1425 50  0001 C CNN
-F 1 "PWR_FLAG" H 3025 1500 50  0000 C CNN
-F 2 "" H 3025 1350 50  0001 C CNN
-F 3 "" H 3025 1350 50  0001 C CNN
-	1    3025 1350
+P 3050 1400
+F 0 "#FLG0101" H 3050 1475 50  0001 C CNN
+F 1 "PWR_FLAG" H 3050 1550 50  0000 C CNN
+F 2 "" H 3050 1400 50  0001 C CNN
+F 3 "" H 3050 1400 50  0001 C CNN
+	1    3050 1400
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	3025 1350 3025 1400
-Connection ~ 3025 1400
-Wire Wire Line
 	2625 1700 2875 1700
-Wire Wire Line
-	2875 1400 3025 1400
 Wire Wire Line
 	2225 1100 2375 1100
 Wire Wire Line
@@ -792,17 +783,6 @@ Wire Wire Line
 Wire Wire Line
 	5125 2450 5325 2450
 $Comp
-L Connector:Conn_01x15_Female J103
-U 1 1 5DCFED35
-P 10625 1675
-F 0 "J103" H 10500 2575 50  0000 L CNN
-F 1 "Conn_01x15_Female" H 10250 2500 50  0000 L CNN
-F 2 "Pin_Headers:Pin_Header_Straight_1x15_Pitch2.54mm" H 10625 1675 50  0001 C CNN
-F 3 "~" H 10625 1675 50  0001 C CNN
-	1    10625 1675
-	1    0    0    -1  
-$EndComp
-$Comp
 L Connector:Conn_01x10_Male J102
 U 1 1 5DCFEE3D
 P 8900 1375
@@ -814,7 +794,7 @@ F 3 "~" H 8900 1375 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L MCU_Microchip_ATmega:ATmega328-PU U103
+L kicad-cpu-board-rescue:ATmega328-PU-MCU_Microchip_ATmega U103
 U 1 1 5DD69A10
 P 4525 2750
 F 0 "U103" H 3884 2796 50  0000 R CNN
@@ -911,7 +891,7 @@ L Device:D_Zener D101
 U 1 1 5CB4F253
 P 6000 3100
 F 0 "D101" V 5954 3179 50  0000 L CNN
-F 1 "5.1v" V 6045 3179 50  0000 L CNN
+F 1 "1N4733A" V 6045 3179 50  0000 L CNN
 F 2 "Diodes_THT:D_A-405_P7.62mm_Horizontal" H 6000 3100 50  0001 C CNN
 F 3 "~" H 6000 3100 50  0001 C CNN
 	1    6000 3100
@@ -940,7 +920,7 @@ L Device:D_Zener D102
 U 1 1 5CB5F7C0
 P 6000 3600
 F 0 "D102" V 5954 3679 50  0000 L CNN
-F 1 "5.1v" V 6045 3679 50  0000 L CNN
+F 1 "1N4733A" V 6045 3679 50  0000 L CNN
 F 2 "Diodes_THT:D_A-405_P7.62mm_Horizontal" H 6000 3600 50  0001 C CNN
 F 3 "~" H 6000 3600 50  0001 C CNN
 	1    6000 3600
@@ -974,15 +954,7 @@ $EndComp
 Wire Wire Line
 	4525 1100 4525 1250
 Wire Wire Line
-	2375 1100 4525 1100
-Wire Wire Line
-	3600 1400 3600 1175
-Wire Wire Line
-	3600 1175 4625 1175
-Wire Wire Line
 	4625 1175 4625 1250
-Wire Wire Line
-	3025 1400 3600 1400
 $Comp
 L Regulator_Linear:L7805 U101
 U 1 1 5CB6D16D
@@ -994,7 +966,6 @@ F 3 "http://www.st.com/content/ccc/resource/technical/document/datasheet/41/4f/b
 	1    1675 1100
 	1    0    0    -1  
 $EndComp
-Connection ~ 2875 1700
 $Comp
 L power:+12V #PWR0133
 U 1 1 5B3286C5
@@ -1116,7 +1087,7 @@ L Device:R R117
 U 1 1 5CE4BC89
 P 3050 6900
 F 0 "R117" V 3130 6900 50  0000 C CNN
-F 1 "47k" V 3050 6900 50  0000 C CNN
+F 1 "10k" V 3050 6900 50  0000 C CNN
 F 2 "Resistors_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P7.62mm_Horizontal" V 2980 6900 50  0001 C CNN
 F 3 "" H 3050 6900 50  0001 C CNN
 	1    3050 6900
@@ -1251,10 +1222,6 @@ F 3 "" H 1450 5750 50  0001 C CNN
 	1    1450 5750
 	0    1    1    0   
 $EndComp
-Wire Wire Line
-	3925 1700 3925 1550
-Wire Wire Line
-	3075 1700 3925 1700
 Wire Wire Line
 	4525 4250 4525 4550
 Text Notes 1950 2200 2    50   ~ 0
@@ -1472,23 +1439,12 @@ F 3 "" H 2625 4475 50  0001 C CNN
 	-1   0    0    1   
 $EndComp
 $Comp
-L Device:L L103
-U 1 1 5CE903D5
-P 2475 4425
-F 0 "L103" V 2425 4425 50  0000 C CNN
-F 1 "L" V 2550 4425 50  0000 C CNN
-F 2 "Inductors_THT:L_Axial_L5.3mm_D2.2mm_P7.62mm_Horizontal_Vishay_IM-1" H 2475 4425 50  0001 C CNN
-F 3 "" H 2475 4425 50  0001 C CNN
-	1    2475 4425
-	0    1    1    0   
-$EndComp
-$Comp
 L Device:L L102
 U 1 1 5CE903DB
 P 2475 4025
 F 0 "L102" V 2425 4025 50  0000 C CNN
-F 1 "L" V 2550 4025 50  0000 C CNN
-F 2 "Inductors_THT:L_Axial_L5.3mm_D2.2mm_P7.62mm_Horizontal_Vishay_IM-1" H 2475 4025 50  0001 C CNN
+F 1 "220uH" V 2550 4025 50  0000 C CNN
+F 2 "Inductors_THT:L_Axial_L6.6mm_D2.7mm_P10.16mm_Horizontal_Vishay_IM-2" H 2475 4025 50  0001 C CNN
 F 3 "" H 2475 4025 50  0001 C CNN
 	1    2475 4025
 	0    1    1    0   
@@ -1509,7 +1465,7 @@ L Device:D D104
 U 1 1 5CE903E7
 P 2075 4425
 F 0 "D104" H 2075 4525 50  0000 C CNN
-F 1 "D" H 2075 4325 50  0000 C CNN
+F 1 "1N4001" H 2075 4325 50  0000 C CNN
 F 2 "Diodes_THT:D_DO-15_P10.16mm_Horizontal" H 2075 4425 50  0001 C CNN
 F 3 "" H 2075 4425 50  0001 C CNN
 	1    2075 4425
@@ -1520,7 +1476,7 @@ L Device:CP1_Small C109
 U 1 1 5CE903ED
 P 2625 4125
 F 0 "C109" H 2635 4195 50  0000 L CNN
-F 1 "47uF" H 2825 4175 50  0000 L CNN
+F 1 "330uf" H 2825 4175 50  0000 L CNN
 F 2 "Capacitors_THT:CP_Radial_D6.3mm_P2.50mm" H 2625 4125 50  0001 C CNN
 F 3 "" H 2625 4125 50  0001 C CNN
 	1    2625 4125
@@ -1565,8 +1521,6 @@ Wire Wire Line
 	2625 4225 1875 4225
 Wire Wire Line
 	1925 4425 1875 4425
-Wire Wire Line
-	2325 4425 2225 4425
 Wire Wire Line
 	2225 4025 2325 4025
 Wire Wire Line
@@ -1751,4 +1705,60 @@ Wire Wire Line
 	2150 6700 2150 6650
 Wire Wire Line
 	975  6150 1650 6150
+$Comp
+L Connector:Conn_01x16_Female J103
+U 1 1 5DBA0DDE
+P 10625 1675
+F 0 "J103" H 10675 2525 50  0000 L CNN
+F 1 "Conn_01x16_Female" H 10650 2450 50  0000 L CNN
+F 2 "Pin_Headers:Pin_Header_Straight_1x16_Pitch2.54mm" H 10625 1675 50  0001 C CNN
+F 3 "~" H 10625 1675 50  0001 C CNN
+	1    10625 1675
+	1    0    0    -1  
+$EndComp
+Text GLabel 10275 2475 0    50   Input ~ 0
+RESET
+Wire Wire Line
+	10275 2475 10425 2475
+Wire Wire Line
+	2875 1700 3375 1700
+Connection ~ 2875 1700
+Wire Wire Line
+	3775 1550 3775 1400
+Wire Wire Line
+	3775 1550 3925 1550
+Wire Wire Line
+	3375 1400 3525 1400
+Wire Wire Line
+	3525 1400 3525 1100
+Wire Wire Line
+	2375 1100 3525 1100
+Connection ~ 3525 1400
+Wire Wire Line
+	3525 1400 3775 1400
+Connection ~ 3525 1100
+Wire Wire Line
+	3525 1100 4525 1100
+Wire Wire Line
+	2875 1400 3050 1400
+Wire Wire Line
+	3275 1400 3275 1175
+Wire Wire Line
+	3275 1175 4625 1175
+Connection ~ 3050 1400
+Wire Wire Line
+	3050 1400 3275 1400
+Wire Wire Line
+	2325 4425 2225 4425
+$Comp
+L Device:L L103
+U 1 1 5CE903D5
+P 2475 4425
+F 0 "L103" V 2425 4425 50  0000 C CNN
+F 1 "220uH" V 2550 4425 50  0000 C CNN
+F 2 "Inductors_THT:L_Axial_L6.6mm_D2.7mm_P10.16mm_Horizontal_Vishay_IM-2" H 2475 4425 50  0001 C CNN
+F 3 "" H 2475 4425 50  0001 C CNN
+	1    2475 4425
+	0    1    1    0   
+$EndComp
 $EndSCHEMATC
