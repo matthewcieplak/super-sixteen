@@ -48,7 +48,7 @@ void LedMatrix::updateMatrix(int row) {
 	digitalWrite(CS1_PIN, LOW);
 	SPI.setBitOrder(LSBFIRST); //shift registers like LSB
 	displayVar3->updateSevenSegmentDisplay(); //has to happen HERE bc it's part of the shift register 2-byte sequence
-	SPI.transfer(~byte1); //led matrix
+	SPI.transfer(byte1); //led matrix  - NOTE: invert this byte if you've wired the LEDs backwards
 	digitalWrite(CS1_PIN, HIGH);
 	displayVar3->nextDigit();
 }
