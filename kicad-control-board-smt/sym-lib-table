@@ -1,0 +1,4 @@
+(sym_lib_table
+  (lib (name kicad-control-board-smt-rescue)(type Legacy)(uri ${KIPRJMOD}/kicad-control-board-smt-rescue.lib)(options "")(descr ""))
+  (lib (name button_no_01x02)(type Legacy)(uri ${KIPRJMOD}/parts/button_no_01x02.lib)(options "")(descr ""))
+)
