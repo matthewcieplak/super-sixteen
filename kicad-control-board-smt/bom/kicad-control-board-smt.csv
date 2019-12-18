@@ -1,0 +1,36 @@
+Comment,Designator,Footprint, LCSC Part Number, MFG Part Number, Manufacturer
+47uF,"C101,C104,C107",Capacitors_SMD:CP_Elec_6.3x7.7,C108053,VES470M1HTR-0607,Lelon
+100nF,"C102,C105,C108",Capacitors_SMD:C_0603_HandSoldering,C14663,CC0603KRX7R9BB104,Yageo
+100pF,"C103,C106,C109",Capacitors_SMD:C_0603_HandSoldering,C14858,CL10C101JB8NNNC,Samsung
+SS54,D1,Diodes_SMD:D_SMA_Handsoldering,C22452,SS54,MDD
+LED,"D105,D114,D115,D111,D106,D102,D103,D107,D112,D116,D117,D113,D108,D104,D110,D101,D118",LEDs:LED_D3.0mm,,,
+GlideLED,D109,LEDs:LED_D3.0mm,,,
+Conn_01x10_Female,J101,Pin_Headers:Pin_Header_Straight_1x10_Pitch2.54mm,,,
+Conn_01x16_Male,J102,Pin_Headers:Pin_Header_Straight_1x16_Pitch2.54mm,,,
+BA56_3DIG_7SEG,J103,Eurocad:BA56_3DIG_7SEG,,,
+Gate Out,J104,Eurocad:PJ301M-12,,,
+Clock Out,J105,Eurocad:PJ301M-12,,,
+Clock In,J106,Eurocad:PJ301M-12,,,
+Pitch Out,J107,Eurocad:PJ301M-12,,,
+CV Out,J108,Eurocad:PJ301M-12,,,
+Reset In,J109,Eurocad:PJ301M-12,,,
+MMBT3906,"Q101,Q102,Q103",TO_SOT_Packages_SMD:SOT-23_Handsoldering,C53444,MMBT3906LT1G,On Semicon
+MMBT3904,"Q104,Q105",TO_SOT_Packages_SMD:SOT-23_Handsoldering,C20526,MMBT3904,Changjiang
+100,"R101,R102,R104,R105,R106,R107,R108,R109,R110,R111,R112,R113",Resistors_SMD:R_0603_HandSoldering,C22775,0603WAF1000T5E,Uniroyal
+1k,"R114,R118,R103",Resistors_SMD:R_0603_HandSoldering,C21190,0603WAF1001T5E,Uniroyal
+680R,"R115,R116,R117",Resistors_SMD:R_0603_HandSoldering,C23228,0603WAF6800T5E,Uniroyal
+10k,"R119,R122",Resistors_SMD:R_0603_HandSoldering,C25804,0603WAF1002T5E,Uniroyal
+100k,"R120,R123",Resistors_SMD:R_0603_HandSoldering,C25803,0603WAF1003T5E,Uniroyal
+1M,"R121,R124",Resistors_SMD:R_0603_HandSoldering,C22935,0603WAF1004T5E,Uniroyal
+R_POT,"RV102,RV103,RV104,RV101",Potentiometers:Potentiometer_Alps_RK09K_Horizontal,,,
+Shift,SW101,Buttons_Switches_THT:SW_PUSH_6mm,,,
+Play,SW102,Buttons_Switches_THT:SW_PUSH_6mm,,,
+Load,SW103,Buttons_Switches_THT:SW_PUSH_6mm,,,
+Save,SW104,Buttons_Switches_THT:SW_PUSH_6mm,,,
+Repeat,SW105,Buttons_Switches_THT:Push_E-Switch_KS01Q01,,,
+Mutate,SW106,Buttons_Switches_THT:Push_E-Switch_KS01Q01,,,
+Glide,SW107,Buttons_Switches_THT:SW_PUSH_6mm,,,
+SW_Push,"SW112,SW109,SW110,SW113,SW114,SW115,SW117,SW118,SW119,SW120,SW121,SW122,SW123,SW124,SW111,SW108",Buttons_Switches_THT:SW_PUSH_6mm,,,
+Rotary_Encoder,SW116,Rotary_Encoder:RotaryEncoder_Alps_EC12E_Vertical_H20mm,,,
+74HC595,"U101,U103",Housings_SOIC:SOIC-16_3.9x9.9mm_Pitch1.27mm,C5947,"74HC595D,118",Nexperia
+MCP23S17,U102,Housings_SOIC:SOIC-28W_7.5x18.7mm_Pitch1.27mm,C145413,MCP23S17-E/SO,Microchip
