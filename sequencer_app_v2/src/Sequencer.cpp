@@ -42,7 +42,9 @@ int prev_note = 0;
 int active_note = 0;
 int active_pitch = 0;
 int calculated_tempo = tempo_millis;
+unsigned int calculated_step_length = 10;
 unsigned int calculated_roll;
+unsigned int calculated_stutter;
 double tempo_millis_swing_odd;
 double tempo_millis_swing_even;
 int glide_duration = 50;
@@ -217,6 +219,7 @@ void Sequencer::setActiveNote(){
 			gate_active = active_sequence.step_matrix[active_step];
 			int cv_out =  active_sequence.cv_matrix[active_step] * 40;
 			dacVar->setOutput(1, GAIN_2, 1, cv_out);
+			calculated_step_length = (active_sequence.duration_matrix[active_step] / 100.0) * (double)calculated_tempo;
 		}
 	} else if(seq_effect_mode && active_sequence.effect == EFFECT_STUTTER) {
 		digitalWrite(GATE_PIN, HIGH);
@@ -310,18 +313,20 @@ void Sequencer::updateGate() {
 	}
 	if (!gate_active) return;
 
-	double percent_step = timekeeper / (double)calculated_tempo * 100.0;
+	//double percent_step = timekeeper / (double)calculated_tempo * 100.0;
 	int steps_advanced = current_step - active_step + 1;
 	if (steps_advanced < 1) {
 		steps_advanced = current_step + active_sequence.sequence_length - active_step + 1;
 	}
 
-	if (seq_effect_mode && active_sequence.effect == EFFECT_STUTTER && active_sequence.step_matrix[current_step]) {
-		if (active_sequence.effect_depth < percent_step * steps_advanced) {
+	if (seq_effect_mode && active_sequence.effect == EFFECT_STUTTER && !active_sequence.step_matrix[current_step]) {
+		//if (active_sequence.effect_depth < percent_step * steps_advanced) {
+		if (timekeeper > calculated_stutter) {
 			digitalWrite(GATE_PIN, LOW);
 			gate_active = false;
 		}
-	} else if (active_sequence.duration_matrix[active_step] < percent_step * steps_advanced) {
+	//} else if (active_sequence.duration_matrix[active_step] < percent_step * steps_advanced) {
+	} else if (timekeeper + calculated_tempo * (steps_advanced-1) > calculated_step_length) {
 		digitalWrite(GATE_PIN, LOW);
 		gate_active = false;
 	}
@@ -357,6 +362,7 @@ int Sequencer::incrementTempo(int amount){
 	tempo_millis_swing_even = tempo_millis * 2 - tempo_millis_swing_odd;
 	active_sequence.sequence_tempo = tempo_bpm;
 	updateRollCalc();
+	updateStutterCalc();
 	return tempo_bpm;
 }
 
@@ -392,7 +398,7 @@ int Sequencer::incrementEffectDepth(int amount){
 		case EFFECT_STOP:    setMinMaxParamUnsigned(depth, amount, 1, 16); break;
 		case EFFECT_FREEZE:  setMinMaxParamUnsigned(depth, amount, 0, 1); break;
 		case EFFECT_RANDOM:  setMinMaxParamUnsigned(depth, amount, 1, 50); break;
-		case EFFECT_STUTTER: setMinMaxParamUnsigned(depth, amount, 1, 100); break;
+		case EFFECT_STUTTER: setMinMaxParamUnsigned(depth, amount, 1, 100); updateStutterCalc(); break;
 		case EFFECT_ROLL:    setMinMaxParamUnsigned(depth, amount, 1, 8); updateRollCalc(); break;
 	}
 	return active_sequence.effect_depth;
@@ -516,6 +522,10 @@ void Sequencer::updateGlideCalc(){
 
 void Sequencer::updateRollCalc(){
 	calculated_roll = calculated_tempo / active_sequence.effect_depth;
+}
+
+void Sequencer::updateStutterCalc(){
+	calculated_stutter = calculated_tempo * float(active_sequence.effect_depth) / 100.0;
 }
 
 uint8_t Sequencer::editedStep(){

@@ -102,6 +102,7 @@ class Sequencer{
         void initializeSerializedSequence();
         void updateGlideCalc();
         void updateRollCalc();
+        void updateStutterCalc();
         int getGlideKeeper(int step);
         void onClockIn();
 
