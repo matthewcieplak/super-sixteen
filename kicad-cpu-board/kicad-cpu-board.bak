@@ -285,7 +285,7 @@ U 1 1 5CB7B004
 P 8450 4325
 F 0 "Q103" V 8700 4325 50  0000 C CNN
 F 1 "2N7000" V 8791 4325 50  0000 C CNN
-F 2 "TO_SOT_Packages_THT:TO-92_Inline_Narrow_Oval" H 8650 4250 50  0001 L CIN
+F 2 "TO_SOT_Packages_THT:TO-92_Inline_Wide" H 8650 4250 50  0001 L CIN
 F 3 "https://www.fairchildsemi.com/datasheets/2N/2N7000.pdf" H 8450 4325 50  0001 L CNN
 	1    8450 4325
 	0    1    1    0   
@@ -326,7 +326,7 @@ U 1 1 5CB7B009
 P 9400 4325
 F 0 "Q104" V 9650 4325 50  0000 C CNN
 F 1 "2N7000" V 9741 4325 50  0000 C CNN
-F 2 "TO_SOT_Packages_THT:TO-92_Inline_Narrow_Oval" H 9600 4250 50  0001 L CIN
+F 2 "TO_SOT_Packages_THT:TO-92_Inline_Wide" H 9600 4250 50  0001 L CIN
 F 3 "https://www.fairchildsemi.com/datasheets/2N/2N7000.pdf" H 9400 4325 50  0001 L CNN
 	1    9400 4325
 	0    1    1    0   
@@ -367,7 +367,7 @@ U 1 1 5CB7B00E
 P 8450 3425
 F 0 "Q101" V 8700 3425 50  0000 C CNN
 F 1 "2N7000" V 8791 3425 50  0000 C CNN
-F 2 "TO_SOT_Packages_THT:TO-92_Inline_Narrow_Oval" H 8650 3350 50  0001 L CIN
+F 2 "TO_SOT_Packages_THT:TO-92_Inline_Wide" H 8650 3350 50  0001 L CIN
 F 3 "https://www.fairchildsemi.com/datasheets/2N/2N7000.pdf" H 8450 3425 50  0001 L CNN
 	1    8450 3425
 	0    1    1    0   
@@ -431,7 +431,7 @@ U 1 1 5CB7B013
 P 9250 3425
 F 0 "Q102" V 9500 3425 50  0000 C CNN
 F 1 "2N7000" V 9591 3425 50  0000 C CNN
-F 2 "TO_SOT_Packages_THT:TO-92_Inline_Narrow_Oval" H 9450 3350 50  0001 L CIN
+F 2 "TO_SOT_Packages_THT:TO-92_Inline_Wide" H 9450 3350 50  0001 L CIN
 F 3 "https://www.fairchildsemi.com/datasheets/2N/2N7000.pdf" H 9250 3425 50  0001 L CNN
 	1    9250 3425
 	0    1    1    0   
@@ -746,7 +746,7 @@ U 1 1 5B7EC4CF
 P 1675 2600
 F 0 "U102" H 1675 2842 50  0000 C CNN
 F 1 "LP2950-3.3_TO92" H 1675 2751 50  0000 C CNN
-F 2 "TO_SOT_Packages_THT:TO-92_Inline_Narrow_Oval" H 1675 2825 50  0001 C CIN
+F 2 "TO_SOT_Packages_THT:TO-92_Inline_Wide" H 1675 2825 50  0001 C CIN
 F 3 "http://www.ti.com/lit/ds/symlink/lp2950-n.pdf" H 1675 2550 50  0001 C CNN
 	1    1675 2600
 	1    0    0    -1  
