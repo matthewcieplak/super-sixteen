@@ -7,3 +7,6 @@
 [submodule "sequencer_app_v2/lib/elapsedMillis"]
 	path = sequencer_app_v2/lib/elapsedMillis
 	url = https://github.com/pfeerick/elapsedMillis.git
+[submodule "sequencer_app_v2/lib/SerialFlash"]
+	path = sequencer_app_v2/lib/SerialFlash
+	url = git@github.com:matthewcieplak/SerialFlash.git
