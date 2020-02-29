@@ -5,6 +5,7 @@
 #include "Sequencer.h"
 #include <MCP23S17.h>
 #include "../lib/c_queue/queue.h"
+#include <elapsedMillis.h>
 
 namespace supersixteen{	
 	
@@ -20,6 +21,8 @@ QUEUE(events, uint16_t, 8);
 //create an instance of queue_example
 volatile struct queue_events queue;
 bool editing_buttons = false;
+const byte BUTTON_DEBOUNCE_TIME = 10;
+elapsedMillis debounce_timer;
 
 
 void Buttons::init() {
@@ -59,8 +62,7 @@ void Buttons::poll() {
 		if (value != button_matrix[stepnum]) { //detect when button changes state
 			button_matrix[stepnum] = value; //store button state
 			uint16_t event = stepnum | value << 8;  //condense button number and state into one 16-bit variable
-			if (editing_buttons) queue_events_push(&queue, &event);
-
+			onButtonPush(event);
 		}
 	}
 	ButtonDriver.digitalWrite(row+4, HIGH);
@@ -72,8 +74,14 @@ void Buttons::poll() {
 		if (value != function_button_matrix[ii]){
 			function_button_matrix[ii] = value;
 			uint16_t event = (function_buttons[ii]+8) | (value << 8); //condense button number and state into one 16-bit variable
-			if (editing_buttons) queue_events_push(&queue, &event);
+			onButtonPush(event);
 		}
+	}
+}
+
+void Buttons::onButtonPush(uint16_t& event){
+	if (editing_buttons && debounce_timer > BUTTON_DEBOUNCE_TIME) {
+		queue_events_push(&queue, &event);
 	}
 }
 
