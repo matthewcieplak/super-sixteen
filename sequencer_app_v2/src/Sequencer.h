@@ -7,6 +7,7 @@
 namespace supersixteen {
 
 
+
 struct sequence {
 	int8_t pitch_matrix[64];
 	int8_t octave_matrix[64];
@@ -100,6 +101,7 @@ class Sequencer{
         uint8_t editedStep();
         void quantizeActivePitch();
         void initializeSerializedSequence();
+        void updateSwingCalc();
         void updateGlideCalc();
         void updateRollCalc();
         void updateStutterCalc();

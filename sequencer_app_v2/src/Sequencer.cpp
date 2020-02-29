@@ -16,7 +16,7 @@ int8_t step_presets[] = { 4, 8, 12, 16, 24, 32, 48, 64 };
 int selected_step = 0;
 int8_t clock_step = -1;
 int8_t current_step = -1;
-int8_t active_step;
+int8_t active_step = -1;
 
 uint8_t prev_sequence_length = active_sequence.sequence_length;
 uint8_t repeat_step_origin = 0;
@@ -28,6 +28,7 @@ bool clock_in_active = false;
 bool reset_in_active = false;
 bool step_incremented = false;
 bool step_recording_mode = false;
+bool first_step = true;
 
 byte tempo_bpm = 120;
 unsigned int tempo_millis = 15000 / tempo_bpm; //would be 60000 but we count 4 steps per "beat"
@@ -36,7 +37,8 @@ bool seq_effect_mode = false;
 bool seq_record_mode = false;
 bool current_scale_tones[13];
 bool note_reached;
-
+bool skip_next_external_step = false;
+bool count_next_swing_step = false;
 
 int prev_note = 0;
 int active_note = 0;
@@ -81,25 +83,34 @@ void Sequencer::init(Calibration& calibration, Dac& dac) {
 }
 
 void Sequencer::updateClock() {
-	if (play_active) {
+	//if (play_active) {
 		if (timekeeper > (clock_step % 2 == 1 ? tempo_millis_swing_even : tempo_millis_swing_odd)) {
 			//CLOCK
 			//increment_step();
 			if (clock_out_active) {
 				digitalWrite(CLOCK_OUT_PIN, LOW);
 				clock_out_active = false;
-			}
-			else {
+			} else {
 				digitalWrite(CLOCK_OUT_PIN, HIGH);
 				clock_out_active = true;
 			}
-			incrementStep();
-			timekeeper = 0;
-			return;
+
+			
+			if (play_active) {
+				incrementStep();
+				timekeeper = 0;
+				return;
+
+			} else if (count_next_swing_step) {
+				incrementStep();
+				timekeeper = 0;
+				count_next_swing_step = false;
+				return;
+			}
 		} else {
 			step_incremented = false;
 		}
-	}
+	//}
 
 	
 	updateGlide();
@@ -134,10 +145,28 @@ void Sequencer::updateClock() {
 }
 
 void Sequencer::onClockIn(){
+	if (first_step) {
+		timekeeper = tempo_millis;
+		first_step = false;
+	}
+
 	clock_in_active = true;
-	incrementStep();
+	if (skip_next_external_step) {
+		skip_next_external_step = false;
+		return;
+	}
+
+	if ((active_sequence.swing > 50) && (clock_step % 2 == 0)) { //ignore external clock to implement swing
+	 	skip_next_external_step = true;
+		count_next_swing_step = true; //these two states *should* stay in sync but in practice microtiming requires two vars for values near 50
+	} 
+
+	
 	calculated_tempo = timekeeper;
+	updateSwingCalc();
+	incrementStep();
 	timekeeper = 0;
+		
 	play_active = false;
 }
 
@@ -349,6 +378,7 @@ void Sequencer::onReset(bool clock_active){
 	clock_step = -1; //clock_active ? -1 : active_sequence.sequence_length - 1;
 	current_step = -1;
 	step_incremented = false;
+	first_step = true;
 }
 
 void Sequencer::onBarSelect(byte bar){
@@ -358,12 +388,19 @@ void Sequencer::onBarSelect(byte bar){
 int Sequencer::incrementTempo(int amount){
 	tempo_bpm = getMinMaxParam(tempo_bpm, amount, 20, 250);
 	tempo_millis = 15000 / tempo_bpm;
-	tempo_millis_swing_odd = tempo_millis * float(active_sequence.swing) / 50.0;
-	tempo_millis_swing_even = tempo_millis * 2 - tempo_millis_swing_odd;
+	if (play_active) {
+		calculated_tempo = tempo_millis;
+	}
 	active_sequence.sequence_tempo = tempo_bpm;
+	updateSwingCalc();
 	updateRollCalc();
 	updateStutterCalc();
 	return tempo_bpm;
+}
+
+void Sequencer::updateSwingCalc(){
+	tempo_millis_swing_odd = calculated_tempo * float(active_sequence.swing) / 50.0;
+	tempo_millis_swing_even = calculated_tempo * 2 - tempo_millis_swing_odd;
 }
 
 int Sequencer::incrementScale(int amount){
