@@ -16,6 +16,7 @@ class Memory{
         bool finishSaving();
         bool load(int patch);
         bool saveSerialized(byte patch);
+        void erase();
 
 
         void erasePatch(byte patch);

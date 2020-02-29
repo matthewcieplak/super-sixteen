@@ -12,7 +12,7 @@ const uint32_t PATCH_FILE_SIZE = 4096;
 const int PATCH_SEQ_LENGTH = 64;
 Sequencer *sequencerVar4;
 bool active = false;
-char filename[20] = "1.bin";
+char filename[20] = "001.bin";
 uint8_t durations_8bit[128];
 SerialFlashFile file;
 
@@ -25,7 +25,10 @@ bool Memory::init(Sequencer& sequencer){
     } else {
         return true;
     }
+}
 
+void Memory::erase(){
+     SerialFlash.eraseAll();
 }
 
 
