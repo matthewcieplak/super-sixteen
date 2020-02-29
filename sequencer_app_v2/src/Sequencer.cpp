@@ -83,18 +83,8 @@ void Sequencer::init(Calibration& calibration, Dac& dac) {
 }
 
 void Sequencer::updateClock() {
-	//if (play_active) {
+	if (play_active || count_next_swing_step) {
 		if (timekeeper > (clock_step % 2 == 1 ? tempo_millis_swing_even : tempo_millis_swing_odd)) {
-			//CLOCK
-			//increment_step();
-			if (clock_out_active) {
-				digitalWrite(CLOCK_OUT_PIN, LOW);
-				clock_out_active = false;
-			} else {
-				digitalWrite(CLOCK_OUT_PIN, HIGH);
-				clock_out_active = true;
-			}
-
 			
 			if (play_active) {
 				incrementStep();
@@ -110,7 +100,7 @@ void Sequencer::updateClock() {
 		} else {
 			step_incremented = false;
 		}
-	//}
+	}
 
 	
 	updateGlide();
@@ -122,20 +112,23 @@ void Sequencer::updateClock() {
 		if (!reset_in_active) {
 			reset_in_active = true;
 			onReset(clock == LOW);
-			if (clock == LOW) {
-				onClockIn(); //duplicated here to fix sync issues on simultaneous signals
-			}
+			incrementStep();
+			// if (clock == LOW) {
+			// 	onClockIn(); //duplicated here to fix sync issues on simultaneous signals
+			// }
 		}
 	} else {
 		reset_in_active = false;
 	}
 
 
-	//todo enable clock in
 	if (clock == LOW) {
 		if(!clock_in_active) {
 			onClockIn();
+			// digitalWrite(CLOCK_OUT_PIN, HIGH);
+			// clock_in_active = true;
 		} else {
+			// digitalWrite(CLOCK_OUT_PIN, LOW);
 			step_incremented = false;
 		}
 	} else {
@@ -175,6 +168,12 @@ void Sequencer::incrementStep() {
 	if (clock_step >= active_sequence.sequence_length) {
 		clock_step = 0;
 	}
+
+	if (!clock_out_active) {
+		clock_out_active = true;
+		digitalWrite(CLOCK_OUT_PIN, HIGH);
+	}
+
 	//prev_step = current_step;
 
 	if (seq_effect_mode && active_sequence.effect == EFFECT_REPEAT) {
@@ -371,12 +370,15 @@ void Sequencer::onPlayButton(){
 	}
 	timekeeper = 0;
 	calculated_tempo = tempo_millis;
+	if (first_step && play_active) {
+		incrementStep();
+	}
 }
 
 void Sequencer::onReset(bool clock_active){
 	timekeeper = tempo_millis;
-	clock_step = -1; //clock_active ? -1 : active_sequence.sequence_length - 1;
-	current_step = -1;
+	clock_step =  -1; //clock_active ? -1 : 0;
+	current_step = clock_step;
 	step_incremented = false;
 	first_step = true;
 }

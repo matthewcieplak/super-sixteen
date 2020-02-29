@@ -60,6 +60,7 @@ char scalename[4];
 char effectname[4];
 
 
+
 void Ui::init(Calibration& calibration, Dac& dac, Sequencer& sequencer){
     pinMode(CS0_PIN, OUTPUT);
 	pinMode(CS1_PIN, OUTPUT);
@@ -323,7 +324,7 @@ void Ui::invertEncoder(){
 }
 
 void Ui::onPlayButton(bool state){
-	if (shift_state) {
+	if (state && shift_state) {
 		sequencerVar2->onReset(false);
 		return;
 	}
