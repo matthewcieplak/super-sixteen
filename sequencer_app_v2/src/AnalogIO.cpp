@@ -131,13 +131,13 @@ void AnalogIo::setDisplayNum(int displayNum){
 
 
 void AnalogIo::recordCurrentParam(){
-	if (sequencerVar->currentStepActive()) {
+	// if (sequencerVar->currentStepActive()) {
 		recording = false; //temporarily flip to enable one-step record
-		change_threshold = -1; //record regarless of motion
+		change_threshold = -1; //record regardless of motion
 		readInput(display_param); // read the currently selected param and write it to the sequence	
 		// change_threshold = DEFAULT_CHANGE_THRESHOLD;
 		recording = true;
-	}
+	// }
 }
 
 void AnalogIo::setRecordMode(bool state){
