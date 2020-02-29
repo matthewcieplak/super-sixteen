@@ -21,7 +21,9 @@ class Ui{
 
         void onRecButton(bool state);
         void onRepeatButton(bool state);
-        void onGlideButton(bool state);        
+        void onGlideButton(bool state);       
+
+        void invertEncoder(); 
         
         void onButtonToggle(int button, bool button_state);
         void onEncoderIncrement(int increment_amount);

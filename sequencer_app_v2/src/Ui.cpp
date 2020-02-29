@@ -232,6 +232,7 @@ void Ui::shiftFunction(int button) {
 		if (button < 4)	selectBar(button);
 	} else {
 		switch (button) {
+			case 15: invertEncoder(); break; //memory.erase();
 			case 14: clearSequence(); break;
 			case 13: initializeCalibrationMode(); break;
 			case PARAM_TEMPO: //select bars?
@@ -314,6 +315,11 @@ void Ui::onGlideButton(bool state){
 			buttons.setGlideLed(sequencerVar2->toggleGlide());
 		}
 	}
+}
+
+void Ui::invertEncoder(){
+	encoder.toggle_inverted();
+	display.setDisplayAlpha("INV");
 }
 
 void Ui::onPlayButton(bool state){
