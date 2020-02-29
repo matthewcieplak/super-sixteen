@@ -101,8 +101,8 @@ F 3 "" H 2625 1700 50  0001 C CNN
 $EndComp
 Text Notes 2025 850  2    60   ~ 12
 5V REGULATOR
-Text Notes 4450 1350 2    60   ~ 12
-ATMEGA 328
+Text Notes 3875 2450 2    60   ~ 12
+ATMEGA 328P
 Text Notes 9400 6400 2    60   ~ 12
 FLASH MEMORY
 $Comp
@@ -118,7 +118,7 @@ F 3 "" H 6600 2625 50  0001 C CNN
 $EndComp
 Connection ~ 2625 1700
 Wire Wire Line
-	2375 1700 2625 1700
+	2375 1700 2600 1700
 Connection ~ 2875 1400
 Wire Wire Line
 	2775 1400 2875 1400
@@ -1642,20 +1642,6 @@ F 6 "Winbond" H 9000 5575 50  0001 C CNN "Manufacturer"
 	1    0    0    -1  
 $EndComp
 $Comp
-L MCU_Microchip_ATmega:ATmega328P-PU U3
-U 1 1 5DD69A10
-P 4525 2750
-F 0 "U3" H 3884 2796 50  0000 R CNN
-F 1 "ATmega328-PU" H 3884 2705 50  0000 R CNN
-F 2 "Housings_QFP:LQFP-32_7x7mm_Pitch0.8mm" H 4525 2750 50  0001 C CIN
-F 3 "http://ww1.microchip.com/downloads/en/DeviceDoc/ATmega328_P%20AVR%20MCU%20with%20picoPower%20Technology%20Data%20Sheet%2040001984A.pdf" H 4525 2750 50  0001 C CNN
-F 4 "C14877" H 4525 2750 50  0001 C CNN "LCSC Part Number"
-F 5 "ATMEGA328P-AU" H 4525 2750 50  0001 C CNN "MFG Part Number"
-F 6 "Microchip" H 4525 2750 50  0001 C CNN "Manufacturer"
-	1    4525 2750
-	1    0    0    -1  
-$EndComp
-$Comp
 L Connector:Conn_01x10_Male J2
 U 1 1 5DCFEE3D
 P 8900 1375
@@ -1950,4 +1936,20 @@ Wire Wire Line
 Connection ~ 6500 2250
 Wire Wire Line
 	6500 2250 6750 2250
+$Comp
+L MCU_Microchip_ATmega:ATmega328-AU U3
+U 1 1 5E1AB25F
+P 4525 2750
+F 0 "U3" H 4525 1161 50  0000 C CNN
+F 1 "ATmega328P-AU" H 4525 1070 50  0000 C CNN
+F 2 "Housings_QFP:TQFP-32_7x7mm_Pitch0.8mm" H 4525 2750 50  0001 C CIN
+F 3 "http://ww1.microchip.com/downloads/en/DeviceDoc/ATmega328_P%20AVR%20MCU%20with%20picoPower%20Technology%20Data%20Sheet%2040001984A.pdf" H 4525 2750 50  0001 C CNN
+	1    4525 2750
+	1    0    0    -1  
+$EndComp
+NoConn ~ 3925 1750
+NoConn ~ 3925 1850
+Connection ~ 2600 1700
+Wire Wire Line
+	2600 1700 2625 1700
 $EndSCHEMATC
