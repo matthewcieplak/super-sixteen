@@ -6,7 +6,7 @@
 
 namespace supersixteen{
 
-const bool COMMON_ANODE = true; //change to FALSE for common cathode display
+const bool COMMON_ANODE = true; //BA56-12GWA change to FALSE for common cathode display BC56-12GWA
 
 int digit_counter = 0;
 int num_display = 999;
@@ -85,7 +85,7 @@ void Display::setDisplayAlpha(const char displayAlpha[]){ //turns 3-character ar
 
 void Display::updateSevenSegmentDisplay(){
 	digitalWrite(digit_pins[digit_counter], COMMON_ANODE ? HIGH : LOW );
-	SPI.transfer(alpha_display[digit_counter]); 
+	SPI.transfer(COMMON_ANODE ? alpha_display[digit_counter] : ~alpha_display[digit_counter]); 
 	// nextDigit();
 }
 
