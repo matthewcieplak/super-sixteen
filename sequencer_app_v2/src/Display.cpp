@@ -6,6 +6,8 @@
 
 namespace supersixteen{
 
+const bool COMMON_ANODE = true; //change to FALSE for common cathode display
+
 int digit_counter = 0;
 int num_display = 999;
 int digit_display[3] = { 0, 0, 0 };
@@ -82,13 +84,13 @@ void Display::setDisplayAlpha(const char displayAlpha[]){ //turns 3-character ar
 
 
 void Display::updateSevenSegmentDisplay(){
-	digitalWrite(digit_pins[digit_counter], HIGH);
+	digitalWrite(digit_pins[digit_counter], COMMON_ANODE ? HIGH : LOW );
 	SPI.transfer(alpha_display[digit_counter]); 
 	// nextDigit();
 }
 
 void Display::blankSevenSegmentDisplay(){
-	digitalWrite(digit_pins[digit_counter], HIGH);
+	digitalWrite(digit_pins[digit_counter], COMMON_ANODE ? HIGH : LOW);
 	//nextDigit();
 }
 
@@ -109,7 +111,7 @@ void Display::nextDigit(){
 		}
 		//leave digit inactive
 	} else {
-		digitalWrite(digit_pins[digit_counter], LOW);
+		digitalWrite(digit_pins[digit_counter], COMMON_ANODE ? LOW : HIGH);
 	}
 }
 
