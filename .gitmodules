@@ -9,4 +9,4 @@
 	url = https://github.com/pfeerick/elapsedMillis.git
 [submodule "sequencer_app_v2/lib/SerialFlash"]
 	path = sequencer_app_v2/lib/SerialFlash
-	url = git@github.com:matthewcieplak/SerialFlash.git
+	url = https://github.com/matthewcieplak/SerialFlash.git
