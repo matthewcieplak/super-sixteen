@@ -1,4 +1,5 @@
 #include <SPI.h>
+#include <Arduino.h>
  
 const int PIN_CS = 1;
 const int GAIN_1 = 0x1;
