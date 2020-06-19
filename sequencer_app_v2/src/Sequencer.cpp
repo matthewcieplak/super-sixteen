@@ -75,11 +75,15 @@ void Sequencer::init(Calibration& calibration, Dac& dac) {
 	pinMode(CLOCK_IN_PIN, INPUT_PULLUP);
 	pinMode(RESET_PIN, INPUT_PULLUP);
 
+	attachInterrupt(digitalPinToInterrupt(CLOCK_IN_PIN), onClockIn, FALLING);
+	// attachInterrupt(digitalPinToInterrupt(RESET_PIN), onResetIn, CHANGE);
+
     active_sequence.scale = 0;
 	prev_sequence_length = active_sequence.sequence_length;
 	incrementScale(0);
 	incrementTempo(0);
 	updateGlideCalc();
+
 }
 
 void Sequencer::updateClock() {
@@ -106,38 +110,36 @@ void Sequencer::updateClock() {
 	updateGlide();
 	updateGate();
 
-	bool clock = digitalRead(CLOCK_IN_PIN);
+	// bool clock = digitalRead(CLOCK_IN_PIN);
 	bool reset = digitalRead(RESET_PIN);
 	if (reset == LOW) {
 		if (!reset_in_active) {
-			reset_in_active = true;
-			onReset(clock == LOW);
+			onReset(); //clock == LOW);
 			incrementStep();
-			// if (clock == LOW) {
-			// 	onClockIn(); //duplicated here to fix sync issues on simultaneous signals
-			// }
+			reset_in_active = true;
 		}
 	} else {
 		reset_in_active = false;
 	}
 
 
-	if (clock == LOW) {
-		if(!clock_in_active) {
-			onClockIn();
+	// if (clock == LOW) {
+		if(clock_in_active) {
+			onClock();
+			clock_in_active = false;
 			// digitalWrite(CLOCK_OUT_PIN, HIGH);
 			// clock_in_active = true;
 		} else {
 			// digitalWrite(CLOCK_OUT_PIN, LOW);
 			step_incremented = false;
 		}
-	} else {
-		clock_in_active = false;
-		step_incremented = false;
-	}
+	// } else {
+	// 	clock_in_active = false;
+	// 	step_incremented = false;
+	// }
 }
 
-void Sequencer::onClockIn(){
+void Sequencer::onClock(){
 	if (first_step) {
 		timekeeper = tempo_millis;
 		first_step = false;
@@ -232,7 +234,10 @@ void Sequencer::setActiveNote(){
 		} else {
 			note_reached = false;
 			quantizeActivePitch();
-			active_note = (active_sequence.octave_matrix[active_step] + 3) * 12 + active_pitch + active_sequence.transpose + 12 * random_octave;
+			active_note = ((active_sequence.octave_matrix[active_step] + 3) * 12) + 
+							active_pitch + 
+							active_sequence.transpose + 
+						    (random_octave * 12);
 			if (seq_effect_mode && active_sequence.effect == EFFECT_OCTAVE) {
 				active_note += (active_sequence.effect_depth - 4) * 12;
 			}
@@ -375,7 +380,15 @@ void Sequencer::onPlayButton(){
 	}
 }
 
-void Sequencer::onReset(bool clock_active){
+void Sequencer::onResetIn(){
+	reset_in_active = true;
+}
+
+void Sequencer::onClockIn(){
+	clock_in_active = true;
+}
+
+void Sequencer::onReset(){
 	timekeeper = tempo_millis;
 	clock_step =  -1; //clock_active ? -1 : 0;
 	current_step = clock_step;

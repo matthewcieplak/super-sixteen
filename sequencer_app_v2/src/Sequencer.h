@@ -54,7 +54,7 @@ class Sequencer{
         
 
         void onPlayButton();
-        void onReset(bool clock_active);
+        void onReset();
 
         bool toggleGlide();
         bool setPitch(int newVal);
@@ -106,7 +106,9 @@ class Sequencer{
         void updateRollCalc();
         void updateStutterCalc();
         int getGlideKeeper(int step);
-        void onClockIn();
+        void onClock();
+        static void onClockIn();
+        static void onResetIn();
 
 };
 
