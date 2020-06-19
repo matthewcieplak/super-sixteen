@@ -1,0 +1,25 @@
+Comment,Designator,Footprint,LCSC, LCSC Part Number, MFG Part Number, Manufacturer
+220uf,C11,Capacitors_SMD:CP_Elec_10x10,,C134521,VZH221M1VTR-1010K,LELON
+47uF,"C2,C10,C12",Capacitors_SMD:CP_Elec_6.3x7.7,,C108053,VES470M1HTR-0607,LELON
+10uF,C3,Capacitors_SMD:CP_Elec_4x5.3,,C249759,VEZ100M1ETR-0405,LELON 
+100nF,"C4,C5,C6,C14,C1,C9,C13",Capacitors_SMD:C_0603_HandSoldering,,C14663,CC0603KRX7R9BB104,YAGEO
+22pf,"C8,C7,C15,C16",Capacitors_SMD:C_0603_HandSoldering,,C1653,CL10C220JB8NNNC,SAMSUNG
+1SMA4733A,"D1,D2",Diodes_SMD:D_SMA_Handsoldering,,C173487,1SMA4733A,MDD
+M7,"D3,D4",Diodes_SMD:D_SMA_Handsoldering,,C95872,M7,MDD
+ICSP Header,J1,Pin_Headers:Pin_Header_Straight_2x03_Pitch2.54mm,,,,
+Conn_01x10_Male,J2,Pin_Headers:Pin_Header_Straight_1x10_Pitch2.54mm,,,,
+Conn_01x16_Female,J3,Pin_Headers:Pin_Header_Straight_1x16_Pitch2.54mm,,,,
+Conn_02x05_Odd_Even,J4,Pin_Headers:Pin_Header_Straight_2x05_Pitch2.54mm,,,,
+220uH,"L1,L2,L3",Inductors_SMD:L_1210_HandSoldering,,C89015,NLV32T-221J-PF,TDK
+2N7002,"Q1,Q3,Q4,Q2",TO_SOT_Packages_SMD:SOT-23_Handsoldering,,C8545,2N7002,CJ
+1M,R1,Resistors_SMD:R_0603_HandSoldering,,C22935,0603WAF1004T5E,Uniroyal
+10k,"R2,R15,R14,R18,R17",Resistors_SMD:R_0603_HandSoldering,,C25804,0603WAF1002T5E,Uniroyal
+1k,"R3,R4,R13,R16",Resistors_SMD:R_0603_HandSoldering,,C21190,0603WAF1001T5E,Uniroyal
+1K,"R9,R10,R5,R6,R7,R8,R11,R12",Resistors_SMD:R_0603_HandSoldering,,C21190,0603WAF1001T5E,Uniroyal
+AMS1117-5.0,U1,TO_SOT_Packages_SMD:SOT-223-3_TabPin2,,C6187,AMS1117-5.0,AMS
+AMS1117-3.3,U2,TO_SOT_Packages_SMD:SOT-223-3_TabPin2,,C6186,AMS1117-3.3,AMS
+ATmega328-PU,U3,Housings_QFP:LQFP-32_7x7mm_Pitch0.8mm,,C14877,ATMEGA328P-AU,Microchip
+W25Q80DVSN,U4,Housings_SOIC:SOIC-8_3.9x4.9mm_Pitch1.27mm,,C401655,W25Q80DVSNIG TR,Winbond
+TL072,U5,Housings_SOIC:SOIC-8_3.9x4.9mm_Pitch1.27mm,,C6961,TL072CDT,ST
+MCP4822,U6,Housings_SOIC:SOIC-8_3.9x4.9mm_Pitch1.27mm,,C16040,MCP4822-E/SN,Microchip
+16mHz,Y1,Crystals:Crystal_SMD_3225-4pin_3.2x2.5mm_HandSoldering,,C13738,X322516MLB4SI,Yanxing Tech

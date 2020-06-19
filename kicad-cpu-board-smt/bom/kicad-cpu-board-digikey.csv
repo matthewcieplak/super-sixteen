@@ -1,0 +1,24 @@
+Comment,Designator,Footprint,Digikey Part Number,MFG Part Number, Manufacturer
+220uF,C11,Capacitors_SMD:CP_Elec_10x10,493-2179-6-ND,UWT1C221MCL1GS,Nichicon
+47uF,"C12,C10,C2",Capacitors_SMD:CP_Elec_6.3x7.7,493-2225-6-ND,UWT1H470MCL1GS,Nichicon
+100nF,"C13,C9,C1,C14,C6,C5,C4",Capacitors_SMD:C_0603_HandSoldering,399-1100-6-ND,C0603C104Z3VACTU,Kemet
+22pf,"C16,C15,C7,C8",Capacitors_SMD:C_0603_HandSoldering,399-7874-6-ND,C0603C220J1GACTU,Kemet
+1uF,C3,Capacitors_SMD:CP_Elec_4x5.3,493-9985-6-ND,UUX2G010MNL1GS,Nichicon
+1SMB5918BT3G,"D2,D1",Diodes_SMD:D_SMA-SMB_Universal_Handsoldering,1SMB5918BT3GOSDKR-ND,1SMB5918BT3G,ON Semiconductor
+S1KB,"D4,D3",Diodes_SMD:D_SMA-SMB_Universal_Handsoldering,S1KB-FDIDKR-ND,S1KB-13-F,Diodes Incorporated
+ICSP Header,J1,Pin_Headers:Pin_Header_Straight_2x03_Pitch2.54mm,609-3218-ND,67996-406HLF,Amphenol
+Conn_01x10_Male,J2,Pin_Headers:Pin_Header_Straight_1x10_Pitch2.54mm,609-3285-ND,68001-410HLF,Amphenol
+Conn_01x16_Male,J3,Pin_Headers:Pin_Header_Straight_1x16_Pitch2.54mm,609-3267-ND,68000-416HLF,Amphenol
+Conn_02x05_Odd_Even,J4,Pin_Headers:Pin_Header_Straight_2x05_Pitch2.54mm,609-3243-ND,67997-410HLF,Amphenol
+220uH,"L3,L2,L1",Inductors_SMD:L_1210_HandSoldering,445-1545-6-ND,NLCV32T-221K-PF,TDK
+2N7002,"Q2,Q4,Q3,Q1",TO_SOT_Packages_SMD:SOT-23_Handsoldering,2N7002LT1GOSDKR-ND,2N7002LT1G,ON Semiconductor
+1M,R1,Resistors_SMD:R_0603_HandSoldering,RMCF0603FT1M00DKR-ND,RMCF0603FT1M00,"Stackpole Electronics, Inc"
+1k,"R16,R4,R3,R12,R11,R8,R7,R6,R5,R10,R9,R13",Resistors_SMD:R_0603_HandSoldering,RMCF0603FT1K00DKR-ND,RMCF0603FT1K00,"Stackpole Electronics, Inc"
+10k,"R17,R18,R14,R15,R2",Resistors_SMD:R_0603_HandSoldering,RMCF0603FT10K0DKR-ND,RMCF0603FT10K0,"Stackpole Electronics, Inc"
+AMS1117-5.0,U1,TO_SOT_Packages_SMD:SOT-223-3_TabPin2,NCP1117ST50T3GOSDKR-ND,NCP1117ST50T3G,ON Semiconductor
+AMS1117-3.3,U2,TO_SOT_Packages_SMD:SOT-223-3_TabPin2,NCP1117ST33T3GOSDKR-ND,NCP1117ST33T3G,ON Semiconductor
+ATmega328P-AU,U3,Housings_QFP:TQFP-32_7x7mm_Pitch0.8mm,ATMEGA328P-AURDKR-ND,ATMEGA328P-AUR,Microchip Technology
+W25Q80DVSN,U4,Housings_SOIC:SOIC-8_3.9x4.9mm_Pitch1.27mm,W25Q80DVSNIG-ND,W25Q80DVSNIG,Winbond
+TL072,U5,Housings_SOIC:SOIC-8_3.9x4.9mm_Pitch1.27mm,296-1282-6-ND,TL072CDR,Texas Instruments
+MCP4822,U6,Housings_SOIC:SOIC-8_3.9x4.9mm_Pitch1.27mm,MCP4822-E/SN-ND,MCP4822-E/SN,Microchip
+16mHz,Y1,Crystals:Crystal_SMD_3225-4pin_3.2x2.5mm_HandSoldering,SER4069DKR-ND,TSX-3225 16.0000MF09Z-AC0,Epson
