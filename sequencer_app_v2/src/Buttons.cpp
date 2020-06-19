@@ -82,6 +82,7 @@ void Buttons::poll() {
 void Buttons::onButtonPush(uint16_t& event){
 	if (editing_buttons && debounce_timer > BUTTON_DEBOUNCE_TIME) {
 		queue_events_push(&queue, &event);
+		debounce_timer = 0;
 	}
 }
 
