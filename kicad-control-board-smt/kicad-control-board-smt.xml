@@ -2,7 +2,7 @@
 <export version="D">
   <design>
     <source>C:\Users\PC\Documents\Arduino\super-sixteen\kicad-control-board-smt\kicad-control-board-smt.sch</source>
-    <date>12/13/2019 7:47:19 PM</date>
+    <date>5/25/2020 8:55:39 PM</date>
     <tool>Eeschema (5.1.2)-1</tool>
     <sheet number="1" name="/" tstamps="/">
       <title_block>
@@ -22,6 +22,11 @@
     <comp ref="D105">
       <value>LED</value>
       <footprint>LEDs:LED_D3.0mm</footprint>
+      <fields>
+        <field name="Digikey Part Number">C503B-AAS-CY0B0251-ND	</field>
+        <field name="MFG Part Number">C503B-AAS-CY0B0251</field>
+        <field name="Manufacturer">Cree</field>
+      </fields>
       <libsource lib="Device" part="LED" description="Light emitting diode"/>
       <sheetpath names="/" tstamps="/"/>
       <tstamp>5B31C0F6</tstamp>
@@ -29,6 +34,11 @@
     <comp ref="D114">
       <value>LED</value>
       <footprint>LEDs:LED_D3.0mm</footprint>
+      <fields>
+        <field name="Digikey Part Number">C503B-AAS-CY0B0251-ND	</field>
+        <field name="MFG Part Number">C503B-AAS-CY0B0251</field>
+        <field name="Manufacturer">Cree</field>
+      </fields>
       <libsource lib="Device" part="LED" description="Light emitting diode"/>
       <sheetpath names="/" tstamps="/"/>
       <tstamp>5B31C19A</tstamp>
@@ -36,6 +46,11 @@
     <comp ref="D115">
       <value>LED</value>
       <footprint>LEDs:LED_D3.0mm</footprint>
+      <fields>
+        <field name="Digikey Part Number">C503B-AAS-CY0B0251-ND	</field>
+        <field name="MFG Part Number">C503B-AAS-CY0B0251</field>
+        <field name="Manufacturer">Cree</field>
+      </fields>
       <libsource lib="Device" part="LED" description="Light emitting diode"/>
       <sheetpath names="/" tstamps="/"/>
       <tstamp>5B31C1DB</tstamp>
@@ -43,6 +58,11 @@
     <comp ref="D111">
       <value>LED</value>
       <footprint>LEDs:LED_D3.0mm</footprint>
+      <fields>
+        <field name="Digikey Part Number">C503B-AAS-CY0B0251-ND	</field>
+        <field name="MFG Part Number">C503B-AAS-CY0B0251</field>
+        <field name="Manufacturer">Cree</field>
+      </fields>
       <libsource lib="Device" part="LED" description="Light emitting diode"/>
       <sheetpath names="/" tstamps="/"/>
       <tstamp>5B31C20C</tstamp>
@@ -50,6 +70,11 @@
     <comp ref="D106">
       <value>LED</value>
       <footprint>LEDs:LED_D3.0mm</footprint>
+      <fields>
+        <field name="Digikey Part Number">C503B-AAS-CY0B0251-ND	</field>
+        <field name="MFG Part Number">C503B-AAS-CY0B0251</field>
+        <field name="Manufacturer">Cree</field>
+      </fields>
       <libsource lib="Device" part="LED" description="Light emitting diode"/>
       <sheetpath names="/" tstamps="/"/>
       <tstamp>5B31C235</tstamp>
@@ -57,6 +82,11 @@
     <comp ref="D102">
       <value>LED</value>
       <footprint>LEDs:LED_D3.0mm</footprint>
+      <fields>
+        <field name="Digikey Part Number">C503B-AAS-CY0B0251-ND	</field>
+        <field name="MFG Part Number">C503B-AAS-CY0B0251</field>
+        <field name="Manufacturer">Cree</field>
+      </fields>
       <libsource lib="Device" part="LED" description="Light emitting diode"/>
       <sheetpath names="/" tstamps="/"/>
       <tstamp>5B31C260</tstamp>
@@ -64,6 +94,11 @@
     <comp ref="D103">
       <value>LED</value>
       <footprint>LEDs:LED_D3.0mm</footprint>
+      <fields>
+        <field name="Digikey Part Number">C503B-AAS-CY0B0251-ND	</field>
+        <field name="MFG Part Number">C503B-AAS-CY0B0251</field>
+        <field name="Manufacturer">Cree</field>
+      </fields>
       <libsource lib="Device" part="LED" description="Light emitting diode"/>
       <sheetpath names="/" tstamps="/"/>
       <tstamp>5B31C2B1</tstamp>
@@ -71,6 +106,11 @@
     <comp ref="D107">
       <value>LED</value>
       <footprint>LEDs:LED_D3.0mm</footprint>
+      <fields>
+        <field name="Digikey Part Number">C503B-AAS-CY0B0251-ND	</field>
+        <field name="MFG Part Number">C503B-AAS-CY0B0251</field>
+        <field name="Manufacturer">Cree</field>
+      </fields>
       <libsource lib="Device" part="LED" description="Light emitting diode"/>
       <sheetpath names="/" tstamps="/"/>
       <tstamp>5B31C340</tstamp>
@@ -78,6 +118,11 @@
     <comp ref="D112">
       <value>LED</value>
       <footprint>LEDs:LED_D3.0mm</footprint>
+      <fields>
+        <field name="Digikey Part Number">C503B-AAS-CY0B0251-ND	</field>
+        <field name="MFG Part Number">C503B-AAS-CY0B0251</field>
+        <field name="Manufacturer">Cree</field>
+      </fields>
       <libsource lib="Device" part="LED" description="Light emitting diode"/>
       <sheetpath names="/" tstamps="/"/>
       <tstamp>5B31C373</tstamp>
@@ -85,6 +130,11 @@
     <comp ref="D116">
       <value>LED</value>
       <footprint>LEDs:LED_D3.0mm</footprint>
+      <fields>
+        <field name="Digikey Part Number">C503B-AAS-CY0B0251-ND	</field>
+        <field name="MFG Part Number">C503B-AAS-CY0B0251</field>
+        <field name="Manufacturer">Cree</field>
+      </fields>
       <libsource lib="Device" part="LED" description="Light emitting diode"/>
       <sheetpath names="/" tstamps="/"/>
       <tstamp>5B31C3A6</tstamp>
@@ -92,6 +142,11 @@
     <comp ref="D117">
       <value>LED</value>
       <footprint>LEDs:LED_D3.0mm</footprint>
+      <fields>
+        <field name="Digikey Part Number">C503B-AAS-CY0B0251-ND	</field>
+        <field name="MFG Part Number">C503B-AAS-CY0B0251</field>
+        <field name="Manufacturer">Cree</field>
+      </fields>
       <libsource lib="Device" part="LED" description="Light emitting diode"/>
       <sheetpath names="/" tstamps="/"/>
       <tstamp>5B31C3DD</tstamp>
@@ -99,6 +154,11 @@
     <comp ref="D113">
       <value>LED</value>
       <footprint>LEDs:LED_D3.0mm</footprint>
+      <fields>
+        <field name="Digikey Part Number">C503B-AAS-CY0B0251-ND	</field>
+        <field name="MFG Part Number">C503B-AAS-CY0B0251</field>
+        <field name="Manufacturer">Cree</field>
+      </fields>
       <libsource lib="Device" part="LED" description="Light emitting diode"/>
       <sheetpath names="/" tstamps="/"/>
       <tstamp>5B31C41E</tstamp>
@@ -106,6 +166,11 @@
     <comp ref="D108">
       <value>LED</value>
       <footprint>LEDs:LED_D3.0mm</footprint>
+      <fields>
+        <field name="Digikey Part Number">C503B-AAS-CY0B0251-ND	</field>
+        <field name="MFG Part Number">C503B-AAS-CY0B0251</field>
+        <field name="Manufacturer">Cree</field>
+      </fields>
       <libsource lib="Device" part="LED" description="Light emitting diode"/>
       <sheetpath names="/" tstamps="/"/>
       <tstamp>5B31C457</tstamp>
@@ -113,6 +178,11 @@
     <comp ref="D104">
       <value>LED</value>
       <footprint>LEDs:LED_D3.0mm</footprint>
+      <fields>
+        <field name="Digikey Part Number">C503B-AAS-CY0B0251-ND	</field>
+        <field name="MFG Part Number">C503B-AAS-CY0B0251</field>
+        <field name="Manufacturer">Cree</field>
+      </fields>
       <libsource lib="Device" part="LED" description="Light emitting diode"/>
       <sheetpath names="/" tstamps="/"/>
       <tstamp>5B31C492</tstamp>
@@ -121,9 +191,10 @@
       <value>100</value>
       <footprint>Resistors_SMD:R_0603_HandSoldering</footprint>
       <fields>
+        <field name="Digikey Part Number">RMCF0603FT100RDKR-ND</field>
         <field name="LCSC Part Number">C22775</field>
-        <field name="MFG Part Number">0603WAF1000T5E</field>
-        <field name="Manufacturer">Uniroyal</field>
+        <field name="MFG Part Number">RMCF0603FT100R</field>
+        <field name="Manufacturer">Stackpole Electronics Inc</field>
       </fields>
       <libsource lib="Device" part="R" description="Resistor"/>
       <sheetpath names="/" tstamps="/"/>
@@ -133,9 +204,10 @@
       <value>100</value>
       <footprint>Resistors_SMD:R_0603_HandSoldering</footprint>
       <fields>
+        <field name="Digikey Part Number">RMCF0603FT100RDKR-ND</field>
         <field name="LCSC Part Number">C22775</field>
-        <field name="MFG Part Number">0603WAF1000T5E</field>
-        <field name="Manufacturer">Uniroyal</field>
+        <field name="MFG Part Number">RMCF0603FT100R</field>
+        <field name="Manufacturer">Stackpole Electronics Inc</field>
       </fields>
       <libsource lib="Device" part="R" description="Resistor"/>
       <sheetpath names="/" tstamps="/"/>
@@ -145,9 +217,10 @@
       <value>100</value>
       <footprint>Resistors_SMD:R_0603_HandSoldering</footprint>
       <fields>
+        <field name="Digikey Part Number">RMCF0603FT100RDKR-ND</field>
         <field name="LCSC Part Number">C22775</field>
-        <field name="MFG Part Number">0603WAF1000T5E</field>
-        <field name="Manufacturer">Uniroyal</field>
+        <field name="MFG Part Number">RMCF0603FT100R</field>
+        <field name="Manufacturer">Stackpole Electronics Inc</field>
       </fields>
       <libsource lib="Device" part="R" description="Resistor"/>
       <sheetpath names="/" tstamps="/"/>
@@ -157,9 +230,10 @@
       <value>100</value>
       <footprint>Resistors_SMD:R_0603_HandSoldering</footprint>
       <fields>
+        <field name="Digikey Part Number">RMCF0603FT100RDKR-ND</field>
         <field name="LCSC Part Number">C22775</field>
-        <field name="MFG Part Number">0603WAF1000T5E</field>
-        <field name="Manufacturer">Uniroyal</field>
+        <field name="MFG Part Number">RMCF0603FT100R</field>
+        <field name="Manufacturer">Stackpole Electronics Inc</field>
       </fields>
       <libsource lib="Device" part="R" description="Resistor"/>
       <sheetpath names="/" tstamps="/"/>
@@ -169,9 +243,10 @@
       <value>100</value>
       <footprint>Resistors_SMD:R_0603_HandSoldering</footprint>
       <fields>
+        <field name="Digikey Part Number">RMCF0603FT100RDKR-ND</field>
         <field name="LCSC Part Number">C22775</field>
-        <field name="MFG Part Number">0603WAF1000T5E</field>
-        <field name="Manufacturer">Uniroyal</field>
+        <field name="MFG Part Number">RMCF0603FT100R</field>
+        <field name="Manufacturer">Stackpole Electronics Inc</field>
       </fields>
       <libsource lib="Device" part="R" description="Resistor"/>
       <sheetpath names="/" tstamps="/"/>
@@ -181,9 +256,10 @@
       <value>100</value>
       <footprint>Resistors_SMD:R_0603_HandSoldering</footprint>
       <fields>
+        <field name="Digikey Part Number">RMCF0603FT100RDKR-ND</field>
         <field name="LCSC Part Number">C22775</field>
-        <field name="MFG Part Number">0603WAF1000T5E</field>
-        <field name="Manufacturer">Uniroyal</field>
+        <field name="MFG Part Number">RMCF0603FT100R</field>
+        <field name="Manufacturer">Stackpole Electronics Inc</field>
       </fields>
       <libsource lib="Device" part="R" description="Resistor"/>
       <sheetpath names="/" tstamps="/"/>
@@ -193,9 +269,10 @@
       <value>100</value>
       <footprint>Resistors_SMD:R_0603_HandSoldering</footprint>
       <fields>
+        <field name="Digikey Part Number">RMCF0603FT100RDKR-ND</field>
         <field name="LCSC Part Number">C22775</field>
-        <field name="MFG Part Number">0603WAF1000T5E</field>
-        <field name="Manufacturer">Uniroyal</field>
+        <field name="MFG Part Number">RMCF0603FT100R</field>
+        <field name="Manufacturer">Stackpole Electronics Inc</field>
       </fields>
       <libsource lib="Device" part="R" description="Resistor"/>
       <sheetpath names="/" tstamps="/"/>
@@ -205,9 +282,10 @@
       <value>100</value>
       <footprint>Resistors_SMD:R_0603_HandSoldering</footprint>
       <fields>
+        <field name="Digikey Part Number">RMCF0603FT100RDKR-ND</field>
         <field name="LCSC Part Number">C22775</field>
-        <field name="MFG Part Number">0603WAF1000T5E</field>
-        <field name="Manufacturer">Uniroyal</field>
+        <field name="MFG Part Number">RMCF0603FT100R</field>
+        <field name="Manufacturer">Stackpole Electronics Inc</field>
       </fields>
       <libsource lib="Device" part="R" description="Resistor"/>
       <sheetpath names="/" tstamps="/"/>
@@ -217,9 +295,10 @@
       <value>100</value>
       <footprint>Resistors_SMD:R_0603_HandSoldering</footprint>
       <fields>
+        <field name="Digikey Part Number">RMCF0603FT100RDKR-ND</field>
         <field name="LCSC Part Number">C22775</field>
-        <field name="MFG Part Number">0603WAF1000T5E</field>
-        <field name="Manufacturer">Uniroyal</field>
+        <field name="MFG Part Number">RMCF0603FT100R</field>
+        <field name="Manufacturer">Stackpole Electronics Inc</field>
       </fields>
       <libsource lib="Device" part="R" description="Resistor"/>
       <sheetpath names="/" tstamps="/"/>
@@ -229,9 +308,10 @@
       <value>100</value>
       <footprint>Resistors_SMD:R_0603_HandSoldering</footprint>
       <fields>
+        <field name="Digikey Part Number">RMCF0603FT100RDKR-ND</field>
         <field name="LCSC Part Number">C22775</field>
-        <field name="MFG Part Number">0603WAF1000T5E</field>
-        <field name="Manufacturer">Uniroyal</field>
+        <field name="MFG Part Number">RMCF0603FT100R</field>
+        <field name="Manufacturer">Stackpole Electronics Inc</field>
       </fields>
       <libsource lib="Device" part="R" description="Resistor"/>
       <sheetpath names="/" tstamps="/"/>
@@ -241,9 +321,10 @@
       <value>100</value>
       <footprint>Resistors_SMD:R_0603_HandSoldering</footprint>
       <fields>
+        <field name="Digikey Part Number">RMCF0603FT100RDKR-ND</field>
         <field name="LCSC Part Number">C22775</field>
-        <field name="MFG Part Number">0603WAF1000T5E</field>
-        <field name="Manufacturer">Uniroyal</field>
+        <field name="MFG Part Number">RMCF0603FT100R</field>
+        <field name="Manufacturer">Stackpole Electronics Inc</field>
       </fields>
       <libsource lib="Device" part="R" description="Resistor"/>
       <sheetpath names="/" tstamps="/"/>
@@ -253,9 +334,10 @@
       <value>100</value>
       <footprint>Resistors_SMD:R_0603_HandSoldering</footprint>
       <fields>
+        <field name="Digikey Part Number">RMCF0603FT100RDKR-ND</field>
         <field name="LCSC Part Number">C22775</field>
-        <field name="MFG Part Number">0603WAF1000T5E</field>
-        <field name="Manufacturer">Uniroyal</field>
+        <field name="MFG Part Number">RMCF0603FT100R</field>
+        <field name="Manufacturer">Stackpole Electronics Inc</field>
       </fields>
       <libsource lib="Device" part="R" description="Resistor"/>
       <sheetpath names="/" tstamps="/"/>
@@ -264,6 +346,11 @@
     <comp ref="J107">
       <value>Pitch Out</value>
       <footprint>Eurocad:PJ301M-12</footprint>
+      <fields>
+        <field name="Digikey Part Number">N/A</field>
+        <field name="MFG Part Number">WQP-WQP518MA</field>
+        <field name="Manufacturer">Qingpu</field>
+      </fields>
       <libsource lib="eurocad" part="PJ301M-12" description=""/>
       <sheetpath names="/" tstamps="/"/>
       <tstamp>5B34C005</tstamp>
@@ -271,6 +358,11 @@
     <comp ref="J104">
       <value>Gate Out</value>
       <footprint>Eurocad:PJ301M-12</footprint>
+      <fields>
+        <field name="Digikey Part Number">N/A</field>
+        <field name="MFG Part Number">WQP-WQP518MA</field>
+        <field name="Manufacturer">Qingpu</field>
+      </fields>
       <libsource lib="eurocad" part="PJ301M-12" description=""/>
       <sheetpath names="/" tstamps="/"/>
       <tstamp>5B34C0E4</tstamp>
@@ -278,6 +370,11 @@
     <comp ref="J108">
       <value>CV Out</value>
       <footprint>Eurocad:PJ301M-12</footprint>
+      <fields>
+        <field name="Digikey Part Number">N/A</field>
+        <field name="MFG Part Number">WQP-WQP518MA</field>
+        <field name="Manufacturer">Qingpu</field>
+      </fields>
       <libsource lib="eurocad" part="PJ301M-12" description=""/>
       <sheetpath names="/" tstamps="/"/>
       <tstamp>5B34D2B1</tstamp>
@@ -285,6 +382,11 @@
     <comp ref="D109">
       <value>GlideLED</value>
       <footprint>LEDs:LED_D3.0mm</footprint>
+      <fields>
+        <field name="Digikey Part Number">C503B-AAS-CY0B0251-ND	</field>
+        <field name="MFG Part Number">C503B-AAS-CY0B0251</field>
+        <field name="Manufacturer">Cree</field>
+      </fields>
       <libsource lib="Device" part="LED" description="Light emitting diode"/>
       <sheetpath names="/" tstamps="/"/>
       <tstamp>5B354E64</tstamp>
@@ -293,9 +395,9 @@
       <value>1k</value>
       <footprint>Resistors_SMD:R_0603_HandSoldering</footprint>
       <fields>
-        <field name="LCSC Part Number">C21190</field>
-        <field name="MFG Part Number">0603WAF1001T5E</field>
-        <field name="Manufacturer">Uniroyal</field>
+        <field name="Digikey Part Number">RMCF0603FT1K00DKR-ND</field>
+        <field name="MFG Part Number">RMCF0603FT1K00</field>
+        <field name="Manufacturer">Stackpole Electronics Inc</field>
       </fields>
       <libsource lib="Device" part="R" description="Resistor"/>
       <sheetpath names="/" tstamps="/"/>
@@ -305,9 +407,9 @@
       <value>1k</value>
       <footprint>Resistors_SMD:R_0603_HandSoldering</footprint>
       <fields>
-        <field name="LCSC Part Number">C21190</field>
-        <field name="MFG Part Number">0603WAF1001T5E</field>
-        <field name="Manufacturer">Uniroyal</field>
+        <field name="Digikey Part Number">RMCF0603FT1K00DKR-ND</field>
+        <field name="MFG Part Number">RMCF0603FT1K00</field>
+        <field name="Manufacturer">Stackpole Electronics Inc</field>
       </fields>
       <libsource lib="Device" part="R" description="Resistor"/>
       <sheetpath names="/" tstamps="/"/>
@@ -317,9 +419,10 @@
       <value>100k</value>
       <footprint>Resistors_SMD:R_0603_HandSoldering</footprint>
       <fields>
+        <field name="Digikey Part Number">RMCF0603FG100KDKR-ND</field>
         <field name="LCSC Part Number">C25803</field>
-        <field name="MFG Part Number">0603WAF1003T5E</field>
-        <field name="Manufacturer">Uniroyal</field>
+        <field name="MFG Part Number">RMCF0603FG100K</field>
+        <field name="Manufacturer">Stackpole Electronics Inc</field>
       </fields>
       <libsource lib="Device" part="R" description="Resistor"/>
       <sheetpath names="/" tstamps="/"/>
@@ -329,9 +432,10 @@
       <value>680R</value>
       <footprint>Resistors_SMD:R_0603_HandSoldering</footprint>
       <fields>
+        <field name="Digikey Part Number">RMCF0603FT680RCT-ND</field>
         <field name="LCSC Part Number">C23228</field>
-        <field name="MFG Part Number">0603WAF6800T5E</field>
-        <field name="Manufacturer">Uniroyal</field>
+        <field name="MFG Part Number">RMCF0603FT680R</field>
+        <field name="Manufacturer">Stackpole Electronics Inc</field>
       </fields>
       <libsource lib="Device" part="R" description="Resistor"/>
       <sheetpath names="/" tstamps="/"/>
@@ -341,9 +445,10 @@
       <value>680R</value>
       <footprint>Resistors_SMD:R_0603_HandSoldering</footprint>
       <fields>
+        <field name="Digikey Part Number">RMCF0603FT680RCT-ND</field>
         <field name="LCSC Part Number">C23228</field>
-        <field name="MFG Part Number">0603WAF6800T5E</field>
-        <field name="Manufacturer">Uniroyal</field>
+        <field name="MFG Part Number">RMCF0603FT680R</field>
+        <field name="Manufacturer">Stackpole Electronics Inc</field>
       </fields>
       <libsource lib="Device" part="R" description="Resistor"/>
       <sheetpath names="/" tstamps="/"/>
@@ -353,9 +458,10 @@
       <value>680R</value>
       <footprint>Resistors_SMD:R_0603_HandSoldering</footprint>
       <fields>
+        <field name="Digikey Part Number">RMCF0603FT680RCT-ND</field>
         <field name="LCSC Part Number">C23228</field>
-        <field name="MFG Part Number">0603WAF6800T5E</field>
-        <field name="Manufacturer">Uniroyal</field>
+        <field name="MFG Part Number">RMCF0603FT680R</field>
+        <field name="Manufacturer">Stackpole Electronics Inc</field>
       </fields>
       <libsource lib="Device" part="R" description="Resistor"/>
       <sheetpath names="/" tstamps="/"/>
@@ -366,9 +472,10 @@
       <footprint>Capacitors_SMD:CP_Elec_6.3x7.7</footprint>
       <datasheet>~</datasheet>
       <fields>
+        <field name="Digikey Part Number">493-2225-6-ND</field>
         <field name="LCSC Part Number">C108053</field>
         <field name="MFG Part Number">VES470M1HTR-0607</field>
-        <field name="Manufacturer">Lelon</field>
+        <field name="Manufacturer">Nichicon</field>
       </fields>
       <libsource lib="Device" part="CP1" description="Polarized capacitor, US symbol"/>
       <sheetpath names="/" tstamps="/"/>
@@ -379,9 +486,10 @@
       <footprint>Capacitors_SMD:C_0603_HandSoldering</footprint>
       <datasheet>~</datasheet>
       <fields>
+        <field name="Digikey Part Number">399-1100-6-ND</field>
         <field name="LCSC Part Number">C14663</field>
-        <field name="MFG Part Number">CC0603KRX7R9BB104</field>
-        <field name="Manufacturer">Yageo</field>
+        <field name="MFG Part Number">C0603C104Z3VACTU</field>
+        <field name="Manufacturer">Kemet</field>
       </fields>
       <libsource lib="Device" part="C" description="Unpolarized capacitor"/>
       <sheetpath names="/" tstamps="/"/>
@@ -392,9 +500,10 @@
       <footprint>Capacitors_SMD:C_0603_HandSoldering</footprint>
       <datasheet>~</datasheet>
       <fields>
+        <field name="Digikey Part Number">399-7821-6-ND</field>
         <field name="LCSC Part Number">C14858</field>
-        <field name="MFG Part Number">CL10C101JB8NNNC</field>
-        <field name="Manufacturer">Samsung</field>
+        <field name="MFG Part Number">C0603C101J1GACTU</field>
+        <field name="Manufacturer">Kemet</field>
       </fields>
       <libsource lib="Device" part="C" description="Unpolarized capacitor"/>
       <sheetpath names="/" tstamps="/"/>
@@ -405,9 +514,10 @@
       <footprint>Capacitors_SMD:CP_Elec_6.3x7.7</footprint>
       <datasheet>~</datasheet>
       <fields>
+        <field name="Digikey Part Number">493-2225-6-ND</field>
         <field name="LCSC Part Number">C108053</field>
         <field name="MFG Part Number">VES470M1HTR-0607</field>
-        <field name="Manufacturer">Lelon</field>
+        <field name="Manufacturer">Nichicon</field>
       </fields>
       <libsource lib="Device" part="CP1" description="Polarized capacitor, US symbol"/>
       <sheetpath names="/" tstamps="/"/>
@@ -418,9 +528,10 @@
       <footprint>Capacitors_SMD:C_0603_HandSoldering</footprint>
       <datasheet>~</datasheet>
       <fields>
+        <field name="Digikey Part Number">399-1100-6-ND</field>
         <field name="LCSC Part Number">C14663</field>
-        <field name="MFG Part Number">CC0603KRX7R9BB104</field>
-        <field name="Manufacturer">Yageo</field>
+        <field name="MFG Part Number">C0603C104Z3VACTU</field>
+        <field name="Manufacturer">Kemet</field>
       </fields>
       <libsource lib="Device" part="C" description="Unpolarized capacitor"/>
       <sheetpath names="/" tstamps="/"/>
@@ -431,9 +542,10 @@
       <footprint>Capacitors_SMD:C_0603_HandSoldering</footprint>
       <datasheet>~</datasheet>
       <fields>
+        <field name="Digikey Part Number">399-7821-6-ND</field>
         <field name="LCSC Part Number">C14858</field>
-        <field name="MFG Part Number">CL10C101JB8NNNC</field>
-        <field name="Manufacturer">Samsung</field>
+        <field name="MFG Part Number">C0603C101J1GACTU</field>
+        <field name="Manufacturer">Kemet</field>
       </fields>
       <libsource lib="Device" part="C" description="Unpolarized capacitor"/>
       <sheetpath names="/" tstamps="/"/>
@@ -444,9 +556,10 @@
       <footprint>Resistors_SMD:R_0603_HandSoldering</footprint>
       <datasheet>~</datasheet>
       <fields>
+        <field name="Digikey Part Number">RMCF0603FT10K0DKR-ND</field>
         <field name="LCSC Part Number">C25804</field>
-        <field name="MFG Part Number">0603WAF1002T5E</field>
-        <field name="Manufacturer">Uniroyal</field>
+        <field name="MFG Part Number">RMCF0603FT10K0</field>
+        <field name="Manufacturer">Stackpole Electronics Inc</field>
       </fields>
       <libsource lib="Device" part="R" description="Resistor"/>
       <sheetpath names="/" tstamps="/"/>
@@ -457,9 +570,10 @@
       <footprint>Resistors_SMD:R_0603_HandSoldering</footprint>
       <datasheet>~</datasheet>
       <fields>
+        <field name="Digikey Part Number">RMCF0603FT1M00DKR-ND</field>
         <field name="LCSC Part Number">C22935</field>
-        <field name="MFG Part Number">0603WAF1004T5E</field>
-        <field name="Manufacturer">Uniroyal</field>
+        <field name="MFG Part Number">RMCF0603FT1M00</field>
+        <field name="Manufacturer">Stackpole Electronics Inc</field>
       </fields>
       <libsource lib="Device" part="R" description="Resistor"/>
       <sheetpath names="/" tstamps="/"/>
@@ -469,9 +583,10 @@
       <value>100k</value>
       <footprint>Resistors_SMD:R_0603_HandSoldering</footprint>
       <fields>
+        <field name="Digikey Part Number">RMCF0603FG100KDKR-ND</field>
         <field name="LCSC Part Number">C25803</field>
-        <field name="MFG Part Number">0603WAF1003T5E</field>
-        <field name="Manufacturer">Uniroyal</field>
+        <field name="MFG Part Number">RMCF0603FG100K</field>
+        <field name="Manufacturer">Stackpole Electronics Inc</field>
       </fields>
       <libsource lib="Device" part="R" description="Resistor"/>
       <sheetpath names="/" tstamps="/"/>
@@ -482,9 +597,10 @@
       <footprint>Resistors_SMD:R_0603_HandSoldering</footprint>
       <datasheet>~</datasheet>
       <fields>
+        <field name="Digikey Part Number">RMCF0603FT10K0DKR-ND</field>
         <field name="LCSC Part Number">C25804</field>
-        <field name="MFG Part Number">0603WAF1002T5E</field>
-        <field name="Manufacturer">Uniroyal</field>
+        <field name="MFG Part Number">RMCF0603FT10K0</field>
+        <field name="Manufacturer">Stackpole Electronics Inc</field>
       </fields>
       <libsource lib="Device" part="R" description="Resistor"/>
       <sheetpath names="/" tstamps="/"/>
@@ -495,9 +611,10 @@
       <footprint>Resistors_SMD:R_0603_HandSoldering</footprint>
       <datasheet>~</datasheet>
       <fields>
+        <field name="Digikey Part Number">RMCF0603FT1M00DKR-ND</field>
         <field name="LCSC Part Number">C22935</field>
-        <field name="MFG Part Number">0603WAF1004T5E</field>
-        <field name="Manufacturer">Uniroyal</field>
+        <field name="MFG Part Number">RMCF0603FT1M00</field>
+        <field name="Manufacturer">Stackpole Electronics Inc</field>
       </fields>
       <libsource lib="Device" part="R" description="Resistor"/>
       <sheetpath names="/" tstamps="/"/>
@@ -506,6 +623,11 @@
     <comp ref="J103">
       <value>BA56_3DIG_7SEG</value>
       <footprint>Eurocad:BA56_3DIG_7SEG</footprint>
+      <fields>
+        <field name="Digikey Part Number">754-1656-5-ND</field>
+        <field name="MFG Part Number">BA56-12GWA</field>
+        <field name="Manufacturer">Kingbright</field>
+      </fields>
       <libsource lib="eurocad" part="BA56_3DIG_7SEG" description=""/>
       <sheetpath names="/" tstamps="/"/>
       <tstamp>5E92E7D5</tstamp>
@@ -513,6 +635,11 @@
     <comp ref="SW105">
       <value>Repeat</value>
       <footprint>Buttons_Switches_THT:Push_E-Switch_KS01Q01</footprint>
+      <fields>
+        <field name="Digikey Part Number">401-1992-ND</field>
+        <field name="MFG Part Number">D6R40 F2 LFS</field>
+        <field name="Manufacturer">C&amp;K</field>
+      </fields>
       <libsource lib="Switch" part="SW_Push" description="Push button switch, generic, two pins"/>
       <sheetpath names="/" tstamps="/"/>
       <tstamp>5C500D20</tstamp>
@@ -520,6 +647,11 @@
     <comp ref="SW106">
       <value>Mutate</value>
       <footprint>Buttons_Switches_THT:Push_E-Switch_KS01Q01</footprint>
+      <fields>
+        <field name="Digikey Part Number">401-1992-ND</field>
+        <field name="MFG Part Number">D6R40 F2 LFS</field>
+        <field name="Manufacturer">C&amp;K</field>
+      </fields>
       <libsource lib="Switch" part="SW_Push" description="Push button switch, generic, two pins"/>
       <sheetpath names="/" tstamps="/"/>
       <tstamp>5C5017FE</tstamp>
@@ -529,9 +661,10 @@
       <footprint>Housings_SOIC:SOIC-16_3.9x9.9mm_Pitch1.27mm</footprint>
       <datasheet>http://www.ti.com/lit/ds/symlink/sn74hc595.pdf</datasheet>
       <fields>
+        <field name="Digikey Part Number">1727-2821-6-ND</field>
         <field name="LCSC Part Number">C5947</field>
         <field name="MFG Part Number">74HC595D,118</field>
-        <field name="Manufacturer">Nexperia</field>
+        <field name="Manufacturer">Nexperia USA, Inc</field>
       </fields>
       <libsource lib="74xx" part="74HC595" description="8-bit serial in/out Shift Register 3-State Outputs"/>
       <sheetpath names="/" tstamps="/"/>
@@ -540,6 +673,11 @@
     <comp ref="D110">
       <value>LED</value>
       <footprint>LEDs:LED_D3.0mm</footprint>
+      <fields>
+        <field name="Digikey Part Number">C503B-AAS-CY0B0251-ND	</field>
+        <field name="MFG Part Number">C503B-AAS-CY0B0251</field>
+        <field name="Manufacturer">Cree</field>
+      </fields>
       <libsource lib="Device" part="LED" description="Light emitting diode"/>
       <sheetpath names="/" tstamps="/"/>
       <tstamp>5B31C175</tstamp>
@@ -547,6 +685,11 @@
     <comp ref="D101">
       <value>LED</value>
       <footprint>LEDs:LED_D3.0mm</footprint>
+      <fields>
+        <field name="Digikey Part Number">C503B-AAS-CY0B0251-ND	</field>
+        <field name="MFG Part Number">C503B-AAS-CY0B0251</field>
+        <field name="Manufacturer">Cree</field>
+      </fields>
       <libsource lib="Device" part="LED" description="Light emitting diode"/>
       <sheetpath names="/" tstamps="/"/>
       <tstamp>5B31C0A1</tstamp>
@@ -556,9 +699,10 @@
       <footprint>Housings_SOIC:SOIC-16_3.9x9.9mm_Pitch1.27mm</footprint>
       <datasheet>http://www.ti.com/lit/ds/symlink/sn74hc595.pdf</datasheet>
       <fields>
+        <field name="Digikey Part Number">1727-2821-6-ND</field>
         <field name="LCSC Part Number">C5947</field>
         <field name="MFG Part Number">74HC595D,118</field>
-        <field name="Manufacturer">Nexperia</field>
+        <field name="Manufacturer">Nexperia USA, Inc</field>
       </fields>
       <libsource lib="74xx" part="74HC595" description="8-bit serial in/out Shift Register 3-State Outputs"/>
       <sheetpath names="/" tstamps="/"/>
@@ -569,9 +713,10 @@
       <footprint>Capacitors_SMD:CP_Elec_6.3x7.7</footprint>
       <datasheet>~</datasheet>
       <fields>
+        <field name="Digikey Part Number">493-2225-6-ND</field>
         <field name="LCSC Part Number">C108053</field>
         <field name="MFG Part Number">VES470M1HTR-0607</field>
-        <field name="Manufacturer">Lelon</field>
+        <field name="Manufacturer">Nichicon</field>
       </fields>
       <libsource lib="Device" part="CP1" description="Polarized capacitor, US symbol"/>
       <sheetpath names="/" tstamps="/"/>
@@ -582,9 +727,10 @@
       <footprint>Capacitors_SMD:C_0603_HandSoldering</footprint>
       <datasheet>~</datasheet>
       <fields>
+        <field name="Digikey Part Number">399-1100-6-ND</field>
         <field name="LCSC Part Number">C14663</field>
-        <field name="MFG Part Number">CC0603KRX7R9BB104</field>
-        <field name="Manufacturer">Yageo</field>
+        <field name="MFG Part Number">C0603C104Z3VACTU</field>
+        <field name="Manufacturer">Kemet</field>
       </fields>
       <libsource lib="Device" part="C" description="Unpolarized capacitor"/>
       <sheetpath names="/" tstamps="/"/>
@@ -595,9 +741,10 @@
       <footprint>Capacitors_SMD:C_0603_HandSoldering</footprint>
       <datasheet>~</datasheet>
       <fields>
+        <field name="Digikey Part Number">399-7821-6-ND</field>
         <field name="LCSC Part Number">C14858</field>
-        <field name="MFG Part Number">CL10C101JB8NNNC</field>
-        <field name="Manufacturer">Samsung</field>
+        <field name="MFG Part Number">C0603C101J1GACTU</field>
+        <field name="Manufacturer">Kemet</field>
       </fields>
       <libsource lib="Device" part="C" description="Unpolarized capacitor"/>
       <sheetpath names="/" tstamps="/"/>
@@ -607,6 +754,7 @@
       <value>MCP23S17</value>
       <footprint>Housings_SOIC:SOIC-28W_7.5x18.7mm_Pitch1.27mm</footprint>
       <fields>
+        <field name="Digikey Part Number">MCP23S17-E/SO-ND</field>
         <field name="LCSC Part Number">C145413</field>
         <field name="MFG Part Number">MCP23S17-E/SO</field>
         <field name="Manufacturer">Microchip</field>
@@ -620,9 +768,9 @@
       <footprint>Resistors_SMD:R_0603_HandSoldering</footprint>
       <datasheet>~</datasheet>
       <fields>
-        <field name="LCSC Part Number">C21190</field>
-        <field name="MFG Part Number">0603WAF1001T5E</field>
-        <field name="Manufacturer">Uniroyal</field>
+        <field name="Digikey Part Number">RMCF0603FT1K00DKR-ND</field>
+        <field name="MFG Part Number">RMCF0603FT1K00</field>
+        <field name="Manufacturer">Stackpole Electronics Inc</field>
       </fields>
       <libsource lib="Device" part="R" description="Resistor"/>
       <sheetpath names="/" tstamps="/"/>
@@ -631,6 +779,11 @@
     <comp ref="J109">
       <value>Reset In</value>
       <footprint>Eurocad:PJ301M-12</footprint>
+      <fields>
+        <field name="Digikey Part Number">N/A</field>
+        <field name="MFG Part Number">WQP-WQP518MA</field>
+        <field name="Manufacturer">Qingpu</field>
+      </fields>
       <libsource lib="eurocad" part="PJ301M-12" description=""/>
       <sheetpath names="/" tstamps="/"/>
       <tstamp>634B3A5E</tstamp>
@@ -638,6 +791,11 @@
     <comp ref="J106">
       <value>Clock In</value>
       <footprint>Eurocad:PJ301M-12</footprint>
+      <fields>
+        <field name="Digikey Part Number">N/A</field>
+        <field name="MFG Part Number">WQP-WQP518MA</field>
+        <field name="Manufacturer">Qingpu</field>
+      </fields>
       <libsource lib="eurocad" part="PJ301M-12" description=""/>
       <sheetpath names="/" tstamps="/"/>
       <tstamp>634B3B76</tstamp>
@@ -645,6 +803,11 @@
     <comp ref="J105">
       <value>Clock Out</value>
       <footprint>Eurocad:PJ301M-12</footprint>
+      <fields>
+        <field name="Digikey Part Number">N/A</field>
+        <field name="MFG Part Number">WQP-WQP518MA</field>
+        <field name="Manufacturer">Qingpu</field>
+      </fields>
       <libsource lib="eurocad" part="PJ301M-12" description=""/>
       <sheetpath names="/" tstamps="/"/>
       <tstamp>634B3C66</tstamp>
@@ -652,6 +815,11 @@
     <comp ref="D118">
       <value>LED</value>
       <footprint>LEDs:LED_D3.0mm</footprint>
+      <fields>
+        <field name="Digikey Part Number">C503B-AAS-CY0B0251-ND	</field>
+        <field name="MFG Part Number">C503B-AAS-CY0B0251</field>
+        <field name="Manufacturer">Cree</field>
+      </fields>
       <libsource lib="Device" part="LED" description="Light emitting diode"/>
       <sheetpath names="/" tstamps="/"/>
       <tstamp>5DFA8CC0</tstamp>
@@ -660,6 +828,11 @@
       <value>Rotary_Encoder</value>
       <footprint>Rotary_Encoder:RotaryEncoder_Alps_EC12E_Vertical_H20mm</footprint>
       <datasheet>~</datasheet>
+      <fields>
+        <field name="Digikey Part Number">PEC11R-4215F-N0024-ND</field>
+        <field name="MFG Part Number">PEC11R-4215F-N0024</field>
+        <field name="Manufacturer">Bourns, Inc</field>
+      </fields>
       <libsource lib="Device" part="Rotary_Encoder" description="Rotary encoder, dual channel, incremental quadrate outputs"/>
       <sheetpath names="/" tstamps="/"/>
       <tstamp>5E4445EE</tstamp>
@@ -668,14 +841,24 @@
       <value>Conn_01x10_Female</value>
       <footprint>Pin_Headers:Pin_Header_Straight_1x10_Pitch2.54mm</footprint>
       <datasheet>~</datasheet>
+      <fields>
+        <field name="Digikey Part Number">S7008-ND</field>
+        <field name="MFG Part Number">PPTC101LFBN-RC</field>
+        <field name="Manufacturer">Sullins</field>
+      </fields>
       <libsource lib="Connector" part="Conn_01x10_Female" description="Generic connector, single row, 01x10, script generated (kicad-library-utils/schlib/autogen/connector/)"/>
       <sheetpath names="/" tstamps="/"/>
       <tstamp>5CE432AC</tstamp>
     </comp>
     <comp ref="J102">
-      <value>Conn_01x16_Male</value>
+      <value>Conn_01x16_Female</value>
       <footprint>Pin_Headers:Pin_Header_Straight_1x16_Pitch2.54mm</footprint>
       <datasheet>~</datasheet>
+      <fields>
+        <field name="Digikey Part Number">S7014-ND</field>
+        <field name="MFG Part Number">PPTC161LFBN-RC</field>
+        <field name="Manufacturer">Sullins</field>
+      </fields>
       <libsource lib="Connector" part="Conn_01x16_Male" description="Generic connector, single row, 01x16, script generated (kicad-library-utils/schlib/autogen/connector/)"/>
       <sheetpath names="/" tstamps="/"/>
       <tstamp>5DF9687D</tstamp>
@@ -684,6 +867,11 @@
       <value>SW_Push</value>
       <footprint>Buttons_Switches_THT:SW_PUSH_6mm</footprint>
       <datasheet>~</datasheet>
+      <fields>
+        <field name="Digikey Part Number">EG1861-ND</field>
+        <field name="MFG Part Number">TL1105SPF160Q</field>
+        <field name="Manufacturer">E-Switch</field>
+      </fields>
       <libsource lib="Switch" part="SW_Push" description="Push button switch, generic, two pins"/>
       <sheetpath names="/" tstamps="/"/>
       <tstamp>5DFD1D4E</tstamp>
@@ -692,6 +880,11 @@
       <value>SW_Push</value>
       <footprint>Buttons_Switches_THT:SW_PUSH_6mm</footprint>
       <datasheet>~</datasheet>
+      <fields>
+        <field name="Digikey Part Number">EG1861-ND</field>
+        <field name="MFG Part Number">TL1105SPF160Q</field>
+        <field name="Manufacturer">E-Switch</field>
+      </fields>
       <libsource lib="Switch" part="SW_Push" description="Push button switch, generic, two pins"/>
       <sheetpath names="/" tstamps="/"/>
       <tstamp>5E298545</tstamp>
@@ -700,6 +893,11 @@
       <value>SW_Push</value>
       <footprint>Buttons_Switches_THT:SW_PUSH_6mm</footprint>
       <datasheet>~</datasheet>
+      <fields>
+        <field name="Digikey Part Number">EG1861-ND</field>
+        <field name="MFG Part Number">TL1105SPF160Q</field>
+        <field name="Manufacturer">E-Switch</field>
+      </fields>
       <libsource lib="Switch" part="SW_Push" description="Push button switch, generic, two pins"/>
       <sheetpath names="/" tstamps="/"/>
       <tstamp>5E298983</tstamp>
@@ -708,6 +906,11 @@
       <value>SW_Push</value>
       <footprint>Buttons_Switches_THT:SW_PUSH_6mm</footprint>
       <datasheet>~</datasheet>
+      <fields>
+        <field name="Digikey Part Number">EG1861-ND</field>
+        <field name="MFG Part Number">TL1105SPF160Q</field>
+        <field name="Manufacturer">E-Switch</field>
+      </fields>
       <libsource lib="Switch" part="SW_Push" description="Push button switch, generic, two pins"/>
       <sheetpath names="/" tstamps="/"/>
       <tstamp>5E2E64AE</tstamp>
@@ -716,6 +919,11 @@
       <value>SW_Push</value>
       <footprint>Buttons_Switches_THT:SW_PUSH_6mm</footprint>
       <datasheet>~</datasheet>
+      <fields>
+        <field name="Digikey Part Number">EG1861-ND</field>
+        <field name="MFG Part Number">TL1105SPF160Q</field>
+        <field name="Manufacturer">E-Switch</field>
+      </fields>
       <libsource lib="Switch" part="SW_Push" description="Push button switch, generic, two pins"/>
       <sheetpath names="/" tstamps="/"/>
       <tstamp>5E2E6838</tstamp>
@@ -724,6 +932,11 @@
       <value>SW_Push</value>
       <footprint>Buttons_Switches_THT:SW_PUSH_6mm</footprint>
       <datasheet>~</datasheet>
+      <fields>
+        <field name="Digikey Part Number">EG1861-ND</field>
+        <field name="MFG Part Number">TL1105SPF160Q</field>
+        <field name="Manufacturer">E-Switch</field>
+      </fields>
       <libsource lib="Switch" part="SW_Push" description="Push button switch, generic, two pins"/>
       <sheetpath names="/" tstamps="/"/>
       <tstamp>5E2E6C7D</tstamp>
@@ -732,6 +945,11 @@
       <value>SW_Push</value>
       <footprint>Buttons_Switches_THT:SW_PUSH_6mm</footprint>
       <datasheet>~</datasheet>
+      <fields>
+        <field name="Digikey Part Number">EG1861-ND</field>
+        <field name="MFG Part Number">TL1105SPF160Q</field>
+        <field name="Manufacturer">E-Switch</field>
+      </fields>
       <libsource lib="Switch" part="SW_Push" description="Push button switch, generic, two pins"/>
       <sheetpath names="/" tstamps="/"/>
       <tstamp>5E2EB8AF</tstamp>
@@ -740,6 +958,11 @@
       <value>SW_Push</value>
       <footprint>Buttons_Switches_THT:SW_PUSH_6mm</footprint>
       <datasheet>~</datasheet>
+      <fields>
+        <field name="Digikey Part Number">EG1861-ND</field>
+        <field name="MFG Part Number">TL1105SPF160Q</field>
+        <field name="Manufacturer">E-Switch</field>
+      </fields>
       <libsource lib="Switch" part="SW_Push" description="Push button switch, generic, two pins"/>
       <sheetpath names="/" tstamps="/"/>
       <tstamp>5E2EB8B5</tstamp>
@@ -748,6 +971,11 @@
       <value>SW_Push</value>
       <footprint>Buttons_Switches_THT:SW_PUSH_6mm</footprint>
       <datasheet>~</datasheet>
+      <fields>
+        <field name="Digikey Part Number">EG1861-ND</field>
+        <field name="MFG Part Number">TL1105SPF160Q</field>
+        <field name="Manufacturer">E-Switch</field>
+      </fields>
       <libsource lib="Switch" part="SW_Push" description="Push button switch, generic, two pins"/>
       <sheetpath names="/" tstamps="/"/>
       <tstamp>5E2EB8BB</tstamp>
@@ -756,6 +984,11 @@
       <value>SW_Push</value>
       <footprint>Buttons_Switches_THT:SW_PUSH_6mm</footprint>
       <datasheet>~</datasheet>
+      <fields>
+        <field name="Digikey Part Number">EG1861-ND</field>
+        <field name="MFG Part Number">TL1105SPF160Q</field>
+        <field name="Manufacturer">E-Switch</field>
+      </fields>
       <libsource lib="Switch" part="SW_Push" description="Push button switch, generic, two pins"/>
       <sheetpath names="/" tstamps="/"/>
       <tstamp>5E2EB8C1</tstamp>
@@ -764,6 +997,11 @@
       <value>SW_Push</value>
       <footprint>Buttons_Switches_THT:SW_PUSH_6mm</footprint>
       <datasheet>~</datasheet>
+      <fields>
+        <field name="Digikey Part Number">EG1861-ND</field>
+        <field name="MFG Part Number">TL1105SPF160Q</field>
+        <field name="Manufacturer">E-Switch</field>
+      </fields>
       <libsource lib="Switch" part="SW_Push" description="Push button switch, generic, two pins"/>
       <sheetpath names="/" tstamps="/"/>
       <tstamp>5E313415</tstamp>
@@ -772,6 +1010,11 @@
       <value>SW_Push</value>
       <footprint>Buttons_Switches_THT:SW_PUSH_6mm</footprint>
       <datasheet>~</datasheet>
+      <fields>
+        <field name="Digikey Part Number">EG1861-ND</field>
+        <field name="MFG Part Number">TL1105SPF160Q</field>
+        <field name="Manufacturer">E-Switch</field>
+      </fields>
       <libsource lib="Switch" part="SW_Push" description="Push button switch, generic, two pins"/>
       <sheetpath names="/" tstamps="/"/>
       <tstamp>5E31341B</tstamp>
@@ -780,6 +1023,11 @@
       <value>SW_Push</value>
       <footprint>Buttons_Switches_THT:SW_PUSH_6mm</footprint>
       <datasheet>~</datasheet>
+      <fields>
+        <field name="Digikey Part Number">EG1861-ND</field>
+        <field name="MFG Part Number">TL1105SPF160Q</field>
+        <field name="Manufacturer">E-Switch</field>
+      </fields>
       <libsource lib="Switch" part="SW_Push" description="Push button switch, generic, two pins"/>
       <sheetpath names="/" tstamps="/"/>
       <tstamp>5E313421</tstamp>
@@ -788,6 +1036,11 @@
       <value>SW_Push</value>
       <footprint>Buttons_Switches_THT:SW_PUSH_6mm</footprint>
       <datasheet>~</datasheet>
+      <fields>
+        <field name="Digikey Part Number">EG1861-ND</field>
+        <field name="MFG Part Number">TL1105SPF160Q</field>
+        <field name="Manufacturer">E-Switch</field>
+      </fields>
       <libsource lib="Switch" part="SW_Push" description="Push button switch, generic, two pins"/>
       <sheetpath names="/" tstamps="/"/>
       <tstamp>5E313427</tstamp>
@@ -796,6 +1049,11 @@
       <value>SW_Push</value>
       <footprint>Buttons_Switches_THT:SW_PUSH_6mm</footprint>
       <datasheet>~</datasheet>
+      <fields>
+        <field name="Digikey Part Number">EG1861-ND</field>
+        <field name="MFG Part Number">TL1105SPF160Q</field>
+        <field name="Manufacturer">E-Switch</field>
+      </fields>
       <libsource lib="Switch" part="SW_Push" description="Push button switch, generic, two pins"/>
       <sheetpath names="/" tstamps="/"/>
       <tstamp>5E2BF60A</tstamp>
@@ -804,6 +1062,11 @@
       <value>Glide</value>
       <footprint>Buttons_Switches_THT:SW_PUSH_6mm</footprint>
       <datasheet>~</datasheet>
+      <fields>
+        <field name="Digikey Part Number">EG1861-ND</field>
+        <field name="MFG Part Number">TL1105SPF160Q</field>
+        <field name="Manufacturer">E-Switch</field>
+      </fields>
       <libsource lib="Switch" part="SW_Push" description="Push button switch, generic, two pins"/>
       <sheetpath names="/" tstamps="/"/>
       <tstamp>5E92BF49</tstamp>
@@ -812,6 +1075,11 @@
       <value>Shift</value>
       <footprint>Buttons_Switches_THT:SW_PUSH_6mm</footprint>
       <datasheet>~</datasheet>
+      <fields>
+        <field name="Digikey Part Number">EG1861-ND</field>
+        <field name="MFG Part Number">TL1105SPF160Q</field>
+        <field name="Manufacturer">E-Switch</field>
+      </fields>
       <libsource lib="Switch" part="SW_Push" description="Push button switch, generic, two pins"/>
       <sheetpath names="/" tstamps="/"/>
       <tstamp>5E92CE04</tstamp>
@@ -820,6 +1088,11 @@
       <value>Play</value>
       <footprint>Buttons_Switches_THT:SW_PUSH_6mm</footprint>
       <datasheet>~</datasheet>
+      <fields>
+        <field name="Digikey Part Number">EG1861-ND</field>
+        <field name="MFG Part Number">TL1105SPF160Q</field>
+        <field name="Manufacturer">E-Switch</field>
+      </fields>
       <libsource lib="Switch" part="SW_Push" description="Push button switch, generic, two pins"/>
       <sheetpath names="/" tstamps="/"/>
       <tstamp>5E92CE0A</tstamp>
@@ -828,6 +1101,11 @@
       <value>Load</value>
       <footprint>Buttons_Switches_THT:SW_PUSH_6mm</footprint>
       <datasheet>~</datasheet>
+      <fields>
+        <field name="Digikey Part Number">EG1861-ND</field>
+        <field name="MFG Part Number">TL1105SPF160Q</field>
+        <field name="Manufacturer">E-Switch</field>
+      </fields>
       <libsource lib="Switch" part="SW_Push" description="Push button switch, generic, two pins"/>
       <sheetpath names="/" tstamps="/"/>
       <tstamp>5E92CE10</tstamp>
@@ -836,6 +1114,11 @@
       <value>Save</value>
       <footprint>Buttons_Switches_THT:SW_PUSH_6mm</footprint>
       <datasheet>~</datasheet>
+      <fields>
+        <field name="Digikey Part Number">EG1861-ND</field>
+        <field name="MFG Part Number">TL1105SPF160Q</field>
+        <field name="Manufacturer">E-Switch</field>
+      </fields>
       <libsource lib="Switch" part="SW_Push" description="Push button switch, generic, two pins"/>
       <sheetpath names="/" tstamps="/"/>
       <tstamp>5E92CE16</tstamp>
@@ -845,9 +1128,10 @@
       <footprint>TO_SOT_Packages_SMD:SOT-23_Handsoldering</footprint>
       <datasheet>https://www.fairchildsemi.com/datasheets/2N/2N3906.pdf</datasheet>
       <fields>
+        <field name="Digikey Part Number">MMBT3906LT1GOSDKR-ND</field>
         <field name="LCSC Part Number">C53444</field>
         <field name="MFG Part Number">MMBT3906LT1G</field>
-        <field name="Manufacturer">On Semicon</field>
+        <field name="Manufacturer">ON Semiconductor</field>
       </fields>
       <libsource lib="Transistor_BJT" part="MMBT3906" description="-0.2A Ic, -40V Vce, Small Signal PNP Transistor, SOT-23"/>
       <sheetpath names="/" tstamps="/"/>
@@ -858,9 +1142,10 @@
       <footprint>TO_SOT_Packages_SMD:SOT-23_Handsoldering</footprint>
       <datasheet>https://www.fairchildsemi.com/datasheets/2N/2N3906.pdf</datasheet>
       <fields>
+        <field name="Digikey Part Number">MMBT3906LT1GOSDKR-ND</field>
         <field name="LCSC Part Number">C53444</field>
         <field name="MFG Part Number">MMBT3906LT1G</field>
-        <field name="Manufacturer">On Semicon</field>
+        <field name="Manufacturer">ON Semiconductor</field>
       </fields>
       <libsource lib="Transistor_BJT" part="MMBT3906" description="-0.2A Ic, -40V Vce, Small Signal PNP Transistor, SOT-23"/>
       <sheetpath names="/" tstamps="/"/>
@@ -871,9 +1156,10 @@
       <footprint>TO_SOT_Packages_SMD:SOT-23_Handsoldering</footprint>
       <datasheet>https://www.fairchildsemi.com/datasheets/2N/2N3906.pdf</datasheet>
       <fields>
+        <field name="Digikey Part Number">MMBT3906LT1GOSDKR-ND</field>
         <field name="LCSC Part Number">C53444</field>
         <field name="MFG Part Number">MMBT3906LT1G</field>
-        <field name="Manufacturer">On Semicon</field>
+        <field name="Manufacturer">ON Semiconductor</field>
       </fields>
       <libsource lib="Transistor_BJT" part="MMBT3906" description="-0.2A Ic, -40V Vce, Small Signal PNP Transistor, SOT-23"/>
       <sheetpath names="/" tstamps="/"/>
@@ -884,9 +1170,10 @@
       <footprint>TO_SOT_Packages_SMD:SOT-23_Handsoldering</footprint>
       <datasheet>https://www.fairchildsemi.com/datasheets/2N/2N3904.pdf</datasheet>
       <fields>
+        <field name="Digikey Part Number">MMBT3904LT3GOSDKR-ND</field>
         <field name="LCSC Part Number">C20526</field>
-        <field name="MFG Part Number">MMBT3904</field>
-        <field name="Manufacturer">Changjiang</field>
+        <field name="MFG Part Number">MMBT3904LT3G</field>
+        <field name="Manufacturer">ON Semiconductor</field>
       </fields>
       <libsource lib="Transistor_BJT" part="MMBT3904" description="0.2A Ic, 40V Vce, Small Signal NPN Transistor, SOT-23"/>
       <sheetpath names="/" tstamps="/"/>
@@ -897,9 +1184,10 @@
       <footprint>TO_SOT_Packages_SMD:SOT-23_Handsoldering</footprint>
       <datasheet>https://www.fairchildsemi.com/datasheets/2N/2N3904.pdf</datasheet>
       <fields>
+        <field name="Digikey Part Number">MMBT3904LT3GOSDKR-ND</field>
         <field name="LCSC Part Number">C20526</field>
-        <field name="MFG Part Number">MMBT3904</field>
-        <field name="Manufacturer">Changjiang</field>
+        <field name="MFG Part Number">MMBT3904LT3G</field>
+        <field name="Manufacturer">ON Semiconductor</field>
       </fields>
       <libsource lib="Transistor_BJT" part="MMBT3904" description="0.2A Ic, 40V Vce, Small Signal NPN Transistor, SOT-23"/>
       <sheetpath names="/" tstamps="/"/>
@@ -910,9 +1198,9 @@
       <footprint>Diodes_SMD:D_SMA_Handsoldering</footprint>
       <datasheet>~</datasheet>
       <fields>
-        <field name="LCSC Part Number">C22452</field>
-        <field name="MFG Part Number">SS54</field>
-        <field name="Manufacturer">MDD</field>
+        <field name="Digikey Part Number">TSS54URGGDKR-ND</field>
+        <field name="MFG Part Number">TSS54U RGG</field>
+        <field name="Manufacturer">Taiwan Semiconductor</field>
       </fields>
       <libsource lib="Device" part="D_Schottky" description="Schottky diode"/>
       <sheetpath names="/" tstamps="/"/>
@@ -922,6 +1210,11 @@
       <value>R_POT</value>
       <footprint>Potentiometers:Potentiometer_Alps_RK09K_Horizontal</footprint>
       <datasheet>~</datasheet>
+      <fields>
+        <field name="Digikey Part Number">N/A</field>
+        <field name="MFG Part Number">RV09AF-40-20K-B100K</field>
+        <field name="Manufacturer">Alpha</field>
+      </fields>
       <libsource lib="Device" part="R_POT" description="Potentiometer"/>
       <sheetpath names="/" tstamps="/"/>
       <tstamp>5ECA626B</tstamp>
@@ -930,6 +1223,11 @@
       <value>R_POT</value>
       <footprint>Potentiometers:Potentiometer_Alps_RK09K_Horizontal</footprint>
       <datasheet>~</datasheet>
+      <fields>
+        <field name="Digikey Part Number">N/A</field>
+        <field name="MFG Part Number">RV09AF-40-20K-B100K</field>
+        <field name="Manufacturer">Alpha</field>
+      </fields>
       <libsource lib="Device" part="R_POT" description="Potentiometer"/>
       <sheetpath names="/" tstamps="/"/>
       <tstamp>5ECA6896</tstamp>
@@ -938,6 +1236,11 @@
       <value>R_POT</value>
       <footprint>Potentiometers:Potentiometer_Alps_RK09K_Horizontal</footprint>
       <datasheet>~</datasheet>
+      <fields>
+        <field name="Digikey Part Number">N/A</field>
+        <field name="MFG Part Number">RV09AF-40-20K-B100K</field>
+        <field name="Manufacturer">Alpha</field>
+      </fields>
       <libsource lib="Device" part="R_POT" description="Potentiometer"/>
       <sheetpath names="/" tstamps="/"/>
       <tstamp>5ECA6C3A</tstamp>
@@ -946,6 +1249,11 @@
       <value>SW_Push</value>
       <footprint>Buttons_Switches_THT:SW_PUSH_6mm</footprint>
       <datasheet>~</datasheet>
+      <fields>
+        <field name="Digikey Part Number">EG1861-ND</field>
+        <field name="MFG Part Number">TL1105SPF160Q</field>
+        <field name="Manufacturer">E-Switch</field>
+      </fields>
       <libsource lib="Switch" part="SW_Push" description="Push button switch, generic, two pins"/>
       <sheetpath names="/" tstamps="/"/>
       <tstamp>5E271495</tstamp>
@@ -954,6 +1262,11 @@
       <value>R_POT</value>
       <footprint>Potentiometers:Potentiometer_Alps_RK09K_Horizontal</footprint>
       <datasheet>~</datasheet>
+      <fields>
+        <field name="Digikey Part Number">N/A</field>
+        <field name="MFG Part Number">RV09AF-40-20K-B100K</field>
+        <field name="Manufacturer">Alpha</field>
+      </fields>
       <libsource lib="Device" part="R_POT" description="Potentiometer"/>
       <sheetpath names="/" tstamps="/"/>
       <tstamp>5ECA52E4</tstamp>
