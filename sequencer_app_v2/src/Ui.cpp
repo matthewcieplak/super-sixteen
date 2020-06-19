@@ -325,11 +325,15 @@ void Ui::invertEncoder(){
 
 void Ui::onPlayButton(bool state){
 	if (state && shift_state) {
-		sequencerVar2->onReset(false);
+		ledMatrix.reset();
+		ledMatrix.setMatrixFromSequencer(current_bar);
+		sequencerVar2->onReset();
 		return;
 	}
 	if (state && isSequencing()) {
 		cancelSaveOrLoad();
+		ledMatrix.reset();
+		ledMatrix.setMatrixFromSequencer(current_bar);
 		sequencerVar2->onPlayButton();
 	}
 }
