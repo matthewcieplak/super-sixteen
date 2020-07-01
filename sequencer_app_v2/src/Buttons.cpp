@@ -23,6 +23,7 @@ volatile struct queue_events queue;
 bool editing_buttons = false;
 const byte BUTTON_DEBOUNCE_TIME = 10;
 elapsedMillis debounce_timer;
+volatile uint16_t bouncing_button = 0x00;
 
 
 void Buttons::init() {
@@ -80,8 +81,12 @@ void Buttons::poll() {
 }
 
 void Buttons::onButtonPush(uint16_t& event){
-	if (editing_buttons && debounce_timer > BUTTON_DEBOUNCE_TIME) {
+	if (editing_buttons) {
+		if (debounce_timer < BUTTON_DEBOUNCE_TIME && (event & 0x00FF) == bouncing_button) {
+			return;
+		}
 		queue_events_push(&queue, &event);
+		bouncing_button = event & 0x00FF;
 		debounce_timer = 0;
 	}
 }
