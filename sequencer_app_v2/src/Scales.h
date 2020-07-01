@@ -19,9 +19,9 @@ const char scale_0[] PROGMEM = "CHR"; //chromatic
 const char scale_1[] PROGMEM = "MAJ"; //major
 const char scale_2[] PROGMEM = "MIN"; //minor
 const char scale_3[] PROGMEM = "PEN"; //major pentatonic
-const char scale_4[] PROGMEM = "PE2"; //minor pentatonic
+const char scale_4[] PROGMEM = "PEM"; //minor pentatonic
 const char scale_5[] PROGMEM = "BLU"; //blues major
-const char scale_6[] PROGMEM = "BL2"; //blues minor
+const char scale_6[] PROGMEM = "BLM"; //blues minor
 const char scale_7[] PROGMEM = "PHR"; //phrygian
 const char scale_8[] PROGMEM = "DOR"; //dorian
 const char scale_9[] PROGMEM = "WHO"; //whole tone
@@ -32,26 +32,28 @@ const char *const scale_names[] PROGMEM = { scale_0, scale_1, scale_2, scale_3, 
 const char effect_0[] PROGMEM = "REP"; //repeat
 const char effect_1[] PROGMEM = "REV"; //reverse
 const char effect_2[] PROGMEM = "OCT"; //octave shift
-const char effect_3[] PROGMEM = "GLD"; //auto-glide
-const char effect_4[] PROGMEM = "FRZ"; //freeze
-const char effect_5[] PROGMEM = "STP"; //record stop
-const char effect_6[] PROGMEM = "RND"; //random pitch
-const char effect_7[] PROGMEM = "STT"; //stutter
-const char effect_8[] PROGMEM = "ROL"; //roll
+const char effect_3[] PROGMEM = "TRS"; //transpose
+const char effect_4[] PROGMEM = "GLD"; //auto-glide
+const char effect_5[] PROGMEM = "FRZ"; //freeze
+const char effect_6[] PROGMEM = "STP"; //record stop
+const char effect_7[] PROGMEM = "RND"; //random pitch
+const char effect_8[] PROGMEM = "STT"; //stutter
+const char effect_9[] PROGMEM = "ROL"; //roll
 
-static const uint8_t EFFECT_REPEAT  = 0;
-static const uint8_t EFFECT_REVERSE = 1;
-static const uint8_t EFFECT_OCTAVE  = 2;
-static const uint8_t EFFECT_GLIDE   = 3;
-static const uint8_t EFFECT_FREEZE  = 4;
-static const uint8_t EFFECT_STOP    = 5;
-static const uint8_t EFFECT_RANDOM  = 6;
-static const uint8_t EFFECT_STUTTER = 7;
-static const uint8_t EFFECT_ROLL    = 8;
+static const uint8_t EFFECT_REPEAT    = 0;
+static const uint8_t EFFECT_REVERSE   = 1;
+static const uint8_t EFFECT_OCTAVE    = 2;
+static const uint8_t EFFECT_TRANSPOSE = 3;
+static const uint8_t EFFECT_GLIDE     = 4;
+static const uint8_t EFFECT_FREEZE    = 5;
+static const uint8_t EFFECT_STOP      = 6;
+static const uint8_t EFFECT_RANDOM    = 7;
+static const uint8_t EFFECT_STUTTER   = 8;
+static const uint8_t EFFECT_ROLL      = 9;
 
 
 
-const char *const effect_names[] PROGMEM = { effect_0, effect_1, effect_2, effect_3, effect_4, effect_5, effect_6, effect_7, effect_8 };
+const char *const effect_names[] PROGMEM = { effect_0, effect_1, effect_2, effect_3, effect_4, effect_5, effect_6, effect_7, effect_8, effect_9 };
 
 
                               //  C  Db  D  Eb  E   F  Gb  G  Ab   A  Bb  B  C

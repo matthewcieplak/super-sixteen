@@ -268,6 +268,11 @@ void Sequencer::quantizeActivePitch(){
 		if (active_pitch > 12) random_octave = 1;
 		else if (active_pitch < 12) random_octave = -1;
 		active_pitch = ((active_pitch + 12) % 24) - 12; //trim excess octaves
+	} else if (seq_effect_mode && active_sequence.effect == EFFECT_TRANSPOSE) {
+		active_pitch += active_sequence.effect_depth - 12;
+		if (active_pitch > 12) random_octave = 1;
+		else if (active_pitch < 12) random_octave = -1;
+		active_pitch = ((active_pitch + 12) % 24) - 12; //trim excess octaves
 	}
 	if (current_scale_tones[active_pitch >= 0 ? active_pitch : active_pitch + 12] == false) {
 		active_pitch += quantize_map[active_pitch >= 0 ? active_pitch : active_pitch + 12];
@@ -377,6 +382,7 @@ void Sequencer::onPlayButton(){
 	calculated_tempo = tempo_millis;
 	if (first_step && play_active) {
 		incrementStep();
+		setActiveNote();
 	}
 }
 
@@ -445,6 +451,7 @@ int Sequencer::incrementEffectDepth(int amount){
 	switch(active_sequence.effect) {
 		case EFFECT_REPEAT:  setMinMaxParamUnsigned(depth, amount, 1, 16); break;
 		case EFFECT_OCTAVE:  setMinMaxParamUnsigned(depth, amount, 0, 8); return active_sequence.effect_depth - 4; break;//this is displayed as -4/+4 in UI
+		case EFFECT_TRANSPOSE:setMinMaxParamUnsigned(depth, amount, 0, 24); return active_sequence.effect_depth - 12; break; //this is displayed as -12/+12 in the ui
 		case EFFECT_GLIDE:   setMinMaxParamUnsigned(depth, amount, 1, 100); updateGlideCalc(); return active_sequence.effect_depth * 4; break; //multiply to get bigger range
 		case EFFECT_REVERSE: setMinMaxParamUnsigned(depth, amount, 0, 1); break;
 		case EFFECT_STOP:    setMinMaxParamUnsigned(depth, amount, 1, 16); break;
