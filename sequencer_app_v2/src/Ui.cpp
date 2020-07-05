@@ -34,6 +34,7 @@ bool record_mode = false;
 bool effect_mode = false;
 bool saving = false;
 bool copy_state = false;
+byte erase_counter = 0;
 
 const byte SEQUENCE_MODE = 0;
 const byte CALIBRATE_MODE = 1;
@@ -225,6 +226,7 @@ void Ui::onShiftButton(bool button_state){
 		cancelSaveOrLoad();
 	} else {
 		copy_state = false;
+		erase_counter = 0;
 	}
 }
 
@@ -233,7 +235,14 @@ void Ui::shiftFunction(int button) {
 		if (button < 4)	selectBar(button);
 	} else {
 		switch (button) {
-			case 15: invertEncoder(); break; //memory.erase();
+			case 15: erase_counter += 1;
+				switch (erase_counter) {
+					case 1: display.setDisplayAlpha("E  "); break;
+					case 2: display.setDisplayAlpha("ER "); break;
+					case 3: display.setDisplayAlpha("ERS"); display.blinkDisplay(true, 500, 0); break;
+					case 4:  memory.erase(); display.setDisplayNum(0); erase_counter = 0; display.blinkDisplay(false, 100, 0); break;
+				}
+				break;
 			case 14: clearSequence(); break;
 			case 13: initializeCalibrationMode(); break;
 			case PARAM_TEMPO: //select bars?
