@@ -76,7 +76,7 @@ void Sequencer::init(Calibration& calibration, Dac& dac) {
 	pinMode(RESET_PIN, INPUT_PULLUP);
 
 	attachInterrupt(digitalPinToInterrupt(CLOCK_IN_PIN), onClockIn, FALLING);
-	// attachInterrupt(digitalPinToInterrupt(RESET_PIN), onResetIn, CHANGE);
+	// attachInterrupt(digitalPinToInterrupt(RESET_PIN), onResetIn, FALLING);
 
     active_sequence.scale = 0;
 	prev_sequence_length = active_sequence.sequence_length;
@@ -110,12 +110,10 @@ void Sequencer::updateClock() {
 	updateGlide();
 	updateGate();
 
-	// bool clock = digitalRead(CLOCK_IN_PIN);
 	bool reset = digitalRead(RESET_PIN);
 	if (reset == LOW) {
 		if (!reset_in_active) {
-			onReset(); //clock == LOW);
-			incrementStep();
+			onReset(); 
 			reset_in_active = true;
 		}
 	} else {
@@ -123,20 +121,13 @@ void Sequencer::updateClock() {
 	}
 
 
-	// if (clock == LOW) {
-		if(clock_in_active) {
-			onClock();
-			clock_in_active = false;
-			// digitalWrite(CLOCK_OUT_PIN, HIGH);
-			// clock_in_active = true;
-		} else {
-			// digitalWrite(CLOCK_OUT_PIN, LOW);
-			step_incremented = false;
-		}
-	// } else {
-	// 	clock_in_active = false;
-	// 	step_incremented = false;
-	// }
+	if(clock_in_active) {
+		onClock();
+		clock_in_active = false;
+	} else {
+		step_incremented = false;
+	}
+
 }
 
 void Sequencer::onClock(){
