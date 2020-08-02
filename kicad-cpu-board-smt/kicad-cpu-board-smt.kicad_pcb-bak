@@ -2611,7 +2611,7 @@
   (gr_text "-12V\nRED\nSTRIPE" (at 70.2 74.25) (layer F.SilkS)
     (effects (font (size 1 1) (thickness 0.15)) (justify right))
   )
-  (gr_text "SUPER SIXTEEN V1.2 SMT" (at 30.8 69.15) (layer F.SilkS)
+  (gr_text "SUPER SIXTEEN V1.3 SMT" (at 30.8 69.15) (layer F.SilkS)
     (effects (font (size 1 1) (thickness 0.15)))
   )
   (gr_text "EXTRALIFE INSTRUMENTS" (at 30.25 67.2) (layer F.SilkS)
