@@ -227,7 +227,7 @@ void Sequencer::setActiveNote(){
 			quantizeActivePitch();
 			active_note = ((active_sequence.octave_matrix[active_step] + 3) * 12) + 
 							active_pitch + 
-							active_sequence.transpose + 
+							(active_sequence.transpose - 24)  + 
 						    (random_octave * 12);
 			if (seq_effect_mode && active_sequence.effect == EFFECT_OCTAVE) {
 				active_note += (active_sequence.effect_depth - 4) * 12;
@@ -256,15 +256,22 @@ void Sequencer::quantizeActivePitch(){
 	random_octave = 0;
 	if (seq_effect_mode && active_sequence.effect == EFFECT_RANDOM) {
 		active_pitch += rand() % active_sequence.effect_depth;
-		if (active_pitch > 12) random_octave = 1;
-		else if (active_pitch < 12) random_octave = -1;
-		active_pitch = ((active_pitch + 12) % 24) - 12; //trim excess octaves
 	} else if (seq_effect_mode && active_sequence.effect == EFFECT_TRANSPOSE) {
-		active_pitch += active_sequence.effect_depth - 12;
-		if (active_pitch > 12) random_octave = 1;
-		else if (active_pitch < 12) random_octave = -1;
-		active_pitch = ((active_pitch + 12) % 24) - 12; //trim excess octaves
+		active_pitch += active_sequence.effect_depth - 24;
 	}
+
+	//normalize to 2 octaves
+	if (active_pitch > 12) {
+		if (active_pitch > 36) random_octave = 3;
+		else random_octave = active_pitch >= 24 ? 2 : 1;
+		active_pitch = active_pitch % 12;
+	} else if (active_pitch < -12) {
+		if (active_pitch <= -36) random_octave = -3;
+		random_octave = active_pitch <= -24 ? -2 : -1;
+		active_pitch = active_pitch % -12;
+	}
+
+	//quantize to scale
 	if (current_scale_tones[active_pitch >= 0 ? active_pitch : active_pitch + 12] == false) {
 		active_pitch += quantize_map[active_pitch >= 0 ? active_pitch : active_pitch + 12];
 	}
@@ -426,6 +433,7 @@ int Sequencer::incrementEffect(int amount){
 	setMinMaxParamUnsigned(effect, amount, 0, 8);	
 	switch (active_sequence.effect) {
 		case EFFECT_GLIDE: active_sequence.effect_depth = active_sequence.glide_length; break; //set useful default rather than zero 
+		case EFFECT_TRANSPOSE: active_sequence.effect_depth = 24; break;
 		case EFFECT_OCTAVE: active_sequence.effect_depth = 5; break;//actually zero with offset
 		case EFFECT_REPEAT: active_sequence.effect_depth = 4; break;
 		case EFFECT_STOP: active_sequence.effect_depth = 8; break;
@@ -442,7 +450,7 @@ int Sequencer::incrementEffectDepth(int amount){
 	switch(active_sequence.effect) {
 		case EFFECT_REPEAT:  setMinMaxParamUnsigned(depth, amount, 1, 16); break;
 		case EFFECT_OCTAVE:  setMinMaxParamUnsigned(depth, amount, 0, 8); return active_sequence.effect_depth - 4; break;//this is displayed as -4/+4 in UI
-		case EFFECT_TRANSPOSE:setMinMaxParamUnsigned(depth, amount, 0, 24); return active_sequence.effect_depth - 12; break; //this is displayed as -12/+12 in the ui
+		case EFFECT_TRANSPOSE:setMinMaxParamUnsigned(depth, amount, 0, 48); return active_sequence.effect_depth - 24; break; //this is displayed as -24/+24 in the ui
 		case EFFECT_GLIDE:   setMinMaxParamUnsigned(depth, amount, 1, 100); updateGlideCalc(); return active_sequence.effect_depth * 4; break; //multiply to get bigger range
 		case EFFECT_REVERSE: setMinMaxParamUnsigned(depth, amount, 0, 1); break;
 		case EFFECT_STOP:    setMinMaxParamUnsigned(depth, amount, 1, 16); break;
@@ -477,7 +485,8 @@ int Sequencer::incrementSwing(int amount){
 }
 
 int Sequencer::incrementTranspose(int amount){
-	return active_sequence.transpose = getMinMaxParam(active_sequence.transpose, amount, -36, 36);
+	active_sequence.transpose = getMinMaxParam(active_sequence.transpose, amount, 0, 48);
+	return active_sequence.transpose - 24;
 }
 
 int Sequencer::incrementGlide(int amount){
@@ -649,13 +658,13 @@ void Sequencer::clearSequence(){
 	active_sequence.glide_length = 50;
 	active_sequence.sequence_length = 16;
 	active_sequence.bars = 1;
-	active_sequence.scale = 1;
+	active_sequence.scale = 0;
 
 	active_sequence.swing = 50;
 	active_sequence.effect = 0; //mutate = repeat (0), reverse (1), octave shift (2), auto-glide (3), hold  (4)
 	active_sequence.effect_depth = 4;
     //active_sequence.sequence_tempo = 120; //might be done in real time? probably not a good idea to change
-    active_sequence.transpose = 0;
+    active_sequence.transpose = 24;
 }
 
 void Sequencer::loadScale(uint8_t scale){
