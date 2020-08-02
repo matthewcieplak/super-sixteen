@@ -1,4 +1,4 @@
-### Module positions - created on 5/25/2020 8:58:47 PM ###
+### Module positions - created on 7/24/2020 1:44:19 AM ###
 ### Printed by Pcbnew version kicad (5.1.2)-1
 ## Unit = mm, Angle = deg.
 ## Side : top
@@ -10,8 +10,8 @@ C104      47uF      CP_Elec_6.3x7.7                    17.0000   -85.0000   90.0
 C105      100nF     C_0603_HandSoldering               23.0000   -85.0000   90.0000  top
 C106      100pF     C_0603_HandSoldering               25.0000   -85.0000   90.0000  top
 C107      47uF      CP_Elec_6.3x7.7                   105.0000   -35.0000   90.0000  top
-C108      100nF     C_0603_HandSoldering               96.2500   -30.7500  180.0000  top
-C109      100pF     C_0603_HandSoldering               96.2500   -28.0000  180.0000  top
+C108      100nF     C_0603_HandSoldering               96.2500   -32.2580  180.0000  top
+C109      100pF     C_0603_HandSoldering               96.2500   -29.7180  180.0000  top
 D1        SS54      D_SMA_Handsoldering                94.0410  -114.6004  270.0000  top
 Q101      MMBT3906  SOT-23_Handsoldering               36.0000   -17.0000  180.0000  top
 Q102      MMBT3906  SOT-23_Handsoldering               36.0000   -23.0000  180.0000  top
