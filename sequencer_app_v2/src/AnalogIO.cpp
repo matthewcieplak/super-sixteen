@@ -40,6 +40,7 @@ bool param_changed = false;
 
 int change_threshold = DEFAULT_CHANGE_THRESHOLD;
 bool recording = false;
+bool recorded_input_active = false;
 
 
 Sequencer* sequencerVar;
@@ -78,6 +79,7 @@ void AnalogIo::readInput(int i){
 	param_changed = false;
 
 	if (abs(analogValues[i] - lastAnalogValues[i]) > change_threshold) {
+		recorded_input_active = true;
 		lastAnalogValues[i] = analogValues[i];
 		if (!editing) return;
 		switch (i) {
@@ -131,6 +133,7 @@ void AnalogIo::setDisplayNum(int displayNum){
 
 
 void AnalogIo::recordCurrentParam(){
+	if (!recorded_input_active) return;
 	// if (sequencerVar->currentStepActive()) {
 		recording = false; //temporarily flip to enable one-step record
 		change_threshold = -1; //record regardless of motion
@@ -141,6 +144,7 @@ void AnalogIo::recordCurrentParam(){
 }
 
 void AnalogIo::setRecordMode(bool state){
+	recorded_input_active = false;
 	recording = state;
 }
 
