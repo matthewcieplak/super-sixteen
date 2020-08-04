@@ -15,6 +15,7 @@ struct sequence {
 	int8_t cv_matrix[64];
     bool step_matrix[64] = { 1,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0 };
 	bool glide_matrix[64];
+    bool effect_matrix[64];
 
 	uint8_t glide_length = 50;
 	uint8_t sequence_length = 16;
@@ -75,7 +76,7 @@ class Sequencer{
         int getSelectedStep();
 
         void setRecordMode(bool state);
-        void setEffectMode(bool state);
+        void onMutateButton(bool state);
         
         void setTempoFromSequence();
         void loadScale(uint8_t scale);
@@ -87,6 +88,8 @@ class Sequencer{
         void paste(byte bar1, byte bar2);
         bool currentStepActive();
         void setStepRecordingMode(bool state);
+        void setMutateRecordingMode(bool state);
+
 
 
         sequence& getActiveSequence();
@@ -96,6 +99,7 @@ class Sequencer{
         int getMinMaxParam(int param, int increment_amount, int min, int max);
         uint8_t setMinMaxParamUnsigned(uint8_t& param, int8_t increment_amount, uint8_t min, uint8_t max);
         int8_t setMinMaxParam(int8_t& param, int8_t increment_amount, int8_t min, int8_t max);
+        void setEffectMode(bool state);
         void updateGlide();
         void updateGate();
         uint8_t editedStep();

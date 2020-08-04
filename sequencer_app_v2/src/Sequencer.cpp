@@ -17,6 +17,7 @@ int selected_step = 0;
 int8_t clock_step = -1;
 int8_t current_step = -1;
 int8_t active_step = -1;
+int8_t step_recording_initiated_step = 0;
 
 uint8_t prev_sequence_length = active_sequence.sequence_length;
 uint8_t repeat_step_origin = 0;
@@ -35,10 +36,15 @@ unsigned int tempo_millis = 15000 / tempo_bpm; //would be 60000 but we count 4 s
 bool play_active = 0;
 bool seq_effect_mode = false;
 bool seq_record_mode = false;
+bool seq_recording_effect = false;
+bool mutate_button = false;
+
 bool current_scale_tones[13];
 bool note_reached;
 bool skip_next_external_step = false;
 bool count_next_swing_step = false;
+
+
 
 int prev_note = 0;
 int active_note = 0;
@@ -53,6 +59,7 @@ int glide_duration = 50;
 int glide_time; //
 int random_octave = 0;
 
+
 double current_note_value = 0;
 Calibration *calibrationVar;
 Dac *dacVar;
@@ -60,6 +67,7 @@ Dac *dacVar;
 static const int ROLL_PAUSE_DURATION = 5;
 const int CLOCK_PULSE_DURATION = 10; //milliseconds pulse width of clock output
 elapsedMillis timekeeper;
+unsigned int stepkeeper;
 
 
 void Sequencer::init(Calibration& calibration, Dac& dac) {
@@ -167,6 +175,15 @@ void Sequencer::incrementStep() {
 		digitalWrite(CLOCK_OUT_PIN, HIGH);
 	}
 
+	if (seq_recording_effect) { //while recording, respect mutate button state and record active/inactive to current step
+		active_sequence.effect_matrix[current_step] = mutate_button;
+	} else if (active_sequence.effect_matrix[current_step]) { //if mutation data is recorded, play it back
+		if (!seq_effect_mode) setEffectMode(true); //don't re-trigger effect mode, to avoid messing up timings set by prev steps
+	} else if (seq_effect_mode && !mutate_button) {
+		setEffectMode(false); //turn off sequenced effect after recorded activity (when not manually engaged) 
+	}
+	
+
 	//prev_step = current_step;
 
 	if (seq_effect_mode && active_sequence.effect == EFFECT_REPEAT) {
@@ -193,9 +210,11 @@ void Sequencer::incrementStep() {
 		current_step = clock_step;
 	}
 
-	if (step_recording_mode) {
-		active_sequence.step_matrix[current_step] = true;
-	}
+	// if (step_recording_mode) {
+	// 	active_sequence.step_matrix[current_step] = true;
+	// }
+
+
 
 	if (active_sequence.step_matrix[current_step]) {
 		active_step = current_step;
@@ -273,7 +292,14 @@ void Sequencer::quantizeActivePitch(){
 
 	//quantize to scale
 	if (current_scale_tones[active_pitch >= 0 ? active_pitch : active_pitch + 12] == false) {
-		active_pitch += quantize_map[active_pitch >= 0 ? active_pitch : active_pitch + 12];
+		if (active_sequence.scale == 3) { //major pentatonic
+			active_pitch += quantize_pen[active_pitch >= 0 ? active_pitch : active_pitch + 12];
+		} else if (active_sequence.scale == 4) { //minor pentatonic
+			active_pitch += quantize_pem[active_pitch >= 0 ? active_pitch : active_pitch + 12];
+		} else {//all others (diatonics)
+			active_pitch += quantize_map[active_pitch >= 0 ? active_pitch : active_pitch + 12];
+		}
+		
 	}
 }
 
@@ -430,7 +456,7 @@ int Sequencer::incrementScale(int amount){
 
 int Sequencer::incrementEffect(int amount){
 	uint8_t &effect = active_sequence.effect;
-	setMinMaxParamUnsigned(effect, amount, 0, 8);	
+	setMinMaxParamUnsigned(effect, amount, 0, 9);	
 	switch (active_sequence.effect) {
 		case EFFECT_GLIDE: active_sequence.effect_depth = active_sequence.glide_length; break; //set useful default rather than zero 
 		case EFFECT_TRANSPOSE: active_sequence.effect_depth = 24; break;
@@ -620,6 +646,7 @@ int Sequencer::getSelectedStep(){
 	return selected_step;
 }
 
+
 void Sequencer::setEffectMode(bool state){
 	seq_effect_mode = state;
 	repeat_step_origin  = current_step;
@@ -630,12 +657,22 @@ void Sequencer::setEffectMode(bool state){
 		gate_active = state;
 	}  else if (active_sequence.effect == EFFECT_STOP) {
 		note_reached = false;
+	} 
+}
+
+void Sequencer::onMutateButton(bool state){
+	mutate_button = state;
+	setEffectMode(state);
+	if (seq_record_mode && state) {
+		active_sequence.effect_matrix[current_step] = state;
+		seq_recording_effect = state;
 	}
 }
 
 
 void Sequencer::setRecordMode(bool state){
 	seq_record_mode = state;
+	if (!state)	seq_recording_effect = false; 
 }
 
 sequence& Sequencer::getActiveSequence(){
@@ -654,6 +691,7 @@ void Sequencer::clearSequence(){
 		active_sequence.cv_matrix[i] = 0;
 		active_sequence.step_matrix[i] = false;
 		active_sequence.glide_matrix[i] = false;
+		active_sequence.effect_matrix[i] = false;
 	}
 	active_sequence.glide_length = 50;
 	active_sequence.sequence_length = 16;
@@ -692,10 +730,32 @@ void Sequencer::paste(byte bar1, byte bar2) {
 	memcpy(active_sequence.duration_matrix+bar2*16, active_sequence.duration_matrix+bar1*16, 32);
 	memcpy(active_sequence.cv_matrix+bar2*16, active_sequence.cv_matrix+bar1*16, 16);
 	memcpy(active_sequence.glide_matrix+bar2*16, active_sequence.glide_matrix+bar1*16, 16);
+	memcpy(active_sequence.effect_matrix+bar2*16, active_sequence.effect_matrix+bar1*16, 16);
 }
 
 void Sequencer::setStepRecordingMode(bool state){
-	if (state) active_sequence.step_matrix[current_step] = true;
+	if (state) {
+		active_sequence.step_matrix[current_step] = true;
+		step_recording_initiated_step = current_step;
+		active_step = current_step;
+		prev_note = active_note;
+		stepkeeper = timekeeper;
+		setActiveNote(); //update pitch
+		gate_active = false;
+		digitalWrite(GATE_PIN, HIGH);
+
+	} else {
+		//make each note as long as the button was held down for
+		int8_t steps_elapsed = current_step - step_recording_initiated_step;
+		if (steps_elapsed < 0) {
+			steps_elapsed += active_sequence.sequence_length;
+		}
+		//active_sequence.duration_matrix[step_recording_initiated_step] = min(1 + 100 * , 400);
+		uint16_t recorded_step_duration = timekeeper - stepkeeper + (steps_elapsed * calculated_step_length);
+
+		active_sequence.duration_matrix[step_recording_initiated_step] = min(400, recorded_step_duration * 100 / calculated_step_length);
+		digitalWrite(GATE_PIN, LOW);
+	}
 	step_recording_mode = state;
 }
 
