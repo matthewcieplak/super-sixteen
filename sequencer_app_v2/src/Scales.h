@@ -57,5 +57,7 @@ const char *const effect_names[] PROGMEM = { effect_0, effect_1, effect_2, effec
 
 
                               //  C  Db  D  Eb  E   F  Gb  G  Ab   A  Bb  B  C
-const int8_t quantize_map[13] = { 0, 1, -1, 1, -1, -1, 1, -1, 1,  -1, 1, -1, 0 }; //steps required to move to altered/diatonic scale degree when out of quantization
+const int8_t quantize_map[13] = { 0, 1, -1, 1, -1, -1, 1, -1,  1, -1, 1, -1, 0 }; //steps required to move to altered/diatonic scale degree when out of quantization
+const int8_t quantize_pen[13] = { 0, 1, -1, 1, -1, -1, 1, -1,  1, -1, 1,  1, 0 }; //steps required to move to major pentatonic scale degree
+const int8_t quantize_pem[13] = { 0, 1,  1, 1, -1, -1, 1, -1, -1,  1, 1, -1, 0 }; //steps required to move to minor pentatonic scale degree
 }
