@@ -45,11 +45,11 @@ void LedMatrix::updateMatrix(int row) {
 		byte2 +=  (led_matrix[row * 4 + col] << step_map[row * 4 + col]);
 	}
 	byte1 += ~byte2;
-	digitalWrite(CS1_PIN, LOW);
+	PORTB = ~_BV(1) & PORTB; //equivalent to digitalWrite(CS1_PIN, LOW);
 	SPI.setBitOrder(LSBFIRST); //shift registers like LSB
 	displayVar3->updateSevenSegmentDisplay(); //has to happen HERE bc it's part of the shift register 2-byte sequence
 	SPI.transfer(byte1); //led matrix  - NOTE: invert this byte if you've wired the LEDs backwards
-	digitalWrite(CS1_PIN, HIGH);
+	PORTB = _BV(1) | PORTB; //equivalent to digitalWrite(CS1_PIN, HIGH);
 	displayVar3->nextDigit();
 }
 
@@ -60,10 +60,12 @@ void LedMatrix::blankMatrix(int row) {
 	byte1 = (1 << (7-row)); //turn on row driver
 	byte2 = 0xF0;
 	byte1 += ~byte2;
+	//PORTB = PORTB & B10111111; //equivalent to 
 	digitalWrite(CS1_PIN, LOW);
 	SPI.setBitOrder(LSBFIRST); //shift registers like LSB
 	displayVar3->blankSevenSegmentDisplay(); //has to happen HERE bc it's part of the shift register 2-byte sequence
 	SPI.transfer(~byte1); //led matrix
+	//PORTB = PORTB | B01000000; //equivalent to 
 	digitalWrite(CS1_PIN, HIGH);
 	//displayVar3->nextDigit();
 }

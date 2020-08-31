@@ -69,7 +69,6 @@ const int CLOCK_PULSE_DURATION = 10; //milliseconds pulse width of clock output
 elapsedMillis timekeeper;
 unsigned int stepkeeper;
 
-
 void Sequencer::init(Calibration& calibration, Dac& dac) {
 	calibrationVar = &calibration;
 
@@ -113,21 +112,17 @@ void Sequencer::updateClock() {
 			step_incremented = false;
 		}
 	}
-
 	
 	updateGlide();
 	updateGate();
 
-	bool reset = digitalRead(RESET_PIN);
-	if (reset == LOW) {
-		if (!reset_in_active) {
-			onReset(); 
-			reset_in_active = true;
-		}
-	} else {
+
+	if (reset_in_active == false && ((PIND & _BV(4)) >> 4) == LOW) { //digitalRead(RESET_PIN) == LOW) { //
+		onReset(); 
+		reset_in_active = true;
+	} else if (reset_in_active == true) {
 		reset_in_active = false;
 	}
-
 
 	if(clock_in_active) {
 		onClock();
