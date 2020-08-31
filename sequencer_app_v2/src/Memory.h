@@ -15,6 +15,8 @@ class Memory{
         byte save(int patch); //, sequence& active_sequence);
         bool finishSaving();
         bool load(int patch);
+        bool patchExists(int patch);
+
         bool saveSerialized(byte patch);
         void erase();
 

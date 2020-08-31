@@ -218,7 +218,7 @@ void Ui::onButtonToggle(int button, bool button_state) {
 		case REPEAT_PIN: onRepeatButton(button_state); break;
 		//default: display.setDisplayNum(button);
         }
-		display.setDecimal(!button_state);
+		display.setDecimal(button_state);
     }
 }
 
@@ -288,6 +288,7 @@ void Ui::onEncoderIncrement(int increment_amount) {
 		if (selected_patch < 1) selected_patch = 99;
 		if (selected_patch > 99) selected_patch = 1;
 		display.setDisplayNum(selected_patch);
+		display.setDecimal(memory.patchExists(selected_patch));
 		display.blinkDisplay(true, 300, 0);
 	} else if (ui_mode == EDIT_PARAM_MODE) {
 		int param = 0;

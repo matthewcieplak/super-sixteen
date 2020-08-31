@@ -163,4 +163,9 @@ bool Memory::load(int patch){
     return true;
 }
 
+bool Memory::patchExists(int patch){
+    getFileName(patch);
+    return SerialFlash.exists(filename);
+}
+
 }
