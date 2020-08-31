@@ -34,6 +34,7 @@ bool record_mode = false;
 bool effect_mode = false;
 bool saving = false;
 bool copy_state = false;
+bool encoder_bumped = false;
 byte erase_counter = 0;
 
 const byte SEQUENCE_MODE = 0;
@@ -113,6 +114,7 @@ void Ui::poll(){
 		//if (!record_mode) {
 		if (analogIo.paramChanged()){
 			display.setDisplayNum(analogIo.getDisplayNum());
+			cancelSaveOrLoad(); //TODO remove if this is too jittery to use
 		}
 		//}
 	}
@@ -270,7 +272,7 @@ void Ui::selectBar(byte bar){
 		display.setDisplayAlpha(barname);
 		copy_state = true;
 	}
-	
+
 	current_bar = bar;
 	sequencerVar2->onBarSelect(current_bar);
 	ledMatrix.setMatrixFromSequencer(current_bar);
@@ -280,11 +282,13 @@ void Ui::onEncoderIncrement(int increment_amount) {
 	if (ui_mode == CALIBRATE_MODE) {
 		display.setDisplayNum(calibrationVar2->incrementCalibration(increment_amount, calibration_step));
         updateCalibration(calibration_step);
-	} else if (ui_mode == SAVE_MODE || ui_mode == LOAD_MODE) {
+	} else if (encoder_bumped || ui_mode == SAVE_MODE || ui_mode == LOAD_MODE) {
+		if (ui_mode == SEQUENCE_MODE) ui_mode = LOAD_MODE;
 		selected_patch += increment_amount;
 		if (selected_patch < 1) selected_patch = 99;
 		if (selected_patch > 99) selected_patch = 1;
 		display.setDisplayNum(selected_patch);
+		display.blinkDisplay(true, 300, 0);
 	} else if (ui_mode == EDIT_PARAM_MODE) {
 		int param = 0;
 		if (current_param == PARAM_SCALE) {
@@ -307,10 +311,11 @@ void Ui::onEncoderIncrement(int increment_amount) {
 			display.setDisplayNum(param);
 		}
 	} else {
-
-		//TODO consider using default encoder value to queue up a patch to load??
-		//sequencing, presumably
-		display.setDisplayNum(sequencerVar2->incrementTempo(increment_amount));
+		//by default when encoder is turned
+		//show current patch number and select another if moved further
+		selected_patch = current_patch;
+		display.setDisplayNum(selected_patch);
+		encoder_bumped = true;
 	}
 }
 
@@ -357,6 +362,7 @@ void Ui::onRecButton(bool state){
 			sequencerVar2->setRecordMode(state);
 			analogIo.setRecordMode(state);
 			sequencerVar2->setStepRecordingMode(false);
+			cancelSaveOrLoad();
 		}
 	}
 }
@@ -370,14 +376,16 @@ void Ui::onRepeatButton(bool state){
 		} else {
 			effect_mode = state;
 			if (effect_mode) {
+				cancelSaveOrLoad();
 				ui_mode = EDIT_PARAM_MODE;
 				current_param = PARAM_EFFECT_DEPTH;
 				onEncoderIncrement(0);
 			} else {
 				ui_mode = SEQUENCE_MODE;
 			}
-			sequencerVar2->setEffectMode(state);
-		} 
+			sequencerVar2->onMutateButton(state);
+			
+		}
 	}
 }
 
@@ -439,16 +447,15 @@ void Ui::onStepIncremented(){
 }
 
 bool Ui::cancelSaveOrLoad(){
+	encoder_bumped = false;
+
 	if (ui_mode == LOAD_MODE || ui_mode == SAVE_MODE || ui_mode == EDIT_PARAM_MODE || ui_mode == CALIBRATE_MODE) {
 		if (ui_mode == CALIBRATE_MODE) {
 			digitalWrite(GATE_PIN, LOW);
 		}
 		initializeSequenceMode();
 		display.blinkDisplay(true, 100, 1);
-		
-		
 		return true;
-		
 	}
 	return false;
 }
