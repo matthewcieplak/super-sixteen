@@ -69,6 +69,7 @@ bool Memory::finishSaving(){
     int8_t *cvs         =  seq->cv_matrix;
     bool *steps         =  seq->step_matrix;
     bool *glides        =  seq->glide_matrix;
+    bool *effects       =  seq->effect_matrix;
 
     uint8_t misc[8]; //unsigned
     misc[0] = seq->glide_length;
@@ -80,7 +81,7 @@ bool Memory::finishSaving(){
 	misc[6] = seq->effect_depth;
     misc[7] = seq->sequence_tempo;
 
-    int8_t misc2[1]; //signed
+    int8_t misc2[4]; //signed
     misc2[0] = seq->transpose;
 
 
@@ -102,7 +103,7 @@ bool Memory::finishSaving(){
     file.write(glides, PATCH_SEQ_LENGTH);
     file.write(misc, sizeof(misc));
     file.write(misc2, sizeof(misc2));
-    //TODO save misc settings
+    file.write(effects, PATCH_SEQ_LENGTH);
 
     file.close();
     return 1;
@@ -127,6 +128,7 @@ bool Memory::load(int patch){
     int8_t *cvs         =  seq->cv_matrix;
     bool *steps         =  seq->step_matrix;
     bool *glides        =  seq->glide_matrix;
+    bool *effects       =  seq->effect_matrix;
     uint8_t misc[8]; //unsigned    
     int8_t misc2[4]; //signed
 
@@ -139,6 +141,7 @@ bool Memory::load(int patch){
     file.read(glides, PATCH_SEQ_LENGTH);
     file.read(misc, sizeof(misc));
     file.read(misc2, sizeof(misc2));
+    file.read(effects, PATCH_SEQ_LENGTH);
     
     for(int i = 0; i<PATCH_SEQ_LENGTH; i++){ //expand bytewise chars to 16-bit number
         durations[i] = durations_8bit[i] * 256 + durations_8bit[i+PATCH_SEQ_LENGTH];
