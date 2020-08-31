@@ -3963,7 +3963,7 @@
   (segment (start 64.045001 78.125001) (end 69.689997 78.125001) (width 0.25) (layer B.Cu) (net 47))
   (segment (start 62.92 77) (end 64.045001 78.125001) (width 0.25) (layer B.Cu) (net 47))
 
-  (zone (net 1) (net_name GND) (layer B.Cu) (tstamp 5F1B6C62) (hatch edge 0.508)
+  (zone (net 1) (net_name GND) (layer B.Cu) (tstamp 5F1B816B) (hatch edge 0.508)
     (connect_pads (clearance 0.508))
     (min_thickness 0.254)
     (fill yes (arc_segments 16) (thermal_gap 0.508) (thermal_bridge_width 0.508))
