@@ -1,7 +1,7 @@
 M48
-; DRILL file {KiCad (5.1.2)-1} date 7/24/2020 10:08:29 PM
+; DRILL file {KiCad (5.1.2)-1} date 8/21/2020 3:21:20 PM
 ; FORMAT={2:4/ absolute / inch / suppress trailing zeros}
-; #@! TF.CreationDate,2020-07-24T22:08:29-07:00
+; #@! TF.CreationDate,2020-08-21T15:21:20-07:00
 ; #@! TF.GenerationSoftware,Kicad,Pcbnew,(5.1.2)-1
 ; #@! TF.FileFunction,NonPlated,1,2,NPTH
 FMAT,2
@@ -13,11 +13,11 @@ G05
 T1
 X039213Y-007972
 X042677Y-007972
+X039213Y-020079
+X042677Y-020079
 X039213Y-032185
 X042677Y-032185
 X039213Y-044291
 X042677Y-044291
-X039213Y-020079
-X042677Y-020079
 T0
 M30
