@@ -30,8 +30,11 @@ Sequencer *sequencerVar2;
 Dac *dacVar2;
 
 bool shift_state = false;
+bool load_button_state = false;
+bool save_button_state = false;
 bool record_mode = false;
 bool effect_mode = false;
+bool step_record_mode = false;
 bool saving = false;
 bool copy_state = false;
 bool encoder_bumped = false;
@@ -126,6 +129,7 @@ void Ui::multiplex(){
 }
 
 void Ui::onSaveButton(bool state) {
+	save_button_state = state;
 	if (state) { //only toggle on input
 		if (ui_mode == CALIBRATE_MODE) {
 			ui_mode = SEQUENCE_MODE;
@@ -165,6 +169,7 @@ void Ui::finishSaving(){
 
 
 void Ui::onLoadButton(bool state) {
+	load_button_state = state;
 	if (state) { //only toggle on input
 		if (saving) return;
 
@@ -173,8 +178,8 @@ void Ui::onLoadButton(bool state) {
 			if (memory.load(selected_patch)) {
 				display.blinkDisplay(true, 100, 3);
 			} else {
-				display.setDisplayAlpha("ERR");
-				display.blinkDisplay(true, 100, 3);
+				sequencerVar2->clearSequence();
+				display.blinkDisplay(false, 100, 1);
 			}
 			ui_mode = SEQUENCE_MODE;
 			current_patch = selected_patch;
@@ -199,6 +204,14 @@ void Ui::onButtonToggle(int button, bool button_state) {
 			} else {
 				if (shift_state) {
 					shiftFunction(button);
+				} else if (load_button_state) {
+					selected_patch = button + 1;
+					display.setDisplayNum(selected_patch);
+					onLoadButton(load_button_state);
+				} else if (save_button_state) {
+					selected_patch = button + 1;
+					display.setDisplayNum(selected_patch);
+					onSaveButton(save_button_state);
 				} else {
 					selectStep(button);
 				}
@@ -355,14 +368,14 @@ void Ui::onPlayButton(bool state){
 
 void Ui::onRecButton(bool state){
 	if (isSequencing()){
-		if (state && shift_state) {
+		if (shift_state || step_record_mode) {
 			//activate current step
-			sequencerVar2->setStepRecordingMode(true);
+			sequencerVar2->setStepRecordingMode(state);
+			step_record_mode = state;
 		} else {
 			record_mode = state;
 			sequencerVar2->setRecordMode(state);
 			analogIo.setRecordMode(state);
-			sequencerVar2->setStepRecordingMode(false);
 			cancelSaveOrLoad();
 		}
 	}
