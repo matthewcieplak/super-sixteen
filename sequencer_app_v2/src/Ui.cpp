@@ -250,15 +250,17 @@ void Ui::shiftFunction(int button) {
 		if (button < 4)	selectBar(button);
 	} else {
 		switch (button) {
-			case 15: erase_counter += 1;
+			case 15: break; //TODO add config menu
+			case 14: 
+				clearSequence();
+				erase_counter += 1;
 				switch (erase_counter) {
-					case 1: display.setDisplayAlpha("E  "); break;
-					case 2: display.setDisplayAlpha("ER "); break;
-					case 3: display.setDisplayAlpha("ERS"); display.blinkDisplay(true, 500, 0); break;
-					case 4:  memory.erase(); display.setDisplayNum(0); erase_counter = 0; display.blinkDisplay(false, 100, 0); break;
+					case 2: display.setDisplayAlpha("E  "); break;
+					case 3: display.setDisplayAlpha("ER "); break;
+					case 4: display.setDisplayAlpha("ERS"); display.blinkDisplay(true, 500, 0); break;
+					case 5:  memory.erase(); display.setDisplayNum(0); erase_counter = 0; display.blinkDisplay(false, 100, 0); break;
 				}
 				break;
-			case 14: clearSequence(); break;
 			case 13: initializeCalibrationMode(); break;
 			case PARAM_TEMPO: //select bars?
 			case PARAM_STEPS:
