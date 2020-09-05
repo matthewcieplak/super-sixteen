@@ -473,6 +473,8 @@ bool Ui::cancelSaveOrLoad(){
 		display.blinkDisplay(true, 100, 1);
 		return true;
 	}
+	erase_counter = 0;
+	display.blinkDisplay(false, 1, 1);
 	return false;
 }
 
