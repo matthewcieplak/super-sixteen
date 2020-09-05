@@ -19,7 +19,7 @@ bool blinking = false;
 bool blink_state = true;
 const uint8_t decimalChar = 0x01;
 elapsedMillis display_blinker;
-int blink_interval;
+uint16_t blink_interval;
 int blink_cycles_elapsed;
 int blink_cycles_timeout;
 
