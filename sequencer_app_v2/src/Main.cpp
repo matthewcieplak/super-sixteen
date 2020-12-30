@@ -59,7 +59,7 @@ void setup() {
 	analogReference(EXTERNAL); // use AREF for reference voltage
 
 	calibration.readCalibrationValues(); // -- disable to bypass overwriting EEPROM during programming/development. uncomment for typical use
-
+	
     sequencer.init(calibration, dac);
 	ui.init(calibration, dac, sequencer);
 }

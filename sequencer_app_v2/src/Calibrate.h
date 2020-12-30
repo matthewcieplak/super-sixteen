@@ -17,6 +17,10 @@ class Calibration {
         void writeCalibrationValues();
 
         int getCalibrationValue(int step);
+
+        int readDisplayModeValue();
+
+        void writeDisplayModeValue(int displayMode);
 };
 
 }

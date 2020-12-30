@@ -43,8 +43,7 @@ bool current_scale_tones[13];
 bool note_reached;
 bool skip_next_external_step = false;
 bool count_next_swing_step = false;
-
-
+char pitchname[10];
 
 int prev_note = 0;
 int active_note = 0;
@@ -641,6 +640,19 @@ int Sequencer::getSelectedStep(){
 	return selected_step;
 }
 
+char *Sequencer::getPitchName(int pitch, int octave){
+	//uint8_t note = (getPitch() + active_sequence.transpose) % 12; //convert -12/+12 to 0 - 11
+	double midinote = ((double(octave) + 3) * 12) + double(pitch) + active_sequence.transpose - 24;
+
+	int note = min(max(midinote, 0), 127); //don't show unusable pitch adjustments at extreme octaves
+	//set note name
+	strcpy_P(pitchname, (char *)pgm_read_word(&(note_names[note % 12])));  // Necessary casts and dereferencing, just copy (for PROGMEM keywords in flash)
+
+	//set octave
+	char octavename = min(midinote, 127) / 12;
+	pitchname[2] = octavename + 48; //convert 0-9 number to ascii number code (48-57)
+	return pitchname;
+}
 
 void Sequencer::setEffectMode(bool state){
 	seq_effect_mode = state;

@@ -16,6 +16,8 @@ public:
     
     void setDisplayNum(int displayNum);
 
+    void setDisplayAlphaVar(char displayAlpha[3]);
+
     void setDisplayAlpha(const char displayAlpha[3]);
 
     void setDecimal(bool decimalOn);

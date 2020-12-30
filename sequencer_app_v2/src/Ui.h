@@ -24,6 +24,7 @@ class Ui{
         void onGlideButton(bool state);       
 
         void invertEncoder(); 
+        void displaySequenceParam();
         
         void onButtonToggle(int button, bool button_state);
         void onEncoderIncrement(int increment_amount);

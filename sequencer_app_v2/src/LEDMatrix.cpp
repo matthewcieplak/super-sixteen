@@ -130,6 +130,10 @@ void LedMatrix::reset(){
 	}
 }
 
+void LedMatrix::selectStep(int step){
+	selected_step_led = step;
+}
+
 void LedMatrix::setMatrixFromSequencer(byte bar){
 	visible_bar = bar;
 	memcpy(led_matrix, sequencerVar3->getStepMatrix()+bar*16, 16); //reset LED matrix to sequence
@@ -139,6 +143,10 @@ void LedMatrix::setMatrixFromSequencer(byte bar){
 	} else {
 		selected_step_led = selected_step_led % 16; //find relative step in current bar
 	}
+}
+
+void LedMatrix::setMatrix(bool *matrix) {
+	memcpy(led_matrix, matrix, 16);
 }
 
 void LedMatrix::toggleLed(int led){

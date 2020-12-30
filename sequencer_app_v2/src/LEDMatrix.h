@@ -16,6 +16,8 @@ class LedMatrix{
         void multiplexLeds();
 
         void blinkStep(); 
+        
+        void selectStep(int step);
 
         void blinkLed();
 
@@ -24,6 +26,8 @@ class LedMatrix{
         void reset();
 
         void setMatrixFromSequencer(byte bar);
+
+        void setMatrix(bool *matrix);
 
         void toggleLed(int led);
     

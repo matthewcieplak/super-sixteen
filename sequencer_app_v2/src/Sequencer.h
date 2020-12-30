@@ -65,6 +65,7 @@ class Sequencer{
 
         bool getGlide();
         int getPitch();
+        char *getPitchName(int pitch, int octave);
         int getOctave();
         int getDuration();
         int getCv();

@@ -70,15 +70,25 @@ void Display::setDisplayNum(int displayNum){
 	appendDecimal();
 }
 
+void Display::setDisplayAlphaVar(char displayAlpha[]){
+	const char displayAlphaConst[4] = {char(displayAlpha[0]), char(displayAlpha[1]), char(displayAlpha[2])};
+	setDisplayAlpha(displayAlphaConst);
+}
+
 void Display::setDisplayAlpha(const char displayAlpha[]){ //turns 3-character array "MAJ" into ascii indexes that correspond to abbreviated font
 	num_display = 999; //prime variable for easy reset when changed again
-	digit_display[0] = displayAlpha[0] - 55;
-	digit_display[1] = displayAlpha[1] - 55;
-	digit_display[2] = displayAlpha[2] - 55;
-
-	alpha_display[2] = ~alphabet[digit_display[0]];
-	alpha_display[1] = ~alphabet[digit_display[1]];
-	alpha_display[0] = ~alphabet[digit_display[2]];
+	for (int i = 0; i < 3; i++) {
+		if (displayAlpha[i] == 98) {
+			digit_display[i] = 11; //~alphabet[11]; //lowercase "b" as flat symbol
+		} else if (displayAlpha[i] == 32) {
+			digit_display[i] = 36; //~alphabet[36]; //space
+		} else if (displayAlpha[i] > 64) { //convert a-z characters
+			digit_display[i] = displayAlpha[i] - 55;
+		} else if (displayAlpha[i] >= 48) {//convert 0-9 characters
+			digit_display[i] = displayAlpha[i] - 48;
+		} 
+		alpha_display[2-i] = ~alphabet[digit_display[i]];
+	}
 	appendDecimal();
 }	
 

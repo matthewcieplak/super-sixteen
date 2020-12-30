@@ -13,6 +13,7 @@
             "request": "launch",
             "name": "PIO Debug",
             "executable": "c:/Users/PC/Documents/Arduino/super-sixteen/sequencer_app_v2/.pio/build/uno/firmware.elf",
+            "projectEnvName": "uno",
             "toolchainBinDir": "C:/Users/PC/.platformio/packages/toolchain-atmelavr@1.50400.0/bin",
             "preLaunchTask": {
                 "type": "PlatformIO",
@@ -25,6 +26,7 @@
             "request": "launch",
             "name": "PIO Debug (skip Pre-Debug)",
             "executable": "c:/Users/PC/Documents/Arduino/super-sixteen/sequencer_app_v2/.pio/build/uno/firmware.elf",
+            "projectEnvName": "uno",
             "toolchainBinDir": "C:/Users/PC/.platformio/packages/toolchain-atmelavr@1.50400.0/bin",
             "internalConsoleOptions": "openOnSessionStart"
         }

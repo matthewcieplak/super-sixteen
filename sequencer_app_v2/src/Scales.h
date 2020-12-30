@@ -39,6 +39,9 @@ const char effect_6[] PROGMEM = "STP"; //record stop
 const char effect_7[] PROGMEM = "RND"; //random pitch
 const char effect_8[] PROGMEM = "STT"; //stutter
 const char effect_9[] PROGMEM = "ROL"; //roll
+const char effect_10[] PROGMEM = "TUR"; //random pitch
+const char effect_11[] PROGMEM = "TRI"; //stutter
+const char effect_12[] PROGMEM = "TRZ"; //roll
 
 static const uint8_t EFFECT_REPEAT    = 0;
 static const uint8_t EFFECT_REVERSE   = 1;
@@ -50,14 +53,39 @@ static const uint8_t EFFECT_STOP      = 6;
 static const uint8_t EFFECT_RANDOM    = 7;
 static const uint8_t EFFECT_STUTTER   = 8;
 static const uint8_t EFFECT_ROLL      = 9;
+static const uint8_t EFFECT_TURING1   = 10;
+static const uint8_t EFFECT_TURING2   = 11;
+static const uint8_t EFFECT_TURING3   = 12;
+
+const char *const effect_names[] PROGMEM = { effect_0, effect_1, effect_2, effect_3, effect_4, effect_5, effect_6, effect_7, effect_8, effect_9, effect_10, effect_11, effect_12 };
 
 
 
-const char *const effect_names[] PROGMEM = { effect_0, effect_1, effect_2, effect_3, effect_4, effect_5, effect_6, effect_7, effect_8, effect_9 };
+const char note_0[] PROGMEM = "C 0";
+const char note_1[] PROGMEM = "Db0";
+const char note_2[] PROGMEM = "D 0";
+const char note_3[] PROGMEM = "Eb0";
+const char note_4[] PROGMEM = "E 0";
+const char note_5[] PROGMEM = "F 0";
+const char note_6[] PROGMEM = "Gb0";
+const char note_7[] PROGMEM = "G 0";
+const char note_8[] PROGMEM = "Ab0";
+const char note_9[] PROGMEM = "A 0";
+const char note_10[] PROGMEM = "Bb0";
+const char note_11[] PROGMEM = "B 0";
+const char note_12[] PROGMEM = "C 1";
+
+// // 
+const char *const note_names[] PROGMEM = { note_0, note_1, note_2, note_3, note_4, note_5, note_6, note_7, note_8, note_9, note_10, note_11, note_12 };
 
 
                               //  C  Db  D  Eb  E   F  Gb  G  Ab   A  Bb  B  C
 const int8_t quantize_map[13] = { 0, 1, -1, 1, -1, -1, 1, -1,  1, -1, 1, -1, 0 }; //steps required to move to altered/diatonic scale degree when out of quantization
 const int8_t quantize_pen[13] = { 0, 1, -1, 1, -1, -1, 1, -1,  1, -1, 1,  1, 0 }; //steps required to move to major pentatonic scale degree
 const int8_t quantize_pem[13] = { 0, 1,  1, 1, -1, -1, 1, -1, -1,  1, 1, -1, 0 }; //steps required to move to minor pentatonic scale degree
+
+
+
+
+
 }

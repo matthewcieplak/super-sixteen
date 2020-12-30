@@ -61,9 +61,9 @@ byte calibration_step = 0;
 byte current_patch = 1;
 byte selected_patch = 1;
 byte current_bar = 0;
-char scalename[4];
-char effectname[4];
-
+char scalename[5];
+char effectname[5];
+char notename[5];
 
 
 void Ui::init(Calibration& calibration, Dac& dac, Sequencer& sequencer){
@@ -84,6 +84,9 @@ void Ui::init(Calibration& calibration, Dac& dac, Sequencer& sequencer){
     display.init();
 	encoder.init();
     ledMatrix.init(display, sequencer);
+
+	analogIo.setDisplayMode(calibration.readDisplayModeValue());
+
 
 	display.startupSequence();
 
@@ -116,10 +119,18 @@ void Ui::poll(){
 		analogIo.poll();
 		//if (!record_mode) {
 		if (analogIo.paramChanged()){
-			display.setDisplayNum(analogIo.getDisplayNum());
+			displaySequenceParam();
 			cancelSaveOrLoad(); //TODO remove if this is too jittery to use
 		}
 		//}
+	}
+}
+
+void Ui::displaySequenceParam(){
+	if (analogIo.paramIsAlpha()) {
+		display.setDisplayAlphaVar(analogIo.getDisplayAlpha());
+	} else {
+		display.setDisplayNum(analogIo.getDisplayNum());
 	}
 }
 
@@ -283,7 +294,7 @@ void Ui::selectBar(byte bar){
 		display.blinkDisplay(true, 100, 1);
 		copy_state = false;
 	} else {
-		const char barname[4] = {char(36+55), char(11+55), char(bar+1+55)}; //goofy way of writing " b4" with ad-hoc ascii table conversion
+		char barname[4] = {char(36+55), char(11+55), char(bar+1+55)}; //goofy way of writing " b4" with ad-hoc ascii table conversion
 		display.setDisplayAlpha(barname);
 		copy_state = true;
 	}
@@ -408,13 +419,16 @@ void Ui::onRepeatButton(bool state){
 void Ui::selectStep(int step){
 	cancelSaveOrLoad();
 	sequencerVar2->selectStep(step+current_bar*16);
-	ledMatrix.setMatrixFromSequencer(current_bar);
+	if (ui_mode == SEQUENCE_MODE) {
+		ledMatrix.setMatrixFromSequencer(current_bar);
+	}
 	//ledMatrix.blinkLed();
     analogIo.displaySelectedParam();
-	display.setDisplayNum(analogIo.getDisplayNum());
+	displaySequenceParam();
 	buttons.setGlideLed(sequencerVar2->getGlide());
 }
 
+bool calibration_matrix[16] = {1,1,1,1, 1,1,1,1, 1,0,0,0, 0,0,1,1};
 
 void Ui::initializeCalibrationMode() {
 	cancelSaveOrLoad();
@@ -422,6 +436,7 @@ void Ui::initializeCalibrationMode() {
 	calibrationVar2->readCalibrationValues();
 	updateCalibration(calibration_step);
 	display.setDisplayAlpha("CAL");
+	ledMatrix.setMatrix(calibration_matrix);
 	digitalWrite(GATE_PIN, HIGH); //to make signals audible
 }
 
@@ -433,10 +448,28 @@ void Ui::clearSequence(){
 }
 
 void Ui::updateCalibration(int step) {
-    if (step > 8) return;
+    //deal with special options - display mode alpha/numeric on buttons 15/16
+	if (step == 15) {
+		display.setDisplayAlpha("NUM");
+		display.blinkDisplay(true, 100, 3);
+		calibrationVar2->writeDisplayModeValue(0);
+		analogIo.setDisplayMode(0);
+		return;
+	} else if (step == 14) {
+		display.setDisplayAlpha("NOT");
+		display.blinkDisplay(true, 100, 3);
+		calibrationVar2->writeDisplayModeValue(127);
+		analogIo.setDisplayMode(127);
+		return;
+	}
+	
+	
+	//deal with CV output calibration increment octaves
+	if (step > 8) return;
     calibration_step = step;
-	ledMatrix.reset();
-	ledMatrix.toggleLed(step);
+	//ledMatrix.reset();
+	ledMatrix.selectStep(step);
+	ledMatrix.setMatrix(calibration_matrix);
 	display.setDisplayNum(calibrationVar2->getCalibrationValue(step));
 	dacVar2->setOutput(0, GAIN_2, 1, calibrationVar2->getCalibratedOutput(step * 12));
 }
@@ -450,7 +483,7 @@ void Ui::initializeSequenceMode(){
 	ledMatrix.reset();
 	ledMatrix.setMatrixFromSequencer(current_bar);
 	analogIo.displaySelectedParam();
-	display.setDisplayNum(analogIo.getDisplayNum());
+	displaySequenceParam();
 }
 
 void Ui::onStepIncremented(){
