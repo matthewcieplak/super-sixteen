@@ -39,9 +39,9 @@ const char effect_6[] PROGMEM = "STP"; //record stop
 const char effect_7[] PROGMEM = "RND"; //random pitch
 const char effect_8[] PROGMEM = "STT"; //stutter
 const char effect_9[] PROGMEM = "ROL"; //roll
-const char effect_10[] PROGMEM = "TUR"; //random pitch
-const char effect_11[] PROGMEM = "TRI"; //stutter
-const char effect_12[] PROGMEM = "TRZ"; //roll
+const char effect_10[] PROGMEM = "TU1"; //random pitch
+const char effect_11[] PROGMEM = "TU2"; //stutter
+const char effect_12[] PROGMEM = "TU3"; //roll
 
 static const uint8_t EFFECT_REPEAT    = 0;
 static const uint8_t EFFECT_REVERSE   = 1;

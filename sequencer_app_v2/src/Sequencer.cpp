@@ -57,7 +57,7 @@ double tempo_millis_swing_even;
 int glide_duration = 50;
 int glide_time; //
 int random_octave = 0;
-
+bool turing_mode = false;
 
 double current_note_value = 0;
 Calibration *calibrationVar;
@@ -268,7 +268,16 @@ void Sequencer::quantizeActivePitch(){
 	active_pitch = active_sequence.pitch_matrix[active_step];
 	random_octave = 0;
 	if (seq_effect_mode && active_sequence.effect == EFFECT_RANDOM) {
-		active_pitch += rand() % active_sequence.effect_depth;
+		active_pitch += (rand() % active_sequence.effect_depth) * (rand() % 10 > 5 ? -1 : 1);
+	} else if (seq_effect_mode && turing_mode) {
+		active_sequence.pitch_matrix[active_step] += (rand() % active_sequence.effect_depth) * (rand() % 10 > 5 ? -1 : 1);
+		if (abs(active_sequence.pitch_matrix[active_step]) > 12) { 
+			int octave_adjust = active_sequence.pitch_matrix[active_step] > 0 ? 1 : -1;
+			active_sequence.octave_matrix[active_step] += octave_adjust;
+			active_sequence.octave_matrix[active_step] = max(min(active_sequence.octave_matrix[active_step], 2), -2);
+			active_sequence.pitch_matrix[active_step] = (active_sequence.pitch_matrix[active_step] % 12) * octave_adjust;
+		}
+		active_pitch = active_sequence.pitch_matrix[active_step];
 	} else if (seq_effect_mode && active_sequence.effect == EFFECT_TRANSPOSE) {
 		active_pitch += active_sequence.effect_depth - 24;
 	}
@@ -450,7 +459,8 @@ int Sequencer::incrementScale(int amount){
 
 int Sequencer::incrementEffect(int amount){
 	uint8_t &effect = active_sequence.effect;
-	setMinMaxParamUnsigned(effect, amount, 0, 9);	
+	setMinMaxParamUnsigned(effect, amount, 0, 12);	
+	turing_mode = false;
 	switch (active_sequence.effect) {
 		case EFFECT_GLIDE: active_sequence.effect_depth = active_sequence.glide_length; break; //set useful default rather than zero 
 		case EFFECT_TRANSPOSE: active_sequence.effect_depth = 24; break;
@@ -459,6 +469,9 @@ int Sequencer::incrementEffect(int amount){
 		case EFFECT_STOP: active_sequence.effect_depth = 8; break;
 		case EFFECT_STUTTER: active_sequence.effect_depth = 80; break;
 		case EFFECT_ROLL: active_sequence.effect_depth = 2; break;
+		case EFFECT_TURING1:
+		case EFFECT_TURING2:
+		case EFFECT_TURING3: active_sequence.effect_depth = 4; turing_mode = true; break; 
 	}
 	incrementEffectDepth(0);
 	return active_sequence.effect;
@@ -478,6 +491,9 @@ int Sequencer::incrementEffectDepth(int amount){
 		case EFFECT_RANDOM:  setMinMaxParamUnsigned(depth, amount, 1, 50); break;
 		case EFFECT_STUTTER: setMinMaxParamUnsigned(depth, amount, 1, 100); updateStutterCalc(); break;
 		case EFFECT_ROLL:    setMinMaxParamUnsigned(depth, amount, 1, 8); updateRollCalc(); break;
+		case EFFECT_TURING1:
+		case EFFECT_TURING2:
+		case EFFECT_TURING3: setMinMaxParamUnsigned(depth, amount, 1, 50); break;
 	}
 	return active_sequence.effect_depth;
 }
