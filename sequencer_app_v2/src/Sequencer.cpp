@@ -12,6 +12,8 @@ const byte SEQUENCE_MAX_LENGTH = 64;
 sequence active_sequence;
 
 int8_t step_presets[] = { 4, 8, 12, 16, 24, 32, 48, 64 };
+int8_t active_pitches[16];
+int num_active_pitches = 0;
 
 int selected_step = 0;
 int8_t clock_step = -1;
@@ -208,7 +210,11 @@ void Sequencer::incrementStep() {
 	// 	active_sequence.step_matrix[current_step] = true;
 	// }
 
-
+	//in randomize mode, enable steps with
+	if (seq_effect_mode && turing_mode && (active_sequence.effect == EFFECT_TURING2 || active_sequence.effect == EFFECT_TURING3)) {
+		bool step_active =  (rand() % 20) <= active_sequence.effect_depth ? true : false;
+		active_sequence.step_matrix[current_step] = step_active;
+	}
 
 	if (active_sequence.step_matrix[current_step]) {
 		active_step = current_step;
@@ -270,7 +276,23 @@ void Sequencer::quantizeActivePitch(){
 	if (seq_effect_mode && active_sequence.effect == EFFECT_RANDOM) {
 		active_pitch += (rand() % active_sequence.effect_depth) * (rand() % 10 > 5 ? -1 : 1);
 	} else if (seq_effect_mode && turing_mode) {
-		active_sequence.pitch_matrix[active_step] += (rand() % active_sequence.effect_depth) * (rand() % 10 > 5 ? -1 : 1);
+		if (active_sequence.effect == EFFECT_TURING1) {
+			//turing 1 uses depth as "randomness"
+			active_sequence.pitch_matrix[active_step] += (rand() % active_sequence.effect_depth) * (rand() % 10 > 5 ? -1 : 1);
+		} else if (active_sequence.effect == EFFECT_TURING2) {
+			//turing 2 rearranges sequence using existing  pitches, and uses depth as "density"
+			int random_pitch = rand() % num_active_pitches;
+			active_sequence.pitch_matrix[active_step] = active_pitches[random_pitch];
+			active_sequence.duration_matrix[active_step] = (rand() % 130) + 20; //20-170
+		} else if (active_sequence.effect == EFFECT_TURING3) {
+			//turing 3 is fixed at +/-2 octaves and uses depth as "density" for rhythm
+			//also randomizes duration, cv and glide on/off
+			active_sequence.pitch_matrix[active_step] = (rand() % 24) * (rand() % 10 > 5 ? -1 : 1); //-24/+24
+			active_sequence.glide_matrix[active_step] =  (rand() % 10) >= 9 ? true : false; //glide 10% on
+			active_sequence.duration_matrix[active_step] = (rand() % 130) + 20; //20-170
+			active_sequence.cv_matrix[active_step] = rand() % 90; //0-90;
+		}
+
 		if (abs(active_sequence.pitch_matrix[active_step]) > 12) { 
 			int octave_adjust = active_sequence.pitch_matrix[active_step] > 0 ? 1 : -1;
 			active_sequence.octave_matrix[active_step] += octave_adjust;
@@ -469,9 +491,9 @@ int Sequencer::incrementEffect(int amount){
 		case EFFECT_STOP: active_sequence.effect_depth = 8; break;
 		case EFFECT_STUTTER: active_sequence.effect_depth = 80; break;
 		case EFFECT_ROLL: active_sequence.effect_depth = 2; break;
-		case EFFECT_TURING1:
-		case EFFECT_TURING2:
-		case EFFECT_TURING3: active_sequence.effect_depth = 4; turing_mode = true; break; 
+		case EFFECT_TURING1: active_sequence.effect_depth = 4; turing_mode = true; break; 
+		case EFFECT_TURING2: active_sequence.effect_depth = 12; turing_mode = true; break; 
+		case EFFECT_TURING3: active_sequence.effect_depth = 12; turing_mode = true; break; 
 	}
 	incrementEffectDepth(0);
 	return active_sequence.effect;
@@ -491,9 +513,9 @@ int Sequencer::incrementEffectDepth(int amount){
 		case EFFECT_RANDOM:  setMinMaxParamUnsigned(depth, amount, 1, 50); break;
 		case EFFECT_STUTTER: setMinMaxParamUnsigned(depth, amount, 1, 100); updateStutterCalc(); break;
 		case EFFECT_ROLL:    setMinMaxParamUnsigned(depth, amount, 1, 8); updateRollCalc(); break;
-		case EFFECT_TURING1:
+		case EFFECT_TURING1: 
 		case EFFECT_TURING2:
-		case EFFECT_TURING3: setMinMaxParamUnsigned(depth, amount, 1, 50); break;
+		case EFFECT_TURING3: setMinMaxParamUnsigned(depth, amount, 1, 20); break;
 	}
 	return active_sequence.effect_depth;
 }
@@ -680,7 +702,17 @@ void Sequencer::setEffectMode(bool state){
 		gate_active = state;
 	}  else if (active_sequence.effect == EFFECT_STOP) {
 		note_reached = false;
-	} 
+	} else if (active_sequence.effect == EFFECT_TURING2) {
+		//initialize current note set used for randomization
+		num_active_pitches = 0;
+		for (int i = 0; i < active_sequence.sequence_length; i++) {
+			if (active_sequence.step_matrix[i]) {
+				active_pitches[num_active_pitches] = active_sequence.pitch_matrix[i];
+				num_active_pitches += 1;
+			}
+		}
+
+	}
 }
 
 void Sequencer::onMutateButton(bool state){
