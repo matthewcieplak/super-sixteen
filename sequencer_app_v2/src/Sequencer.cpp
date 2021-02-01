@@ -32,6 +32,9 @@ bool reset_in_active = false;
 bool step_incremented = false;
 bool step_recording_mode = false;
 bool first_step = true;
+bool song_mode = false;
+int song_mode_loops = 0;
+bool time_for_next_sequence = false;
 
 byte tempo_bpm = 120;
 unsigned int tempo_millis = 15000 / tempo_bpm; //would be 60000 but we count 4 steps per "beat"
@@ -164,12 +167,18 @@ void Sequencer::incrementStep() {
 	clock_step++;
 	if (clock_step >= active_sequence.sequence_length) {
 		clock_step = 0;
+		if (song_mode) {
+			song_mode_loops += 1;
+			if (song_mode_loops >= active_sequence.song_loops) {
+				time_for_next_sequence = true;
+			}	
+		}
 	}
 
 	if (!clock_out_active) {
 		clock_out_active = true;
 		digitalWrite(CLOCK_OUT_PIN, HIGH);
-	}
+	} 
 
 	if (seq_recording_effect) { //while recording, respect mutate button state and record active/inactive to current step
 		active_sequence.effect_matrix[current_step] = mutate_button;
@@ -449,6 +458,7 @@ void Sequencer::onReset(){
 	current_step = clock_step;
 	step_incremented = false;
 	first_step = true;
+	song_mode_loops = 0;
 }
 
 void Sequencer::onBarSelect(byte bar){
@@ -730,6 +740,26 @@ void Sequencer::setRecordMode(bool state){
 	if (!state)	seq_recording_effect = false; 
 }
 
+int Sequencer::incrementSongNextSeq(int amount){
+	active_sequence.song_next_seq = getMinMaxParam(active_sequence.song_next_seq, amount, 0, 99);
+	if (active_sequence.song_next_seq > 0 && active_sequence.song_loops > 0) {
+		song_mode = true;
+	} else {
+		song_mode = false;
+	}
+	return active_sequence.song_next_seq;
+}
+
+int Sequencer::incrementSongLoops(int amount){
+	active_sequence.song_loops = getMinMaxParam(active_sequence.song_loops, amount, 0, 99);
+	return active_sequence.song_loops;
+}
+
+int Sequencer::getSongNextSeq(){
+	return active_sequence.song_next_seq;
+}
+
+
 sequence& Sequencer::getActiveSequence(){
 	return active_sequence;
 }
@@ -758,6 +788,8 @@ void Sequencer::clearSequence(){
 	active_sequence.effect_depth = 4;
     //active_sequence.sequence_tempo = 120; //might be done in real time? probably not a good idea to change
     active_sequence.transpose = 24;
+	active_sequence.song_next_seq = 0;
+	active_sequence.song_loops = 0;
 }
 
 void Sequencer::loadScale(uint8_t scale){
@@ -768,14 +800,27 @@ void Sequencer::loadScale(uint8_t scale){
 
 void Sequencer::pickupPositionInNewSequence(){
 	if (prev_sequence_length != active_sequence.sequence_length) {
-		clock_step = active_sequence.sequence_length - (prev_sequence_length - clock_step);
+		if (clock_step > 0) {
+			clock_step = active_sequence.sequence_length - (prev_sequence_length - clock_step);
+		}
 		if (clock_step < 0) {
 			clock_step = active_sequence.sequence_length + clock_step;
 		}
 		prev_sequence_length = active_sequence.sequence_length;
 	}
 
+	song_mode_loops = 0;
+	song_mode = active_sequence.song_next_seq > 0 && active_sequence.song_loops > 0;
+	time_for_next_sequence = false;
+}
 
+bool Sequencer::timeForNextSequence(){ //return true exactly once when called
+	if (time_for_next_sequence) {
+		time_for_next_sequence = false;
+		return true;
+	} else {
+		return false;
+	}
 }
 
 void Sequencer::paste(byte bar1, byte bar2) {

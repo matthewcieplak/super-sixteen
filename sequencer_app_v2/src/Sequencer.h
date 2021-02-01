@@ -28,6 +28,9 @@ struct sequence {
     uint8_t sequence_tempo = 120;
 
     int8_t transpose = 24;
+
+    int8_t song_next_seq = 0;
+    int8_t song_loops = 0;
 };
 
 class Sequencer{
@@ -38,6 +41,7 @@ class Sequencer{
 
         void incrementStep();
         bool stepWasIncremented();
+        bool timeForNextSequence();
 
         void selectStep(int step);
         bool getStepOnOff(int step);
@@ -52,6 +56,9 @@ class Sequencer{
         int incrementEffect(int amount);
         int incrementEffectDepth(int amount);
         int incrementGlide(int amount);
+        int incrementSongNextSeq(int incrementAmount);
+        int incrementSongLoops(int incrementAmount);
+        int getSongNextSeq();
         
 
         void onPlayButton();
@@ -90,6 +97,9 @@ class Sequencer{
         bool currentStepActive();
         void setStepRecordingMode(bool state);
         void setMutateRecordingMode(bool state);
+
+
+        //void getSongLoops(int loops);
 
 
 

@@ -37,6 +37,7 @@ class Ui{
         bool cancelSaveOrLoad();
         void shiftFunction(int button);
         void clearSequence();
+        void loadNextSequence();
 
 };
 }

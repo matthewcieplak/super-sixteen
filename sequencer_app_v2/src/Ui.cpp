@@ -39,6 +39,7 @@ bool saving = false;
 bool copy_state = false;
 bool encoder_bumped = false;
 byte erase_counter = 0;
+bool just_selected_param = false;
 
 const byte SEQUENCE_MODE = 0;
 const byte CALIBRATE_MODE = 1;
@@ -51,6 +52,8 @@ const byte PARAM_STEPS = 9;
 const byte PARAM_SCALE = 10;
 const byte PARAM_SWING = 11;
 const byte PARAM_TRANSPOSE = 12;
+const byte PARAM_SONG  = 15;
+const byte PARAM_LOOPS = 16; 
 const byte PARAM_EFFECT = 21;
 const byte PARAM_EFFECT_DEPTH = 25; //
 const byte PARAM_GLIDE = 26;
@@ -198,6 +201,10 @@ void Ui::onLoadButton(bool state) {
 			ledMatrix.setMatrixFromSequencer(current_bar);
 			//TODO set sequencer current step by length of active sequence!
 		} else if (ui_mode == SEQUENCE_MODE){
+			if (shift_state) {
+				loadNextSequence();
+				return;
+			}
 			ui_mode = LOAD_MODE;
 			selected_patch = current_patch;
 			display.setDisplayNum(selected_patch);
@@ -261,7 +268,17 @@ void Ui::shiftFunction(int button) {
 		if (button < 4)	selectBar(button);
 	} else {
 		switch (button) {
-			case 15: break; //TODO add config menu
+			case PARAM_SONG: 
+				ui_mode = EDIT_PARAM_MODE;
+				just_selected_param = true;
+				if (current_param == PARAM_SONG) {
+					current_param = PARAM_LOOPS;
+					display.setDisplayAlpha("LPS");
+				} else {
+					current_param = PARAM_SONG;
+					display.setDisplayAlpha("SNG");
+				}
+				break; 
 			case 14: 
 				clearSequence();
 				erase_counter += 1;
@@ -294,7 +311,7 @@ void Ui::selectBar(byte bar){
 		display.blinkDisplay(true, 100, 1);
 		copy_state = false;
 	} else {
-		char barname[4] = {char(36+55), char(11+55), char(bar+1+55)}; //goofy way of writing " b4" with ad-hoc ascii table conversion
+		char barname[4] = {char(36+55), char(11+55), char(bar+1+48)}; //goofy way of writing " b4" with ad-hoc ascii table conversion
 		display.setDisplayAlpha(barname);
 		copy_state = true;
 	}
@@ -334,6 +351,12 @@ void Ui::onEncoderIncrement(int increment_amount) {
 				case PARAM_SWING: param = sequencerVar2->incrementSwing(increment_amount); break;
 				case PARAM_GLIDE: param = sequencerVar2->incrementGlide(increment_amount); break;
 				case PARAM_TRANSPOSE: param = sequencerVar2->incrementTranspose(increment_amount); break;
+				case PARAM_LOOPS: param = sequencerVar2->incrementSongLoops(just_selected_param ? 0 : increment_amount); just_selected_param = false; break;
+				case PARAM_SONG:  
+					param = sequencerVar2->incrementSongNextSeq(just_selected_param ? 0 : increment_amount);
+					just_selected_param = false;
+					display.setDecimal(memory.patchExists(param));
+					break;
 			}
 			display.setDisplayNum(param);
 		}
@@ -487,12 +510,27 @@ void Ui::initializeSequenceMode(){
 }
 
 void Ui::onStepIncremented(){
+	if (sequencerVar2->timeForNextSequence()) {
+		loadNextSequence();
+	}
+
 	ledMatrix.setMatrixFromSequencer(current_bar);
 	ledMatrix.blinkCurrentStep();
 	if (record_mode) {
 		analogIo.recordCurrentParam();
 	}
 	sequencerVar2->setActiveNote(); //takes place here to enable real-time recording to be heard immediately
+}
+
+void Ui::loadNextSequence(){
+	int next_seq = sequencerVar2->getSongNextSeq();
+	if (next_seq > 0 && memory.patchExists(next_seq)) {
+		current_patch = next_seq;
+		selected_patch = current_patch;
+		memory.load(next_seq);
+		display.setDisplayNum(current_patch);
+		display.blinkDisplay(true, 100, 5);
+	}
 }
 
 bool Ui::cancelSaveOrLoad(){
