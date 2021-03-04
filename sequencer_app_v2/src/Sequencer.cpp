@@ -98,6 +98,7 @@ void Sequencer::init(Calibration& calibration, Dac& dac) {
 }
 
 void Sequencer::updateClock() {
+
 	if (play_active || count_next_swing_step) {
 		if (timekeeper > (clock_step % 2 == 1 ? tempo_millis_swing_even : tempo_millis_swing_odd)) {
 			
@@ -121,10 +122,17 @@ void Sequencer::updateClock() {
 	updateGate();
 
 
+
+	//4 possible states
+	//reset low/clock low - do nothing
+	//reset high/clock low - reset playhead
+	//reset low/clock high - increment step
+	//reset high/clock high - reset playhead then increment step
+
 	if (reset_in_active == false && ((PIND & _BV(4)) >> 4) == LOW) { //digitalRead(RESET_PIN) == LOW) { //
 		onReset(); 
 		reset_in_active = true;
-	} else if (reset_in_active == true) {
+	} else if (reset_in_active == true && ((PIND & _BV(4)) >> 4) == HIGH) {
 		reset_in_active = false;
 	}
 
@@ -134,6 +142,7 @@ void Sequencer::updateClock() {
 	} else {
 		step_incremented = false;
 	}
+
 
 }
 
@@ -161,6 +170,18 @@ void Sequencer::onClock(){
 	timekeeper = 0;
 		
 	play_active = false;
+}
+
+
+void Sequencer::onReset(){
+	clock_step =  -1; //clock_active ? -1 : 0;
+	current_step = clock_step;
+	step_incremented = false;
+	first_step = true;
+	song_mode_loops = 0;
+	if (clock_in_active == false && digitalRead(CLOCK_IN_PIN) == LOW) { //enable slight delay on reset signal
+		onClockIn();
+	}
 }
 
 void Sequencer::incrementStep() {
@@ -452,14 +473,6 @@ void Sequencer::onClockIn(){
 	clock_in_active = true;
 }
 
-void Sequencer::onReset(){
-	timekeeper = tempo_millis;
-	clock_step =  -1; //clock_active ? -1 : 0;
-	current_step = clock_step;
-	step_incremented = false;
-	first_step = true;
-	song_mode_loops = 0;
-}
 
 void Sequencer::onBarSelect(byte bar){
 

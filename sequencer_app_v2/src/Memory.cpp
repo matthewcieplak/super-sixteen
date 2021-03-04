@@ -3,7 +3,7 @@
 #include "Pinout.h"
 
 #include <Arduino.h>
-#include <ArduinoJson.h>
+//#include <ArduinoJson.h>
 #include <SerialFlash.h>
 
 namespace supersixteen {
