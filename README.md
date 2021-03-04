@@ -1,4 +1,4 @@
-# Super Sixteen Eurorack Sequencecr
+# Super Sixteen Eurorack Sequencer
 Super Sixteen is an open-source/open-hardware sequencer for the Eurorack synthesizer format. It's available through my [web shop](https://store.extralifeinstruments.com) and fine retailers as a complete module and DIY kit. It's developed on the Arduino codebase on Atmega328P, using the [PlatformIO](https://platformio.org/) extension for Visual Studio Code.
 
 ![Photo of the Super Sixteen module](https://s3.amazonaws.com/extralifeinstruments.com/images/product/supersixteen-metal.jpg)
