@@ -4,7 +4,7 @@
 #include "Calibrate.h"
 #include "Sequencer.h"
 #include <MCP23S17.h>
-#include "../lib/c_queue/queue.h"
+#include "queue_ino.h"
 #include <elapsedMillis.h>
 
 namespace supersixteen{	

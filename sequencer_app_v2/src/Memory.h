@@ -1,7 +1,7 @@
 #pragma once
 #include <Arduino.h>
 //#include <ArduinoJson.h>
-#include <Sequencer.h>
+#include "Sequencer.h"
 #include <SerialFlash.h>
 // Encoder.h
 
