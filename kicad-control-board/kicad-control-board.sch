@@ -692,7 +692,7 @@ L Device:R R14
 U 1 1 5BAC9030
 P 6550 5300
 F 0 "R14" H 6400 5250 50  0000 L CNN
-F 1 "660" H 6600 5250 50  0000 L CNN
+F 1 "680" H 6600 5250 50  0000 L CNN
 F 2 "Resistors_THT:R_Axial_DIN0204_L3.6mm_D1.6mm_P7.62mm_Horizontal" V 6480 5300 50  0001 C CNN
 F 3 "" H 6550 5300 50  0001 C CNN
 	1    6550 5300
@@ -703,7 +703,7 @@ L Device:R R15
 U 1 1 5BAC960C
 P 7050 5300
 F 0 "R15" H 6900 5250 50  0000 L CNN
-F 1 "660" H 7100 5250 50  0000 L CNN
+F 1 "680" H 7100 5250 50  0000 L CNN
 F 2 "Resistors_THT:R_Axial_DIN0204_L3.6mm_D1.6mm_P7.62mm_Horizontal" V 6980 5300 50  0001 C CNN
 F 3 "" H 7050 5300 50  0001 C CNN
 	1    7050 5300
@@ -714,7 +714,7 @@ L Device:R R16
 U 1 1 5BAC971E
 P 7550 5300
 F 0 "R16" H 7400 5250 50  0000 L CNN
-F 1 "660" H 7600 5250 50  0000 L CNN
+F 1 "680" H 7600 5250 50  0000 L CNN
 F 2 "Resistors_THT:R_Axial_DIN0204_L3.6mm_D1.6mm_P7.62mm_Horizontal" V 7480 5300 50  0001 C CNN
 F 3 "" H 7550 5300 50  0001 C CNN
 	1    7550 5300
@@ -1884,16 +1884,6 @@ A0
 Entry Wire Line
 	2950 1450 3050 1550
 Wire Wire Line
-	6550 5950 6600 5950
-Wire Wire Line
-	9350 6050 9350 6150
-Wire Wire Line
-	7050 5450 7050 5950
-Wire Wire Line
-	6550 5450 6550 5950
-Wire Wire Line
-	7550 5450 7550 5950
-Wire Wire Line
 	7800 3900 7950 3900
 Wire Wire Line
 	7400 1700 7950 1700
@@ -2398,45 +2388,34 @@ Wire Wire Line
 $Comp
 L Transistor_BJT:2N3906 Q1
 U 1 1 5DBBE59D
-P 6800 5950
-F 0 "Q1" H 6990 5996 50  0000 L CNN
-F 1 "2N3906" H 6575 5800 50  0000 L CNN
-F 2 "TO_SOT_Packages_THT:TO-92_Inline_Wide" H 7000 5875 50  0001 L CIN
-F 3 "https://www.fairchildsemi.com/datasheets/2N/2N3906.pdf" H 6800 5950 50  0001 L CNN
-	1    6800 5950
+P 6775 6075
+F 0 "Q1" H 6965 6121 50  0000 L CNN
+F 1 "2N3906" H 6550 5925 50  0000 L CNN
+F 2 "TO_SOT_Packages_THT:TO-92_Inline_Wide" H 6975 6000 50  0001 L CIN
+F 3 "https://www.fairchildsemi.com/datasheets/2N/2N3906.pdf" H 6775 6075 50  0001 L CNN
+	1    6775 6075
 	1    0    0    -1  
 $EndComp
 $Comp
 L Transistor_BJT:2N3906 Q2
 U 1 1 5DBC04EA
-P 7250 5950
-F 0 "Q2" H 7440 5996 50  0000 L CNN
-F 1 "2N3906" H 7050 5800 50  0000 L CNN
-F 2 "TO_SOT_Packages_THT:TO-92_Inline_Wide" H 7450 5875 50  0001 L CIN
-F 3 "https://www.fairchildsemi.com/datasheets/2N/2N3906.pdf" H 7250 5950 50  0001 L CNN
-	1    7250 5950
+P 7250 6075
+F 0 "Q2" H 7440 6121 50  0000 L CNN
+F 1 "2N3906" H 7050 5925 50  0000 L CNN
+F 2 "TO_SOT_Packages_THT:TO-92_Inline_Wide" H 7450 6000 50  0001 L CIN
+F 3 "https://www.fairchildsemi.com/datasheets/2N/2N3906.pdf" H 7250 6075 50  0001 L CNN
+	1    7250 6075
 	1    0    0    -1  
 $EndComp
 $Comp
 L Transistor_BJT:2N3906 Q3
 U 1 1 5DBC0DB5
-P 7750 5950
-F 0 "Q3" H 7940 5996 50  0000 L CNN
-F 1 "2N3906" H 7550 5800 50  0000 L CNN
-F 2 "TO_SOT_Packages_THT:TO-92_Inline_Wide" H 7950 5875 50  0001 L CIN
-F 3 "https://www.fairchildsemi.com/datasheets/2N/2N3906.pdf" H 7750 5950 50  0001 L CNN
-	1    7750 5950
-	1    0    0    -1  
-$EndComp
-$Comp
-L power:+5V #PWR021
-U 1 1 5DC2EE30
-P 8025 5550
-F 0 "#PWR021" H 8025 5400 50  0001 C CNN
-F 1 "+5V" H 7875 5625 50  0000 C CNN
-F 2 "" H 8025 5550 50  0001 C CNN
-F 3 "" H 8025 5550 50  0001 C CNN
-	1    8025 5550
+P 7750 6075
+F 0 "Q3" H 7940 6121 50  0000 L CNN
+F 1 "2N3906" H 7550 5925 50  0000 L CNN
+F 2 "TO_SOT_Packages_THT:TO-92_Inline_Wide" H 7950 6000 50  0001 L CIN
+F 3 "https://www.fairchildsemi.com/datasheets/2N/2N3906.pdf" H 7750 6075 50  0001 L CNN
+	1    7750 6075
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
@@ -2459,35 +2438,11 @@ Wire Wire Line
 Wire Wire Line
 	6150 3700 6350 3700
 Wire Wire Line
-	6900 6250 6900 6150
-Wire Wire Line
 	6550 5150 6550 4850
 Text GLabel 7550 4850 2    50   Input ~ 0
 DIG3
 Text GLabel 6550 4850 2    50   Input ~ 0
 DIG1
-Wire Wire Line
-	9150 6250 9150 6050
-Wire Wire Line
-	6900 6250 9150 6250
-Wire Wire Line
-	7350 6150 7350 6200
-Wire Wire Line
-	7350 6200 9250 6200
-Wire Wire Line
-	9250 6050 9250 6200
-Wire Wire Line
-	7850 6150 9350 6150
-Wire Wire Line
-	7850 5750 7350 5750
-Wire Wire Line
-	7350 5750 6900 5750
-Connection ~ 7350 5750
-Wire Wire Line
-	7850 5750 8025 5750
-Connection ~ 7850 5750
-Wire Wire Line
-	8025 5550 8025 5750
 $Comp
 L Connector:Conn_01x16_Male J2
 U 1 1 5DF9687D
@@ -2505,6 +2460,67 @@ Wire Wire Line
 	6950 3450 6800 3450
 Text GLabel 4800 1650 2    50   Input ~ 0
 SPI_Reset
+Wire Wire Line
+	6575 6075 6550 6075
+Wire Wire Line
+	6550 5450 6550 6075
+$Comp
+L power:+5V #PWR021
+U 1 1 5DC2EE30
+P 6275 6400
+F 0 "#PWR021" H 6275 6250 50  0001 C CNN
+F 1 "+5V" H 6125 6475 50  0000 C CNN
+F 2 "" H 6275 6400 50  0001 C CNN
+F 3 "" H 6275 6400 50  0001 C CNN
+	1    6275 6400
+	-1   0    0    1   
+$EndComp
+Wire Wire Line
+	6275 6400 6275 6325
+Wire Wire Line
+	6275 6325 6875 6325
+Wire Wire Line
+	6875 6275 6875 6325
+Connection ~ 6875 6325
+Wire Wire Line
+	7050 6075 7050 5450
+Wire Wire Line
+	7550 5450 7550 6075
+Wire Wire Line
+	7850 6275 7850 6325
+Wire Wire Line
+	7350 6275 7350 6325
+Connection ~ 7350 6325
+Wire Wire Line
+	7350 6325 7850 6325
+Wire Wire Line
+	6875 6325 7350 6325
+Wire Wire Line
+	9150 6050 8125 6050
+Wire Wire Line
+	8125 6050 8125 5775
+Wire Wire Line
+	8125 5775 6875 5775
+Wire Wire Line
+	6875 5775 6875 5875
+Wire Wire Line
+	7350 5875 7350 5825
+Wire Wire Line
+	7350 5825 8075 5825
+Wire Wire Line
+	8075 5825 8075 6100
+Wire Wire Line
+	8075 6100 9250 6100
+Wire Wire Line
+	9250 6100 9250 6050
+Wire Wire Line
+	9350 6050 9350 6150
+Wire Wire Line
+	9350 6150 8025 6150
+Wire Wire Line
+	8025 6150 8025 5875
+Wire Wire Line
+	8025 5875 7850 5875
 Wire Bus Line
 	3050 850  3050 1550
 Wire Bus Line
