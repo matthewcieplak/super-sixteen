@@ -2,7 +2,7 @@
 
   (general
     (thickness 1.6)
-    (drawings 52)
+    (drawings 53)
     (tracks 968)
     (zones 0)
     (modules 57)
@@ -2883,6 +2883,7 @@
     )
   )
 
+  (gr_line (start 69.088 71.501) (end 69.088 76.962) (layer F.SilkS) (width 0.12))
   (gr_line (start 86.614 58.928) (end 88.519 58.928) (layer F.SilkS) (width 0.12))
   (gr_line (start 82.804 58.928) (end 84.582 58.928) (layer F.SilkS) (width 0.12))
   (gr_line (start 78.994 62.992) (end 77.089 62.992) (layer F.SilkS) (width 0.12))
@@ -2954,10 +2955,10 @@
   (gr_text +5V (at 75.05 36.5) (layer F.SilkS)
     (effects (font (size 1 1) (thickness 0.15)))
   )
-  (gr_text "-12V\nRED\nSTRIPE" (at 70.2 74.25) (layer F.SilkS)
+  (gr_text "-12V\nRED\nSTRIPE" (at 68.707 74.168) (layer F.SilkS)
     (effects (font (size 1 1) (thickness 0.15)) (justify right))
   )
-  (gr_text "SUPER SIXTEEN V1.4 SMT" (at 30.8 69.15) (layer F.SilkS)
+  (gr_text "SUPER SIXTEEN V1.5 SMT" (at 30.8 69.15) (layer F.SilkS)
     (effects (font (size 1 1) (thickness 0.15)))
   )
   (gr_text "EXTRALIFE INSTRUMENTS" (at 30.25 67.2) (layer F.SilkS)
