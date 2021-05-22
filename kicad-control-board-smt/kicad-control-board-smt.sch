@@ -2089,17 +2089,6 @@ Wire Wire Line
 	2500 2550 3700 2550
 Wire Wire Line
 	1500 2750 3700 2750
-$Comp
-L power:+5V #PWR0118
-U 1 1 5DC2EE30
-P 8025 5550
-F 0 "#PWR0118" H 8025 5400 50  0001 C CNN
-F 1 "+5V" H 7875 5625 50  0000 C CNN
-F 2 "" H 8025 5550 50  0001 C CNN
-F 3 "" H 8025 5550 50  0001 C CNN
-	1    8025 5550
-	1    0    0    -1  
-$EndComp
 Wire Wire Line
 	5700 3900 5700 3800
 $Comp
@@ -2120,27 +2109,11 @@ Wire Wire Line
 Wire Wire Line
 	6150 3700 6350 3700
 Wire Wire Line
-	6900 6250 6900 6150
-Wire Wire Line
 	6550 5150 6550 4850
 Text GLabel 7550 4850 2    50   Input ~ 0
 DIG3
 Text GLabel 6550 4850 2    50   Input ~ 0
 DIG1
-Wire Wire Line
-	9150 6250 9150 6050
-Wire Wire Line
-	6900 6250 9150 6250
-Wire Wire Line
-	7350 6150 7350 6200
-Wire Wire Line
-	7350 6200 9250 6200
-Wire Wire Line
-	9250 6050 9250 6200
-Wire Wire Line
-	7850 6150 9350 6150
-Wire Wire Line
-	8025 5550 8025 5750
 $Comp
 L Connector:Conn_01x16_Male J102
 U 1 1 5DF9687D
@@ -2631,14 +2604,6 @@ $EndComp
 Connection ~ 2200 6300
 Connection ~ 2200 7350
 Connection ~ 2500 7550
-Wire Wire Line
-	6900 5750 7350 5750
-Connection ~ 7350 5750
-Wire Wire Line
-	7350 5750 7850 5750
-Connection ~ 7850 5750
-Wire Wire Line
-	7850 5750 8025 5750
 $Comp
 L Device:D_Schottky D1
 U 1 1 5EB35CFB
@@ -2757,6 +2722,57 @@ Wire Wire Line
 	10700 6150 10825 6150
 Wire Wire Line
 	3450 5350 3700 5350
+$Comp
+L power:+5V #PWR0118
+U 1 1 5DC2EE30
+P 6600 6350
+F 0 "#PWR0118" H 6600 6200 50  0001 C CNN
+F 1 "+5V" H 6450 6425 50  0000 C CNN
+F 2 "" H 6600 6350 50  0001 C CNN
+F 3 "" H 6600 6350 50  0001 C CNN
+	1    6600 6350
+	-1   0    0    1   
+$EndComp
+Wire Wire Line
+	7850 6350 7850 6150
+Wire Wire Line
+	7350 6150 7350 6350
+Wire Wire Line
+	7350 6350 7850 6350
+Connection ~ 7350 6350
+Wire Wire Line
+	6900 6150 6900 6350
+Wire Wire Line
+	6600 6350 6900 6350
+Wire Wire Line
+	6900 6350 7350 6350
+Connection ~ 6900 6350
+Wire Wire Line
+	9350 6150 8525 6150
+Wire Wire Line
+	8525 6150 8525 5675
+Wire Wire Line
+	8525 5675 7850 5675
+Wire Wire Line
+	7850 5675 7850 5750
+Wire Wire Line
+	9250 6050 9250 6100
+Wire Wire Line
+	9250 6100 8575 6100
+Wire Wire Line
+	8575 6100 8575 5625
+Wire Wire Line
+	8575 5625 7350 5625
+Wire Wire Line
+	7350 5625 7350 5750
+Wire Wire Line
+	9150 6050 8625 6050
+Wire Wire Line
+	8625 6050 8625 5575
+Wire Wire Line
+	8625 5575 6900 5575
+Wire Wire Line
+	6900 5575 6900 5750
 Wire Bus Line
 	3050 850  3050 1550
 Wire Bus Line
