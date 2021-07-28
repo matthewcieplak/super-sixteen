@@ -12,11 +12,15 @@ class Calibration {
 
         int incrementCalibration(int amt, int step);
 
+        int incrementBrightness(int amt);
+
         void readCalibrationValues();
 
         void writeCalibrationValues();
 
         int getCalibrationValue(int step);
+
+        int getBrightness();
 
         int readDisplayModeValue();
 

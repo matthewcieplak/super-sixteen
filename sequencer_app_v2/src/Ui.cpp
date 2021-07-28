@@ -321,10 +321,24 @@ void Ui::selectBar(byte bar){
 	ledMatrix.setMatrixFromSequencer(current_bar);
 }
 
+//const char brightness_names[4][3] = {"---", "8--", "88-", "888"};
+
 void Ui::onEncoderIncrement(int increment_amount) {
 	if (ui_mode == CALIBRATE_MODE) {
-		display.setDisplayNum(calibrationVar2->incrementCalibration(increment_amount, calibration_step));
-        updateCalibration(calibration_step);
+		if (calibration_step == 8) { //step 8 is brightness mode
+			calibrationVar2->incrementBrightness(-1*increment_amount);
+			display.setBrightness(calibrationVar2->getBrightness());
+			switch(calibrationVar2->getBrightness()) {
+				case 4: display.setDisplayAlpha("BR1"); break;
+				case 3: display.setDisplayAlpha("BR2"); break;
+				case 2: display.setDisplayAlpha("BR3"); break;
+				case 1: display.setDisplayAlpha("BR4"); break;
+				default: display.setDisplayAlpha("BR5");
+			}
+		} else {
+			display.setDisplayNum(calibrationVar2->incrementCalibration(increment_amount, calibration_step));
+    	    updateCalibration(calibration_step);
+		}
 	} else if (encoder_bumped || ui_mode == SAVE_MODE || ui_mode == LOAD_MODE) {
 		if (ui_mode == SEQUENCE_MODE) ui_mode = LOAD_MODE;
 		selected_patch += increment_amount;
@@ -360,6 +374,8 @@ void Ui::onEncoderIncrement(int increment_amount) {
 			}
 			display.setDisplayNum(param);
 		}
+	} else if (shift_state) {
+		sequencerVar2->incrementClock(increment_amount);
 	} else {
 		//by default when encoder is turned
 		//show current patch number and select another if moved further
@@ -485,7 +501,12 @@ void Ui::updateCalibration(int step) {
 		analogIo.setDisplayMode(127);
 		return;
 	}
-	
+
+	if (step == 8) {
+		calibration_step = step;
+		display.setDisplayAlpha("BRT");
+		return;
+	}
 	
 	//deal with CV output calibration increment octaves
 	if (step > 8) return;

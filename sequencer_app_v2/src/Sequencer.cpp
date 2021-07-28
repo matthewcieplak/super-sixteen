@@ -12,7 +12,7 @@ const byte SEQUENCE_MAX_LENGTH = 64;
 sequence active_sequence;
 
 int8_t step_presets[] = { 4, 8, 12, 16, 24, 32, 48, 64 };
-int8_t active_pitches[16];
+int8_t active_pitches[64];
 int num_active_pitches = 0;
 
 int selected_step = 0;
@@ -816,8 +816,8 @@ void Sequencer::pickupPositionInNewSequence(){
 		if (clock_step > 0) {
 			clock_step = active_sequence.sequence_length - (prev_sequence_length - clock_step);
 		}
-		if (clock_step < 0) {
-			clock_step = active_sequence.sequence_length + clock_step;
+		while (clock_step < 0) {
+			clock_step += active_sequence.sequence_length;
 		}
 		prev_sequence_length = active_sequence.sequence_length;
 	}
@@ -870,6 +870,13 @@ void Sequencer::setStepRecordingMode(bool state){
 		digitalWrite(GATE_PIN, LOW);
 	}
 	step_recording_mode = state;
+}
+
+void Sequencer::incrementClock(int steps) { //manually adjsut clock from front panel aka "jog"
+	clock_step += steps;
+	if (clock_step >= active_sequence.sequence_length) {
+		clock_step = 0;
+	}
 }
 
 }

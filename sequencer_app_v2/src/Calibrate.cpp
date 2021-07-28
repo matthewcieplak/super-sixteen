@@ -13,6 +13,7 @@ unsigned int octave_values[9] = { 0,   500,  1000, 1500, 2000, 2500, 3000, 3500,
 //int calibration_values[9]   = { 0,   0,    0,    0,    0,    0,    0,    0,    0    };
 int calibration_values[9]     = { 0,   -4,   -6,   -12,  -15,  -17,  -18,  -21,  -22  }; //programming the chip overwrites the EEPROM, so storing good default here for convenience
 
+int calibration_brightness = 0;
 
 
 int Calibration::getCalibratedOutput(double pitch) {
@@ -47,6 +48,17 @@ int Calibration::incrementCalibration(int amt, int step) {
 		calibration_values[step] += amt;
 	} 
 	return calibration_values[step];
+}
+
+int Calibration::incrementBrightness(int amt) {
+	if (calibration_brightness + amt <= 4 && calibration_brightness + amt >= 0) { //brightness values stored as 0 - 20
+		calibration_brightness += amt;
+	}
+	return calibration_brightness;
+}
+
+int Calibration::getBrightness(){
+	return calibration_brightness;
 }
 
 void Calibration::readCalibrationValues() {

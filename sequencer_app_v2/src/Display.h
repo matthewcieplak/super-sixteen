@@ -26,8 +26,12 @@ public:
 
     void startupSequence();
 
+    void setBrightness(int brightness);
+
 private:
     void appendDecimal();
+
+    bool currentDigitVisible();
 
     int digit_display[3];
     int digit_counter;

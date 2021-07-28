@@ -9,10 +9,15 @@ namespace supersixteen{
 const bool COMMON_ANODE = true; //BA56-12GWA change to FALSE for common cathode display BC56-12GWA
 
 int digit_counter = 0;
+int delay_counter = 0; //used for inserting blank cycles to reduce brightness
 int num_display = 999;
 int digit_display[3] = { 0, 0, 0 };
 int digit_pins[3] = { DIGIT_1_PIN, DIGIT_2_PIN, DIGIT_3_PIN };
 uint8_t alpha_display[3] = { 0, 0, 0 };
+
+//const uint8_t alphabet[40]= {
+const uint8_t dim_mask_1 = 0B00001111;
+const uint8_t dim_mask_2 = 0B11110000;
 
 bool decimal = 0;
 bool blinking = false;
@@ -22,6 +27,8 @@ elapsedMillis display_blinker;
 uint16_t blink_interval;
 int blink_cycles_elapsed;
 int blink_cycles_timeout;
+
+int brightness = 0;
 
 // static const byte startup_sequence[16] = {
 // 	0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80, 0x00, 0x00, 0x00 //, 0x08, 0x10, 0x20, 0x40, 0x80, 0x91, 0xA2, 0xF4, 0xF8
@@ -95,8 +102,34 @@ void Display::setDisplayAlpha(const char displayAlpha[]){ //turns 3-character ar
 
 void Display::updateSevenSegmentDisplay(){
 	digitalWrite(digit_pins[digit_counter], COMMON_ANODE ? HIGH : LOW );
-	SPI.transfer(COMMON_ANODE ? alpha_display[digit_counter] : ~alpha_display[digit_counter]); 
+
+	if (currentDigitVisible()) {
+		SPI.transfer(COMMON_ANODE ? alpha_display[digit_counter] : ~alpha_display[digit_counter]);
+	} else {
+		SPI.transfer(COMMON_ANODE ? 
+		            ~(~(alpha_display[digit_counter]) & (delay_counter == 0 ? dim_mask_1 : dim_mask_2)) : 
+					~(alpha_display[digit_counter] ^ (delay_counter == 0 ? dim_mask_1 : dim_mask_2))  
+					);
+		// SPI.transfer(COMMON_ANODE ? 0xFF : 0x00);
+	} 
+
+
+
 	// nextDigit();
+}
+
+bool Display::currentDigitVisible(){
+	if (brightness == 0) { return true; 
+	} else if (brightness == 1) {
+		if (delay_counter == digit_counter) return false;
+	} else if (brightness == 2) {
+		if (delay_counter == 1) return false;
+	} else if (brightness == 3) {
+		if (delay_counter != digit_counter) return false;
+	} else if (brightness == 4) {
+		if (delay_counter > 0) return false;
+	}
+	return true;
 }
 
 void Display::blankSevenSegmentDisplay(){
@@ -105,9 +138,21 @@ void Display::blankSevenSegmentDisplay(){
 }
 
 void Display::nextDigit(){
+
+	// if (brightness > 0 && delay_counter < brightness) {
+	// 	delay_counter ++;
+	// 	return;
+	// } else {
+	// 	delay_counter = 0;
+	// }
+
 	digit_counter++;
-	if (digit_counter == 3) {
+	if (digit_counter > 2) {
 		digit_counter = 0;
+		delay_counter++;
+		if (delay_counter > 2) {
+			delay_counter = 0;
+		}
 	}
 	if (blinking && display_blinker > blink_interval) {
 		if (display_blinker > blink_interval * 2) {
@@ -121,7 +166,7 @@ void Display::nextDigit(){
 		}
 		//leave digit inactive
 	} else {
-		digitalWrite(digit_pins[digit_counter], COMMON_ANODE ? LOW : HIGH);
+		digitalWrite(digit_pins[digit_counter], COMMON_ANODE ? LOW : HIGH); //de-activate digit
 	}
 }
 
@@ -161,6 +206,12 @@ void Display::startupSequence(){
 		}
 		delay(100);
 	
+}
+
+void Display::setBrightness(int new_brightness){
+	//if (new_brightness >= 0 && new_brightness <= 4) {
+		brightness = new_brightness;
+	//}
 }
 
 }

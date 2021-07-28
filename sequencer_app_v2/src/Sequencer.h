@@ -97,6 +97,7 @@ class Sequencer{
         bool currentStepActive();
         void setStepRecordingMode(bool state);
         void setMutateRecordingMode(bool state);
+        void incrementClock(int steps);
 
 
         //void getSongLoops(int loops);
