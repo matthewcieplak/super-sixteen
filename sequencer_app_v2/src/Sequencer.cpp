@@ -55,6 +55,7 @@ int active_note = 0;
 int active_pitch = 0;
 int calculated_tempo = tempo_millis;
 unsigned int calculated_step_length = 10;
+unsigned int audition_step_length = 0;
 unsigned int calculated_roll;
 unsigned int calculated_stutter;
 double tempo_millis_swing_odd;
@@ -63,6 +64,7 @@ int glide_duration = 50;
 int glide_time; //
 int random_octave = 0;
 bool turing_mode = false;
+bool auditioning = false;
 
 double current_note_value = 0;
 Calibration *calibrationVar;
@@ -104,6 +106,9 @@ void Sequencer::updateClock() {
 			
 			if (play_active) {
 				incrementStep();
+				if (auditioning) {
+					audition_step_length = audition_step_length - timekeeper;
+				}
 				timekeeper = 0;
 				return;
 
@@ -261,9 +266,7 @@ void Sequencer::incrementStep() {
 }
 
 void Sequencer::setActiveNote(){
-	//PITCH/OCTAVE
-
-
+	//PITCH/OCTAVE/GATE for current step
 	if (active_sequence.step_matrix[current_step]) {
 		if (seq_effect_mode && active_sequence.effect == EFFECT_STOP) {
 			updateGlide(); 
@@ -273,25 +276,11 @@ void Sequencer::setActiveNote(){
 			}
 		} else {
 			note_reached = false;
-			quantizeActivePitch();
-			active_note = ((active_sequence.octave_matrix[active_step] + 3) * 12) + 
-							active_pitch + 
-							(active_sequence.transpose - 24)  + 
-						    (random_octave * 12);
-			if (seq_effect_mode && active_sequence.effect == EFFECT_OCTAVE) {
-				active_note += (active_sequence.effect_depth - 4) * 12;
-			}
-			if (active_sequence.glide_matrix[active_step]) {
-				updateGlide();
-			} else {
-				current_note_value = calibrationVar->getCalibratedOutput(active_note);
-				dacVar->setOutput(0, GAIN_2, 1, current_note_value);
-			}
+			setActivePitch(active_step);
 
 			digitalWrite(GATE_PIN, active_sequence.step_matrix[active_step] ? HIGH : LOW);
 			gate_active = active_sequence.step_matrix[active_step];
-			int cv_out =  active_sequence.cv_matrix[active_step] * 40;
-			dacVar->setOutput(1, GAIN_2, 1, cv_out);
+
 			calculated_step_length = (active_sequence.duration_matrix[active_step] / 100.0) * (double)calculated_tempo;
 		}
 	} else if(seq_effect_mode && active_sequence.effect == EFFECT_STUTTER) {
@@ -300,36 +289,57 @@ void Sequencer::setActiveNote(){
 	}
 }
 
-void Sequencer::quantizeActivePitch(){
-	active_pitch = active_sequence.pitch_matrix[active_step];
+void Sequencer::setActivePitch(uint8_t step){
+	quantizeActivePitch(step);
+	active_note = ((active_sequence.octave_matrix[step] + 3) * 12) + 
+					active_pitch + 
+					(active_sequence.transpose - 24)  + 
+					(random_octave * 12);
+
+	if (seq_effect_mode && active_sequence.effect == EFFECT_OCTAVE) {
+		active_note += (active_sequence.effect_depth - 4) * 12;
+	}
+
+	if (active_sequence.glide_matrix[step] && !auditioning) {
+		updateGlide();
+	} else {
+		current_note_value = calibrationVar->getCalibratedOutput(active_note);
+		dacVar->setOutput(0, GAIN_2, 1, current_note_value);
+	}
+
+	
+	int cv_out =  active_sequence.cv_matrix[step] * 40;
+	dacVar->setOutput(1, GAIN_2, 1, cv_out);
+}
+
+void Sequencer::auditionNote(bool gate, int timer){ //used only for audition
+	setActivePitch(selected_step);
+	digitalWrite(GATE_PIN, gate ? HIGH : LOW);
+	gate_active = gate;
+	auditioning = true;
+	audition_step_length = timekeeper + timer;
+}
+
+void Sequencer::setCv2(){
+	switch (active_sequence.cv_mode) {
+		case 0://normal linear mode
+			break;
+		case 1://LFO - smoothed mode
+			break;
+		case 2://note mode - quantized pitch
+			break;
+		case 3://interval mode - referenced to pitch output
+			break;
+	}
+}
+
+void Sequencer::quantizeActivePitch(uint8_t step){
+	active_pitch = active_sequence.pitch_matrix[step];
 	random_octave = 0;
 	if (seq_effect_mode && active_sequence.effect == EFFECT_RANDOM) {
 		active_pitch += (rand() % active_sequence.effect_depth) * (rand() % 10 > 5 ? -1 : 1);
 	} else if (seq_effect_mode && turing_mode) {
-		if (active_sequence.effect == EFFECT_TURING1) {
-			//turing 1 uses depth as "randomness"
-			active_sequence.pitch_matrix[active_step] += (rand() % active_sequence.effect_depth) * (rand() % 10 > 5 ? -1 : 1);
-		} else if (active_sequence.effect == EFFECT_TURING2) {
-			//turing 2 rearranges sequence using existing  pitches, and uses depth as "density"
-			int random_pitch = rand() % num_active_pitches;
-			active_sequence.pitch_matrix[active_step] = active_pitches[random_pitch];
-			active_sequence.duration_matrix[active_step] = (rand() % 130) + 20; //20-170
-		} else if (active_sequence.effect == EFFECT_TURING3) {
-			//turing 3 is fixed at +/-2 octaves and uses depth as "density" for rhythm
-			//also randomizes duration, cv and glide on/off
-			active_sequence.pitch_matrix[active_step] = (rand() % 24) * (rand() % 10 > 5 ? -1 : 1); //-24/+24
-			active_sequence.glide_matrix[active_step] =  (rand() % 10) >= 9 ? true : false; //glide 10% on
-			active_sequence.duration_matrix[active_step] = (rand() % 130) + 20; //20-170
-			active_sequence.cv_matrix[active_step] = rand() % 90; //0-90;
-		}
-
-		if (abs(active_sequence.pitch_matrix[active_step]) > 12) { 
-			int octave_adjust = active_sequence.pitch_matrix[active_step] > 0 ? 1 : -1;
-			active_sequence.octave_matrix[active_step] += octave_adjust;
-			active_sequence.octave_matrix[active_step] = max(min(active_sequence.octave_matrix[active_step], 2), -2);
-			active_sequence.pitch_matrix[active_step] = (active_sequence.pitch_matrix[active_step] % 12) * octave_adjust;
-		}
-		active_pitch = active_sequence.pitch_matrix[active_step];
+		generateTuringPitches();
 	} else if (seq_effect_mode && active_sequence.effect == EFFECT_TRANSPOSE) {
 		active_pitch += active_sequence.effect_depth - 24;
 	}
@@ -358,6 +368,33 @@ void Sequencer::quantizeActivePitch(){
 	}
 }
 
+void Sequencer::generateTuringPitches(){
+	if (active_sequence.effect == EFFECT_TURING1) {
+			//turing 1 uses depth as "randomness"
+		active_sequence.pitch_matrix[active_step] += (rand() % active_sequence.effect_depth) * (rand() % 10 > 5 ? -1 : 1);
+	} else if (active_sequence.effect == EFFECT_TURING2) {
+		//turing 2 rearranges sequence using existing  pitches, and uses depth as "density"
+		int random_pitch = rand() % num_active_pitches;
+		active_sequence.pitch_matrix[active_step] = active_pitches[random_pitch];
+		active_sequence.duration_matrix[active_step] = (rand() % 130) + 20; //20-170
+	} else if (active_sequence.effect == EFFECT_TURING3) {
+		//turing 3 is fixed at +/-2 octaves and uses depth as "density" for rhythm
+		//also randomizes duration, cv and glide on/off
+		active_sequence.pitch_matrix[active_step] = (rand() % 24) * (rand() % 10 > 5 ? -1 : 1); //-24/+24
+		active_sequence.glide_matrix[active_step] =  (rand() % 10) >= 9 ? true : false; //glide 10% on
+		active_sequence.duration_matrix[active_step] = (rand() % 130) + 20; //20-170
+		active_sequence.cv_matrix[active_step] = rand() % 90; //0-90;
+	}
+
+	if (abs(active_sequence.pitch_matrix[active_step]) > 12) { 
+		int octave_adjust = active_sequence.pitch_matrix[active_step] > 0 ? 1 : -1;
+		active_sequence.octave_matrix[active_step] += octave_adjust;
+		active_sequence.octave_matrix[active_step] = max(min(active_sequence.octave_matrix[active_step], 2), -2);
+		active_sequence.pitch_matrix[active_step] = (active_sequence.pitch_matrix[active_step] % 12) * octave_adjust;
+	}
+	active_pitch = active_sequence.pitch_matrix[active_step];
+}
+
 int Sequencer::getCurrentStep(){
 	return current_step;
 }
@@ -380,6 +417,7 @@ void Sequencer::updateGlide() {
 		if (note_reached) {
 			digitalWrite(GATE_PIN, LOW);
 			gate_active = false;
+			auditioning = false;
 		}
 	} else if ((active_sequence.step_matrix[active_step] && active_sequence.glide_matrix[active_step]) || (seq_effect_mode && active_sequence.effect == EFFECT_GLIDE)) {
 		int glidekeeper = getGlideKeeper(active_step);
@@ -443,9 +481,10 @@ void Sequencer::updateGate() {
 			gate_active = false;
 		}
 	//} else if (active_sequence.duration_matrix[active_step] < percent_step * steps_advanced) {
-	} else if (timekeeper + calculated_tempo * (steps_advanced-1) > calculated_step_length) {
+	} else if ((timekeeper + calculated_tempo * (steps_advanced-1) > calculated_step_length && !auditioning) || (auditioning && audition_step_length < timekeeper)) { /// DEFAULT
 		digitalWrite(GATE_PIN, LOW);
 		gate_active = false;
+		auditioning = false;
 	}
 
 
@@ -877,6 +916,10 @@ void Sequencer::incrementClock(int steps) { //manually adjsut clock from front p
 	if (clock_step >= active_sequence.sequence_length) {
 		clock_step = 0;
 	}
+}
+
+void Sequencer::setCVMode(uint8_t mode){
+	active_sequence.cv_mode = mode;
 }
 
 }

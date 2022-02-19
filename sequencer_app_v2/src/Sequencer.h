@@ -31,6 +31,7 @@ struct sequence {
 
     int8_t song_next_seq = 0;
     int8_t song_loops = 0;
+    int8_t cv_mode = 0;
 };
 
 class Sequencer{
@@ -69,6 +70,7 @@ class Sequencer{
         bool setOctave(int8_t newVal);
         bool setDuration(uint16_t newVal);
         bool setCv(int newVal);
+        void auditionNote(bool gate, int timer);
 
         bool getGlide();
         int getPitch();
@@ -91,6 +93,7 @@ class Sequencer{
         void onBarSelect(byte bar);
         void clearSequence();
         void setActiveNote();
+        void setCv2();
         void memoizeSequenceLength();
         void pickupPositionInNewSequence();
         void paste(byte bar1, byte bar2);
@@ -99,7 +102,8 @@ class Sequencer{
         void setMutateRecordingMode(bool state);
         void incrementClock(int steps);
 
-
+        void setAudition(bool audition);
+        void setCVMode(uint8_t mode);
         //void getSongLoops(int loops);
 
 
@@ -115,8 +119,10 @@ class Sequencer{
         void updateGlide();
         void updateGate();
         uint8_t editedStep();
-        void quantizeActivePitch();
+        void setActivePitch(uint8_t step);
+        void quantizeActivePitch(uint8_t step);
         void initializeSerializedSequence();
+        void generateTuringPitches();
         void updateSwingCalc();
         void updateGlideCalc();
         void updateRollCalc();

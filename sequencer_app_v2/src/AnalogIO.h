@@ -6,11 +6,26 @@
 
 namespace supersixteen{
 
+const char audition_0[] PROGMEM = "OFF"; //normal behavior
+const char audition_1[] PROGMEM = "AUD"; //play note when changed
+
+const char *const audition_names[] PROGMEM = { audition_0, audition_1 };
+
+
+const char cvmode_0[] PROGMEM = " CV"; //cv2 auxiliary mode
+const char cvmode_1[] PROGMEM = "LFO"; //cv2 auxiliary mode
+const char cvmode_2[] PROGMEM = "INT"; //cv2 auxiliary mode
+const char cvmode_3[] PROGMEM = "NOT"; //cv2 auxiliary mode
+
+const char *const cvmode_names[] PROGMEM = { cvmode_0, cvmode_1, cvmode_2, cvmode_3 };
+
+
+
 class AnalogIo{
     public:
         void init(Sequencer& sequencer);
 
-        void poll();
+        void poll(bool shift_state);
 
         void displaySelectedParam();
         void recordCurrentParam();
@@ -28,7 +43,7 @@ class AnalogIo{
 
     private:
 
-        void readInput(int i);
+        void readInput(int i, bool shift_state);
 
         void setPitch(int analogValue);
 
@@ -41,6 +56,10 @@ class AnalogIo{
         void setDisplayAlpha(char displayAlpha[4]);
 
         void setCV(int analogValue);
+
+        void setCVMode(int analogValue);
+
+        void setAudition(int analogValue);
 };
 
 }

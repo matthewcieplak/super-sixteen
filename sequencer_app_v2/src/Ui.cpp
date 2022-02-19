@@ -119,7 +119,7 @@ void Ui::poll(){
     }
 
 	if (ui_mode == SEQUENCE_MODE || ui_mode == EDIT_PARAM_MODE) {
-		analogIo.poll();
+		analogIo.poll(shift_state);
 		//if (!record_mode) {
 		if (analogIo.paramChanged()){
 			displaySequenceParam();
@@ -325,7 +325,7 @@ void Ui::selectBar(byte bar){
 
 void Ui::onEncoderIncrement(int increment_amount) {
 	if (ui_mode == CALIBRATE_MODE) {
-		if (calibration_step == 8) { //step 8 is brightness mode
+		if (calibration_step == 9) { //step 8 is brightness mode
 			calibrationVar2->incrementBrightness(-1*increment_amount);
 			display.setBrightness(calibrationVar2->getBrightness());
 			switch(calibrationVar2->getBrightness()) {
@@ -337,7 +337,7 @@ void Ui::onEncoderIncrement(int increment_amount) {
 			}
 		} else {
 			display.setDisplayNum(calibrationVar2->incrementCalibration(increment_amount, calibration_step));
-    	    updateCalibration(calibration_step);
+    	    updateCalibration(calibration_step-1);
 		}
 	} else if (encoder_bumped || ui_mode == SAVE_MODE || ui_mode == LOAD_MODE) {
 		if (ui_mode == SEQUENCE_MODE) ui_mode = LOAD_MODE;
@@ -399,8 +399,12 @@ void Ui::onGlideButton(bool state){
 }
 
 void Ui::invertEncoder(){
-	encoder.toggle_inverted();
-	display.setDisplayAlpha("INV");
+	if (encoder.toggle_inverted()) {
+		display.setDisplayAlpha("INV");
+	} else {
+		display.setDisplayAlpha("REG");
+	}
+	
 }
 
 void Ui::onPlayButton(bool state){
@@ -467,13 +471,13 @@ void Ui::selectStep(int step){
 	buttons.setGlideLed(sequencerVar2->getGlide());
 }
 
-bool calibration_matrix[16] = {1,1,1,1, 1,1,1,1, 1,0,0,0, 0,0,1,1};
+bool calibration_matrix[16] = {1,1,1,1, 1,1,1,1, 1,0,0,0, 1,0,1,1};
 
 void Ui::initializeCalibrationMode() {
 	cancelSaveOrLoad();
 	ui_mode = CALIBRATE_MODE;
 	calibrationVar2->readCalibrationValues();
-	updateCalibration(calibration_step);
+	updateCalibration(calibration_step-1);
 	display.setDisplayAlpha("CAL");
 	ledMatrix.setMatrix(calibration_matrix);
 	digitalWrite(GATE_PIN, HIGH); //to make signals audible
@@ -502,20 +506,26 @@ void Ui::updateCalibration(int step) {
 		return;
 	}
 
-	if (step == 8) {
+	if (step == 12) {
 		calibration_step = step;
+		invertEncoder();
+		return;
+	}
+
+	if (step == 8) {
+		calibration_step = step+1;
 		display.setDisplayAlpha("BRT");
 		return;
 	}
 	
 	//deal with CV output calibration increment octaves
 	if (step > 8) return;
-    calibration_step = step;
+    calibration_step = step+1;
 	//ledMatrix.reset();
 	ledMatrix.selectStep(step);
 	ledMatrix.setMatrix(calibration_matrix);
-	display.setDisplayNum(calibrationVar2->getCalibrationValue(step));
-	dacVar2->setOutput(0, GAIN_2, 1, calibrationVar2->getCalibratedOutput(step * 12));
+	display.setDisplayNum(calibrationVar2->getCalibrationValue(calibration_step));
+	dacVar2->setOutput(0, GAIN_2, 1, calibrationVar2->getCalibratedOutput(calibration_step * 12));
 }
 
 bool Ui::isSequencing(){

@@ -23,6 +23,7 @@ const int analog_pins[4] = {
 #define OCTAVE_PARAM 1
 #define DURATION_PARAM 2
 #define CV_PARAM 3
+#define MODE_PARAM 4
 
 #define DISPLAY_MODE_NUMERIC 0
 #define DISPLAY_MODE_NOTE_NAME 127
@@ -32,6 +33,7 @@ const int analog_pins[4] = {
 
 const int analog_params[4] = { PITCH_PARAM, OCTAVE_PARAM, DURATION_PARAM, CV_PARAM };
 bool editing = false;
+bool audition = false;
 
 int lastAnalogValues[4];
 int analogValues[4];
@@ -46,6 +48,8 @@ bool param_changed = false;
 int change_threshold = DEFAULT_CHANGE_THRESHOLD;
 bool recording = false;
 bool recorded_input_active = false;
+char modename[5];
+
 
 
 Sequencer* sequencerVar;
@@ -57,14 +61,14 @@ void AnalogIo::init(Sequencer& sequencer){
 	pinMode(ANALOG_PIN_4, INPUT);
 	sequencerVar = &sequencer;
 	//initialize analog knob positions to avoid weird edits
-	poll();
-	poll();
-	poll();
-	poll();
+	poll(false);
+	poll(false);
+	poll(false);
+	poll(false);
 	editing = true;
 }
 
-void AnalogIo::poll() {
+void AnalogIo::poll(bool shift_state) {
 	analogMultiplexor += 1;
 	if (analogMultiplexor > 3) {
 		analogMultiplexor = 0;
@@ -75,10 +79,10 @@ void AnalogIo::poll() {
 	} else {
 		change_threshold = DEFAULT_CHANGE_THRESHOLD;
 	}
-	readInput(analogMultiplexor);
+	readInput(analogMultiplexor, shift_state);
 }
 
-void AnalogIo::readInput(int i){
+void AnalogIo::readInput(int i, bool shift_state){
 	// if (i > 3 || i < 0) return; //sometimes we get desynced by interrupts, and analogRead on a wrong pin is fatal
 	analogValues[i] = analogRead(analog_pins[i]);
 	param_changed = false;
@@ -88,10 +92,10 @@ void AnalogIo::readInput(int i){
 		lastAnalogValues[i] = analogValues[i];
 		if (!editing) return;
 		switch (i) {
-		case PITCH_PARAM: setPitch(analogValues[0]); break;
+		case PITCH_PARAM: shift_state ? setAudition(analogValues[0]) : setPitch(analogValues[0]); break;
 		case OCTAVE_PARAM: setOctave(analogValues[1]); break;
 		case DURATION_PARAM: setDuration(analogValues[2]); break;
-		case CV_PARAM: setCV(analogValues[3]); break;
+		case CV_PARAM: shift_state ? setCVMode(analogValues[3]) : setCV(analogValues[3]); break;
 		}
 	}
 }
@@ -104,6 +108,7 @@ void AnalogIo::setPitch(int analogValue) {
 		setDisplayNum(newVal);
 		//if (display_mode == DISPLAY_MODE_NOTE_NAME)
 			setDisplayAlpha(sequencerVar->getPitchName(newVal, sequencerVar->getOctave())); 
+		if (audition) sequencerVar->auditionNote(true, 120);
 	}
 }
 
@@ -113,7 +118,8 @@ void AnalogIo::setOctave(int analogValue) {
 	if (recording || sequencerVar->setOctave(newVal)) {
 		setDisplayNum(newVal);
 		//if (display_mode == DISPLAY_MODE_NOTE_NAME)
-			setDisplayAlpha(sequencerVar->getPitchName(sequencerVar->getPitch(), newVal)); 
+		setDisplayAlpha(sequencerVar->getPitchName(sequencerVar->getPitch(), newVal)); 
+		if (audition) sequencerVar->auditionNote(true, 120);
 	}
 
 }
@@ -165,7 +171,7 @@ void AnalogIo::recordCurrentParam(){
 	// if (sequencerVar->currentStepActive()) {
 		recording = false; //temporarily flip to enable one-step record
 		change_threshold = -1; //record regardless of motion
-		readInput(display_param); // read the currently selected param and write it to the sequence	
+		readInput(display_param, false); // read the currently selected param and write it to the sequence	
 		// change_threshold = DEFAULT_CHANGE_THRESHOLD;
 		recording = true;
 	// }
@@ -193,7 +199,49 @@ bool AnalogIo::paramChanged(){
 }
 
 bool AnalogIo::paramIsAlpha(){
-	return (display_mode == DISPLAY_MODE_NOTE_NAME) && (display_param == PITCH_PARAM || display_param == OCTAVE_PARAM);
+	return (display_param == MODE_PARAM) || ((display_mode == DISPLAY_MODE_NOTE_NAME) && (display_param == PITCH_PARAM || display_param == OCTAVE_PARAM));
 }
+
+void AnalogIo::setCVMode(int analogValue){
+	display_param = MODE_PARAM;
+	uint8_t cv_mode = 0;
+	if (analogValue < 256) {
+		cv_mode = 0;
+	} else if (analogValue < 512) {
+		cv_mode = 1;
+	} else if (analogValue < 768) {
+		cv_mode = 2;
+	} else {
+		cv_mode = 3;
+	}
+
+	strcpy_P(modename, (char *)pgm_read_word(&(cvmode_names[cv_mode])));  // Necessary casts and dereferencing, just copy (for PROGMEM keywords in flash)
+
+
+	setDisplayAlpha(modename);
+	sequencerVar->setCVMode(cv_mode); 
+	param_changed = true;
+	return;
+}
+
+void AnalogIo::setAudition(int analogValue){
+
+	display_param = MODE_PARAM;
+	if (analogValue > 512) {
+		audition = true;
+		strcpy_P(modename, (char *)pgm_read_word(&(audition_names[1])));  // Necessary casts and dereferencing, just copy (for PROGMEM keywords in flash)
+	} else {
+		strcpy_P(modename, (char *)pgm_read_word(&(audition_names[0])));  // Necessary casts and dereferencing, just copy (for PROGMEM keywords in flash)
+		audition= false;
+		sequencerVar->auditionNote(false, 1);
+	}
+	setDisplayAlpha(modename);
+
+	// setDisplayAlpha(modename);
+	param_changed = true;
+	// sequencerVar->setAudition(audition);
+	return;
+}
+
 
 };
