@@ -24,7 +24,7 @@ const int encoder_invert_address = 16;
 void Encoder::init(){
 	pinMode(ENC_A_PIN, INPUT_PULLUP); //encoder A
 	pinMode(ENC_B_PIN, INPUT_PULLUP); //encoder B
-	invert_encoder = EEPROM.read(encoder_invert_address);
+	invert_encoder = EEPROM.read(encoder_invert_address) > 0 ? -1 : 1;
 }
 
 //magic numbers from https://www.circuitsathome.com/mcu/reading-rotary-encoder-on-arduino/
@@ -52,9 +52,10 @@ void Encoder::encoder_increment(int amt) {
 	encoder_amount = 0;
 }
 
-void Encoder::toggle_inverted(){
+bool Encoder::toggle_inverted(){
 	invert_encoder = invert_encoder * -1;
-	EEPROM.write(encoder_invert_address, invert_encoder);
+	EEPROM.write(encoder_invert_address, invert_encoder < 0 ? -1 : 0);
+	return invert_encoder > 0;
 }
 
 }

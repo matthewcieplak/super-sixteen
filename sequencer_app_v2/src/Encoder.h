@@ -11,7 +11,7 @@ class Encoder{
         int smartPoll();
         int encoder_amount = 0;
         int increment_amount = 0;
-        void toggle_inverted();
+        bool toggle_inverted();
     private:
         void encoder_increment(int amt);
 };
