@@ -65,9 +65,9 @@ class AnalogIo{
 
         void setAudition(int analogValue);
 
-        void displayPitchName();
+        void displayPitchName(int pitch, int octave);
 
-        void displayCvName();
+        void displayCvName(int pitch);
 };
 
 }

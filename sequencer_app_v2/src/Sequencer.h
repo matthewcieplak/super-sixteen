@@ -104,7 +104,7 @@ class Sequencer{
         void setAudition(bool audition);
         void setCVMode(uint8_t mode);
         uint8_t getCvMode();
-        int8_t getCv2DisplayValue();
+        int8_t getCv2DisplayValue(int analogvalue);
         //void getSongLoops(int loops);
 
 
