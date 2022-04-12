@@ -134,6 +134,8 @@ class Sequencer{
         void onClock();
         static void onClockIn();
         static void onResetIn();
+        void setLfoTarget();
+        void updateLfo();
 
 };
 

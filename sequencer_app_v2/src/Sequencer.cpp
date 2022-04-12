@@ -70,6 +70,13 @@ bool auditioning = false;
 
 double current_note_value = 0;
 double current_note_value2 = 0; // for cv2 in quantized mode
+double current_lfo_value = 0;
+double lfo_target = 0;
+double lfo_prev = 0;
+double lfo_time = 0;
+uint8_t lfo_steps = 0;
+
+
 Calibration *calibrationVar;
 Dac *dacVar;
 
@@ -258,15 +265,45 @@ void Sequencer::incrementStep() {
 		active_step = current_step;
 		prev_note = active_note;
 		prev_note2 = active_note2;
+		setLfoTarget();
 	}
 
 	step_incremented = true;
-	//setActiveNote();
+}
 
-	
+void Sequencer::setLfoTarget(){
+	//SET VALUE FOR NEXT LFO STEP
+	if (active_sequence.cv_mode == 1) {
+		lfo_prev = lfo_target;
+		lfo_target = -1;
 
-	// TEST running display number
-	// setDisplayNum(current_step);
+		//find next active step and get lfo value
+		uint8_t i = active_step + 1;
+		while (i < active_sequence.sequence_length) {
+			if (active_sequence.step_matrix[i]) {
+				lfo_target = active_sequence.cv_matrix[i];
+				lfo_steps = i - active_step;
+				break;
+			}
+			i++;
+		}
+		if (lfo_target == -1) {
+			i = 0;
+			while (i < current_step) {
+				if (active_sequence.step_matrix[i]) {
+					lfo_target = active_sequence.cv_matrix[i];
+					lfo_steps = i + active_sequence.sequence_length - active_step;
+					break;
+				}
+				i++;
+			}	
+		}
+		if (lfo_target == -1) {
+			lfo_target = active_sequence.cv_matrix[active_step];
+			lfo_steps = 1;
+		}
+		lfo_time = lfo_steps * calculated_tempo;
+	}
 }
 
 void Sequencer::setActiveNote(){
@@ -467,6 +504,20 @@ void Sequencer::updateGlide() {
 			note_reached = true;
 		}
 	} 
+
+	updateLfo();
+}
+
+void Sequencer:: updateLfo(){
+	if (active_sequence.cv_mode == 1) { // LFO
+		//if (seq_record_mode) return;
+		//linear interpolate using active step value, lfo_target, lfo_steps, 
+		int glidekeeper = getGlideKeeper(active_step); 
+		//instantaneous_pitch = ((active_note2 * glidekeeper) + prev_note2 * (glide_time - glidekeeper)) / double(glide_time);
+		current_lfo_value = ((lfo_target * glidekeeper) + lfo_prev * (lfo_time - glidekeeper)) / lfo_time;
+		// current_lfo_value = active_sequence.cv_matrix[active_step]; 
+		dacVar->setOutput(1, GAIN_2, 1, current_lfo_value * 40.0);
+	}
 }
 
 int Sequencer::getGlideKeeper(int step){
@@ -710,6 +761,9 @@ bool Sequencer::setCv2(int analogValue){
 	int newVal = getCv2DisplayValue(analogValue);
 	if (active_sequence.cv_mode == 3){ 
 		if (current_scale_tones[newVal % 12] == false) return false; //skip out-of-scale tones for quantization
+	} else if (active_sequence.cv_mode == 1 && seq_record_mode) { //while recording LFO mode, use real-time values
+		lfo_target = newVal;
+		//dacVar->setOutput(1, GAIN_2, 1, newVal * 40);
 	}
 	bool changed = active_sequence.cv_matrix[editedStep()] != newVal;
 	active_sequence.cv_matrix[editedStep()] = newVal;
