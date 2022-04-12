@@ -248,7 +248,7 @@ void AnalogIo::setCVMode(int analogValue){
 void AnalogIo::setAudition(int analogValue){
 
 	display_param = MODE_PARAM;
-	if (analogValue > 512) {
+	if (analogValue > 900) {
 		audition = true;
 		strcpy_P(modename, (char *)pgm_read_word(&(audition_names[1])));  // Necessary casts and dereferencing, just copy (for PROGMEM keywords in flash)
 	} else {

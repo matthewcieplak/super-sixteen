@@ -136,6 +136,7 @@ class Sequencer{
         static void onResetIn();
         void setLfoTarget();
         void updateLfo();
+        void runStepEffects();
 
 };
 

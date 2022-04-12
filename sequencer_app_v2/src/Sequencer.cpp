@@ -216,6 +216,19 @@ void Sequencer::incrementStep() {
 		digitalWrite(CLOCK_OUT_PIN, HIGH);
 	} 
 
+	runStepEffects();
+
+	if (active_sequence.step_matrix[current_step]) {
+		active_step = current_step;
+		prev_note = active_note;
+		prev_note2 = active_note2;
+		setLfoTarget();
+	}
+
+	step_incremented = true;
+}
+
+void Sequencer::runStepEffects(){
 	if (seq_recording_effect) { //while recording, respect mutate button state and record active/inactive to current step
 		active_sequence.effect_matrix[current_step] = mutate_button;
 	} else if (active_sequence.effect_matrix[current_step]) { //if mutation data is recorded, play it back
@@ -260,15 +273,6 @@ void Sequencer::incrementStep() {
 		bool step_active =  (rand() % 20) <= active_sequence.effect_depth ? true : false;
 		active_sequence.step_matrix[current_step] = step_active;
 	}
-
-	if (active_sequence.step_matrix[current_step]) {
-		active_step = current_step;
-		prev_note = active_note;
-		prev_note2 = active_note2;
-		setLfoTarget();
-	}
-
-	step_incremented = true;
 }
 
 void Sequencer::setLfoTarget(){
@@ -355,6 +359,20 @@ void Sequencer::setPitchOutput(uint8_t step){
 }
 
 void Sequencer::setCv2Output(uint8_t step){
+	if (seq_effect_mode && (active_sequence.effect == EFFECT_CHORD || active_sequence.effect == EFFECT_CHORD_Q || active_sequence.effect == EFFECT_SUB)) {
+			if (active_sequence.effect == EFFECT_CHORD_Q) {
+				active_note2 = quantizePitch(active_sequence.pitch_matrix[step] + active_sequence.effect_depth - 12) + 24;
+				active_note2 = active_note2 + ((active_sequence.octave_matrix[step] + 3) * 12) + (active_sequence.transpose - 24) + (random_octave * 12);
+			} else if ( active_sequence.effect == EFFECT_CHORD) {
+				active_note2 = active_note + active_sequence.effect_depth - 12;
+			} else { //sub osc mode - offset by octaves
+				active_note2 = active_note + (active_sequence.effect_depth - 3) * 12;
+			}
+			current_note_value2 = calibrationVar->getCalibratedOutput(active_note2, 1);
+			dacVar->setOutput(1, GAIN_2, 1, current_note_value2);
+			return;
+	}
+
 	switch (active_sequence.cv_mode) {
 		case 0://normal linear mode, same as lfo without smoothing
 		case 1://lfo interpolated step mode
@@ -627,7 +645,7 @@ int Sequencer::incrementScale(int amount){
 
 int Sequencer::incrementEffect(int amount){
 	uint8_t &effect = active_sequence.effect;
-	setMinMaxParamUnsigned(effect, amount, 0, 12);	
+	setMinMaxParamUnsigned(effect, amount, 0, 16);	
 	turing_mode = false;
 	switch (active_sequence.effect) {
 		case EFFECT_GLIDE: active_sequence.effect_depth = active_sequence.glide_length; break; //set useful default rather than zero 
@@ -640,6 +658,10 @@ int Sequencer::incrementEffect(int amount){
 		case EFFECT_TURING1: active_sequence.effect_depth = 4; turing_mode = true; break; 
 		case EFFECT_TURING2: active_sequence.effect_depth = 12; turing_mode = true; break; 
 		case EFFECT_TURING3: active_sequence.effect_depth = 12; turing_mode = true; break; 
+		case EFFECT_CHORD:
+		case EFFECT_CHORD_Q: active_sequence.effect_depth = 19; break;
+		case EFFECT_SUB: active_sequence.effect_depth = 2; break;
+		case EFFECT_VIBRATO: active_sequence.effect_depth = 5; break;
 	}
 	incrementEffectDepth(0);
 	return active_sequence.effect;
@@ -662,6 +684,10 @@ int Sequencer::incrementEffectDepth(int amount){
 		case EFFECT_TURING1: 
 		case EFFECT_TURING2:
 		case EFFECT_TURING3: setMinMaxParamUnsigned(depth, amount, 1, 20); break;
+		case EFFECT_CHORD:
+		case EFFECT_CHORD_Q: setMinMaxParamUnsigned(depth, amount, 0, 24); return active_sequence.effect_depth - 12; break;
+		case EFFECT_SUB: setMinMaxParamUnsigned(depth, amount, 0, 6); return active_sequence.effect_depth - 3; break;
+		case EFFECT_VIBRATO: setMinMaxParamUnsigned(depth, amount, 0, 10); 
 	}
 	return active_sequence.effect_depth;
 }

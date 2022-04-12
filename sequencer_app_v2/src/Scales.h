@@ -42,6 +42,10 @@ const char effect_9[] PROGMEM = "ROL"; //roll
 const char effect_10[] PROGMEM = "TU1"; //random pitch
 const char effect_11[] PROGMEM = "TU2"; //stutter
 const char effect_12[] PROGMEM = "TU3"; //roll
+const char effect_13[] PROGMEM = "CHO"; //chord (unquantized)
+const char effect_14[] PROGMEM = "CHQ"; //chord (quantized)
+const char effect_15[] PROGMEM = "SUB"; //sub oscillator (octaves)
+const char effect_16[] PROGMEM = "VIB"; //vibrato
 
 static const uint8_t EFFECT_REPEAT    = 0;
 static const uint8_t EFFECT_REVERSE   = 1;
@@ -56,8 +60,12 @@ static const uint8_t EFFECT_ROLL      = 9;
 static const uint8_t EFFECT_TURING1   = 10;
 static const uint8_t EFFECT_TURING2   = 11;
 static const uint8_t EFFECT_TURING3   = 12;
+static const uint8_t EFFECT_CHORD     = 13;
+static const uint8_t EFFECT_CHORD_Q   = 14;
+static const uint8_t EFFECT_SUB       = 15;
+static const uint8_t EFFECT_VIBRATO   = 16;
 
-const char *const effect_names[] PROGMEM = { effect_0, effect_1, effect_2, effect_3, effect_4, effect_5, effect_6, effect_7, effect_8, effect_9, effect_10, effect_11, effect_12 };
+const char *const effect_names[] PROGMEM = { effect_0, effect_1, effect_2, effect_3, effect_4, effect_5, effect_6, effect_7, effect_8, effect_9, effect_10, effect_11, effect_12, effect_13, effect_14, effect_15, effect_16 };
 
 
 
