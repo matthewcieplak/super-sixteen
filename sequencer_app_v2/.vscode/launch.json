@@ -1,5 +1,5 @@
 // AUTOMATICALLY GENERATED FILE. PLEASE DO NOT MODIFY IT MANUALLY
-
+//
 // PIO Unified Debugger
 //
 // Documentation: https://docs.platformio.org/page/plus/debugging.html
@@ -15,11 +15,11 @@
             "executable": "c:/Users/PC/Documents/Arduino/super-sixteen/sequencer_app_v2/.pio/build/uno/firmware.elf",
             "projectEnvName": "uno",
             "toolchainBinDir": "C:/Users/PC/.platformio/packages/toolchain-atmelavr@1.50400.0/bin",
+            "internalConsoleOptions": "openOnSessionStart",
             "preLaunchTask": {
                 "type": "PlatformIO",
                 "task": "Pre-Debug"
-            },
-            "internalConsoleOptions": "openOnSessionStart"
+            }
         },
         {
             "type": "platformio-debug",
@@ -29,6 +29,16 @@
             "projectEnvName": "uno",
             "toolchainBinDir": "C:/Users/PC/.platformio/packages/toolchain-atmelavr@1.50400.0/bin",
             "internalConsoleOptions": "openOnSessionStart"
+        },
+        {
+            "type": "platformio-debug",
+            "request": "launch",
+            "name": "PIO Debug (without uploading)",
+            "executable": "c:/Users/PC/Documents/Arduino/super-sixteen/sequencer_app_v2/.pio/build/uno/firmware.elf",
+            "projectEnvName": "uno",
+            "toolchainBinDir": "C:/Users/PC/.platformio/packages/toolchain-atmelavr@1.50400.0/bin",
+            "internalConsoleOptions": "openOnSessionStart",
+            "loadMode": "manual"
         }
     ]
 }
