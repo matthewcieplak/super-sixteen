@@ -28,7 +28,6 @@ struct sequence {
     uint8_t sequence_tempo = 120;
 
     int8_t transpose = 24;
-
     int8_t song_next_seq = 0;
     int8_t song_loops = 0;
     int8_t cv_mode = 0;
@@ -69,12 +68,13 @@ class Sequencer{
         bool setPitch(int newVal);
         bool setOctave(int8_t newVal);
         bool setDuration(uint16_t newVal);
-        bool setCv(int newVal);
+        bool setCv2(int newVal);
         void auditionNote(bool gate, int timer);
 
         bool getGlide();
         int getPitch();
-        char *getPitchName(int pitch, int octave);
+        int getMidiPitch(int pitch, int octave);
+        char *getPitchName(uint8_t note);
         int getOctave();
         int getDuration();
         int getCv();
@@ -93,7 +93,6 @@ class Sequencer{
         void onBarSelect(byte bar);
         void clearSequence();
         void setActiveNote();
-        void setCv2();
         void memoizeSequenceLength();
         void pickupPositionInNewSequence();
         void paste(byte bar1, byte bar2);
@@ -104,6 +103,8 @@ class Sequencer{
 
         void setAudition(bool audition);
         void setCVMode(uint8_t mode);
+        uint8_t getCvMode();
+        int8_t getCv2DisplayValue();
         //void getSongLoops(int loops);
 
 
@@ -119,8 +120,10 @@ class Sequencer{
         void updateGlide();
         void updateGate();
         uint8_t editedStep();
-        void setActivePitch(uint8_t step);
-        void quantizeActivePitch(uint8_t step);
+        void setPitchOutput(uint8_t step);
+        void setCv2Output(uint8_t step);
+        int8_t quantizePitch(int8_t pitch);
+        uint8_t getCv2Value(uint8_t step);
         void initializeSerializedSequence();
         void generateTuringPitches();
         void updateSwingCalc();

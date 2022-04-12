@@ -8,9 +8,11 @@ class Calibration {
 
         void updateCalibration();
 
-        int getCalibratedOutput(double pitch);
+        int getCalibratedOutput(double pitch, bool output);
 
         int incrementCalibration(int amt, int step);
+
+        void setCalibration2Value(int value, int step);
 
         int incrementBrightness(int amt);
 

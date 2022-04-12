@@ -52,6 +52,7 @@ char pitchname[10];
 
 int prev_note = 0;
 int active_note = 0;
+int active_note2 = 0;//for cv2
 int active_pitch = 0;
 int calculated_tempo = tempo_millis;
 unsigned int calculated_step_length = 10;
@@ -67,6 +68,7 @@ bool turing_mode = false;
 bool auditioning = false;
 
 double current_note_value = 0;
+double current_note_value2 = 0; // for cv2 in quantized mode
 Calibration *calibrationVar;
 Dac *dacVar;
 
@@ -276,7 +278,7 @@ void Sequencer::setActiveNote(){
 			}
 		} else {
 			note_reached = false;
-			setActivePitch(active_step);
+			setPitchOutput(active_step);
 
 			digitalWrite(GATE_PIN, active_sequence.step_matrix[active_step] ? HIGH : LOW);
 			gate_active = active_sequence.step_matrix[active_step];
@@ -289,12 +291,15 @@ void Sequencer::setActiveNote(){
 	}
 }
 
-void Sequencer::setActivePitch(uint8_t step){
-	quantizeActivePitch(step);
+void Sequencer::setPitchOutput(uint8_t step){
+	if (seq_effect_mode && turing_mode) {
+		generateTuringPitches();
+	}
+	active_note = quantizePitch(active_sequence.pitch_matrix[step]) + 24;
 	active_note = ((active_sequence.octave_matrix[step] + 3) * 12) + 
-					active_pitch + 
-					(active_sequence.transpose - 24)  + 
-					(random_octave * 12);
+	 				active_note + 
+	 				(active_sequence.transpose - 24)  + 
+	 				(random_octave * 12);
 
 	if (seq_effect_mode && active_sequence.effect == EFFECT_OCTAVE) {
 		active_note += (active_sequence.effect_depth - 4) * 12;
@@ -303,69 +308,97 @@ void Sequencer::setActivePitch(uint8_t step){
 	if (active_sequence.glide_matrix[step] && !auditioning) {
 		updateGlide();
 	} else {
-		current_note_value = calibrationVar->getCalibratedOutput(active_note);
+		current_note_value = calibrationVar->getCalibratedOutput(active_note, 0);
 		dacVar->setOutput(0, GAIN_2, 1, current_note_value);
 	}
 
-	
-	int cv_out =  active_sequence.cv_matrix[step] * 40;
-	dacVar->setOutput(1, GAIN_2, 1, cv_out);
+	setCv2Output(step);	
 }
 
+void Sequencer::setCv2Output(uint8_t step){
+	switch (active_sequence.cv_mode) {
+		case 0://normal linear mode, same as lfo without smoothing
+		case 1://lfo interpolated step mode
+			current_note_value2 =  active_sequence.cv_matrix[step] * 40;
+			break;
+		case 2://interval mode - relative to pitch1
+			active_note2 = quantizePitch(active_sequence.pitch_matrix[step] + active_sequence.cv_matrix[step]) + 24;
+			active_note2 = ((active_sequence.octave_matrix[step] + 3) * 12) + 
+	 				active_note2 + 
+	 				(active_sequence.transpose - 24)  + 
+	 				(random_octave * 12);
+
+			current_note_value2 = calibrationVar->getCalibratedOutput(active_note2, 1);
+			break;
+		case 3://note mode - quantized pitch
+			active_note2 = quantizePitch(active_sequence.cv_matrix[step] - 24) + 36;
+			active_note2  += (active_sequence.transpose - 24) + (random_octave * 12);
+			current_note_value2 = calibrationVar->getCalibratedOutput(active_note2, 1);
+			break;
+	}
+	dacVar->setOutput(1, GAIN_2, 1, current_note_value2);
+
+}
+
+int8_t Sequencer::getCv2DisplayValue(){
+	// switch (active_sequence.cv_mode) {
+	// 	case 0://normal linear mode, same as lfo without smoothing
+	// 	case 1://lfo interpolated step mode
+	// 		return active_sequence.cv_matrix[selected_step];
+	// 		break;
+	// 	case 2: //interval mode - relative to pitch1
+	// 		return active_sequence.cv_matrix[selected_step] - 24;
+	// 		break;
+	// 	case 3: //note mode - quantized pitch
+	// 		return active_sequence.cv_matrix[selected_step] + 24; //doesnt work with unsigned
+	// 		break;
+	// }
+	// return 0;
+	return active_sequence.cv_matrix[selected_step];
+}
+
+
 void Sequencer::auditionNote(bool gate, int timer){ //used only for audition
-	setActivePitch(selected_step);
+	setPitchOutput(selected_step);
 	digitalWrite(GATE_PIN, gate ? HIGH : LOW);
 	gate_active = gate;
 	auditioning = true;
 	audition_step_length = timekeeper + timer;
 }
 
-void Sequencer::setCv2(){
-	switch (active_sequence.cv_mode) {
-		case 0://normal linear mode
-			break;
-		case 1://LFO - smoothed mode
-			break;
-		case 2://note mode - quantized pitch
-			break;
-		case 3://interval mode - referenced to pitch output
-			break;
-	}
-}
 
-void Sequencer::quantizeActivePitch(uint8_t step){
-	active_pitch = active_sequence.pitch_matrix[step];
+int8_t Sequencer::quantizePitch(int8_t pitch_to_quantize){
+	int8_t pitch = pitch_to_quantize;
 	random_octave = 0;
 	if (seq_effect_mode && active_sequence.effect == EFFECT_RANDOM) {
-		active_pitch += (rand() % active_sequence.effect_depth) * (rand() % 10 > 5 ? -1 : 1);
-	} else if (seq_effect_mode && turing_mode) {
-		generateTuringPitches();
+		pitch += (rand() % active_sequence.effect_depth) * (rand() % 10 > 5 ? -1 : 1);
 	} else if (seq_effect_mode && active_sequence.effect == EFFECT_TRANSPOSE) {
-		active_pitch += active_sequence.effect_depth - 24;
+		pitch += active_sequence.effect_depth - 24;
 	}
 
 	//normalize to 2 octaves
-	if (active_pitch > 12) {
-		if (active_pitch > 36) random_octave = 3;
-		else random_octave = active_pitch >= 24 ? 2 : 1;
-		active_pitch = active_pitch % 12;
-	} else if (active_pitch < -12) {
-		if (active_pitch <= -36) random_octave = -3;
-		random_octave = active_pitch <= -24 ? -2 : -1;
-		active_pitch = active_pitch % -12;
+	if (pitch > 12) {
+		if (pitch >= 36) random_octave = 3;
+		else random_octave = pitch >= 24 ? 2 : 1;
+		pitch = pitch % 12;
+	} else if (pitch < -12) {
+		if (pitch <= -36) random_octave = -3;
+		random_octave = pitch <= -24 ? -2 : -1;
+		pitch = pitch % -12;
 	}
 
 	//quantize to scale
-	if (current_scale_tones[active_pitch >= 0 ? active_pitch : active_pitch + 12] == false) {
+	if (current_scale_tones[pitch >= 0 ? pitch : pitch + 12] == false) {
 		if (active_sequence.scale == 3) { //major pentatonic
-			active_pitch += quantize_pen[active_pitch >= 0 ? active_pitch : active_pitch + 12];
+			pitch += quantize_pen[pitch >= 0 ? pitch : pitch + 12];
 		} else if (active_sequence.scale == 4) { //minor pentatonic
-			active_pitch += quantize_pem[active_pitch >= 0 ? active_pitch : active_pitch + 12];
+			pitch += quantize_pem[pitch >= 0 ? pitch : pitch + 12];
 		} else {//all others (diatonics)
-			active_pitch += quantize_map[active_pitch >= 0 ? active_pitch : active_pitch + 12];
+			pitch += quantize_map[pitch >= 0 ? pitch : pitch + 12];
 		}
-		
 	}
+
+	return pitch;
 }
 
 void Sequencer::generateTuringPitches(){
@@ -392,7 +425,7 @@ void Sequencer::generateTuringPitches(){
 		active_sequence.octave_matrix[active_step] = max(min(active_sequence.octave_matrix[active_step], 2), -2);
 		active_sequence.pitch_matrix[active_step] = (active_sequence.pitch_matrix[active_step] % 12) * octave_adjust;
 	}
-	active_pitch = active_sequence.pitch_matrix[active_step];
+	//return active_sequence.pitch_matrix[active_step];
 }
 
 int Sequencer::getCurrentStep(){
@@ -412,7 +445,7 @@ void Sequencer::updateGlide() {
 
 		double instantaneous_pitch = active_note * (stopTime - glidekeeper) / stopTime;
 		note_reached = (instantaneous_pitch < 1);
-		current_note_value = calibrationVar->getCalibratedOutput(instantaneous_pitch);
+		current_note_value = calibrationVar->getCalibratedOutput(instantaneous_pitch, 0);
 		dacVar->setOutput(0, GAIN_2, 1, current_note_value);
 		if (note_reached) {
 			digitalWrite(GATE_PIN, LOW);
@@ -425,11 +458,11 @@ void Sequencer::updateGlide() {
 			//if (!note_reached) {
 				note_reached = false;
 				double instantaneous_pitch = ((active_note * glidekeeper) + prev_note * (glide_time - glidekeeper)) / double(glide_time);
-				current_note_value = calibrationVar->getCalibratedOutput(instantaneous_pitch);
+				current_note_value = calibrationVar->getCalibratedOutput(instantaneous_pitch, 0);
 				dacVar->setOutput(0, GAIN_2, 1, current_note_value);
 			// }
 		} else if (!note_reached) {
-			current_note_value = calibrationVar->getCalibratedOutput(active_note);
+			current_note_value = calibrationVar->getCalibratedOutput(active_note, 0);
 			dacVar->setOutput(0, GAIN_2, 1, current_note_value);
 			note_reached = true;
 		}
@@ -673,7 +706,21 @@ bool Sequencer::setDuration(uint16_t newVal){
 	active_sequence.duration_matrix[editedStep()] = newVal;
 	return changed;
 }
-bool Sequencer::setCv(int newVal){
+bool Sequencer::setCv2(int analogValue){
+	int newVal = 0;
+	switch (active_sequence.cv_mode) {
+		case 0:
+		case 1:
+			newVal = analogValue / 10.23; //convert from 0-1024 to 0-100 for int8_t
+			break;
+		case 2: //interval mode, normalize -24 / 0 / + 24
+			newVal = analogValue / 21.1 - 24;
+			break;
+		case 3: //note mode, normalize 12-72?
+			newVal = analogValue / 21.1 + 12;
+			if (current_scale_tones[newVal % 12] == false) return false;
+			break;
+	}
 	bool changed = active_sequence.cv_matrix[editedStep()] != newVal;
 	active_sequence.cv_matrix[editedStep()] = newVal;
 	return changed;
@@ -729,6 +776,10 @@ int Sequencer::getDuration(){
 	return active_sequence.duration_matrix[selected_step];
 }
 int Sequencer::getCv(){
+	// switch (active_sequence.cv_mode) {
+	// 	case 0: return_active_sequencebreak;
+	// 	case 1: break;
+	// }
 	return active_sequence.cv_matrix[selected_step];
 }
 
@@ -740,16 +791,20 @@ int Sequencer::getSelectedStep(){
 	return selected_step;
 }
 
-char *Sequencer::getPitchName(int pitch, int octave){
-	//uint8_t note = (getPitch() + active_sequence.transpose) % 12; //convert -12/+12 to 0 - 11
+int Sequencer::getMidiPitch(int pitch, int octave){
 	double midinote = ((double(octave) + 3) * 12) + double(pitch) + active_sequence.transpose - 24;
 
-	int note = min(max(midinote, 0), 127); //don't show unusable pitch adjustments at extreme octaves
+	return min(max(midinote, 0), 127); //don't show unusable pitch adjustments at extreme octaves
+}
+
+char *Sequencer::getPitchName(uint8_t note){
+	//uint8_t note = (getPitch() + active_sequence.transpose) % 12; //convert -12/+12 to 0 - 11
+	
 	//set note name
 	strcpy_P(pitchname, (char *)pgm_read_word(&(note_names[note % 12])));  // Necessary casts and dereferencing, just copy (for PROGMEM keywords in flash)
 
 	//set octave
-	char octavename = min(midinote, 127) / 12;
+	char octavename = min(note, 127) / 12;
 	pitchname[2] = octavename + 48; //convert 0-9 number to ascii number code (48-57)
 	return pitchname;
 }
@@ -842,6 +897,7 @@ void Sequencer::clearSequence(){
     active_sequence.transpose = 24;
 	active_sequence.song_next_seq = 0;
 	active_sequence.song_loops = 0;
+	active_sequence.cv_mode = 0;
 }
 
 void Sequencer::loadScale(uint8_t scale){
@@ -920,6 +976,10 @@ void Sequencer::incrementClock(int steps) { //manually adjsut clock from front p
 
 void Sequencer::setCVMode(uint8_t mode){
 	active_sequence.cv_mode = mode;
+}
+
+uint8_t Sequencer::getCvMode(){
+	return active_sequence.cv_mode;
 }
 
 }

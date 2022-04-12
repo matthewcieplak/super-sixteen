@@ -27,11 +27,15 @@ class AnalogIo{
 
         void poll(bool shift_state);
 
+        void pollCalibration();
+
         void displaySelectedParam();
         void recordCurrentParam();
 
         int getDisplayNum();
         char * getDisplayAlpha();
+
+        int getCalibrationValue();
      
         int display_param;
         int display_num;
@@ -43,7 +47,7 @@ class AnalogIo{
 
     private:
 
-        void readInput(int i, bool shift_state);
+        bool readInput(int i, bool shift_state, bool write_values);
 
         void setPitch(int analogValue);
 
@@ -60,6 +64,10 @@ class AnalogIo{
         void setCVMode(int analogValue);
 
         void setAudition(int analogValue);
+
+        void displayPitchName();
+
+        void displayCvName();
 };
 
 }

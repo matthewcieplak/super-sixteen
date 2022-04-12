@@ -85,6 +85,7 @@ bool Memory::finishSaving(){
     misc2[0] = seq->transpose;
     misc2[1] = seq->song_next_seq;
     misc2[2] = seq->song_loops;
+    misc2[3] = seq->cv_mode;
 
 
     for(int i = 0; i<PATCH_SEQ_LENGTH; i++){ //split 16-bit numbers into 2 bytes
@@ -161,6 +162,7 @@ bool Memory::load(int patch){
     seq->transpose        = misc2[0];
     seq->song_next_seq    = misc2[1];
     seq->song_loops       = misc2[2];
+    seq->cv_mode          = misc2[3];
     
     sequencerVar4->setTempoFromSequence();
     sequencerVar4->pickupPositionInNewSequence();

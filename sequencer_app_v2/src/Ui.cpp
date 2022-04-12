@@ -126,6 +126,15 @@ void Ui::poll(){
 			cancelSaveOrLoad(); //TODO remove if this is too jittery to use
 		}
 		//}
+	} else if (ui_mode == CALIBRATE_MODE) {
+		analogIo.pollCalibration();
+		if (analogIo.paramChanged()){
+			int8_t cal_value = analogIo.getCalibrationValue();
+			display.setDisplayNum(cal_value);
+			calibrationVar2->setCalibration2Value(cal_value, calibration_step);
+			dacVar2->setOutput(1, GAIN_2, 1, calibrationVar2->getCalibratedOutput(calibration_step * 12, 1));
+
+		}
 	}
 }
 
@@ -525,7 +534,8 @@ void Ui::updateCalibration(int step) {
 	ledMatrix.selectStep(step);
 	ledMatrix.setMatrix(calibration_matrix);
 	display.setDisplayNum(calibrationVar2->getCalibrationValue(calibration_step));
-	dacVar2->setOutput(0, GAIN_2, 1, calibrationVar2->getCalibratedOutput(calibration_step * 12));
+	dacVar2->setOutput(0, GAIN_2, 1, calibrationVar2->getCalibratedOutput(calibration_step * 12, 0));
+	dacVar2->setOutput(1, GAIN_2, 1, calibrationVar2->getCalibratedOutput(calibration_step * 12, 1));
 }
 
 bool Ui::isSequencing(){

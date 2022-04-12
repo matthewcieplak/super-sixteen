@@ -29,7 +29,7 @@ const int analog_pins[4] = {
 #define DISPLAY_MODE_NOTE_NAME 127
 
 #define DEFAULT_CHANGE_THRESHOLD 10
-#define LOW_CHANGE_THRESHOLD 4
+#define LOW_CHANGE_THRESHOLD 2
 
 const int analog_params[4] = { PITCH_PARAM, OCTAVE_PARAM, DURATION_PARAM, CV_PARAM };
 bool editing = false;
@@ -79,10 +79,15 @@ void AnalogIo::poll(bool shift_state) {
 	} else {
 		change_threshold = DEFAULT_CHANGE_THRESHOLD;
 	}
-	readInput(analogMultiplexor, shift_state);
+	readInput(analogMultiplexor, shift_state, editing);
 }
 
-void AnalogIo::readInput(int i, bool shift_state){
+void AnalogIo::pollCalibration(){
+	change_threshold = LOW_CHANGE_THRESHOLD;
+	param_changed = readInput(3, false, false);
+}
+
+bool AnalogIo::readInput(int i, bool shift_state, bool write_values){
 	// if (i > 3 || i < 0) return; //sometimes we get desynced by interrupts, and analogRead on a wrong pin is fatal
 	analogValues[i] = analogRead(analog_pins[i]);
 	param_changed = false;
@@ -90,14 +95,18 @@ void AnalogIo::readInput(int i, bool shift_state){
 	if (abs(analogValues[i] - lastAnalogValues[i]) > change_threshold) {
 		recorded_input_active = true;
 		lastAnalogValues[i] = analogValues[i];
-		if (!editing) return;
+		if (!write_values) {
+			return true;
+		}
 		switch (i) {
 		case PITCH_PARAM: shift_state ? setAudition(analogValues[0]) : setPitch(analogValues[0]); break;
 		case OCTAVE_PARAM: setOctave(analogValues[1]); break;
 		case DURATION_PARAM: setDuration(analogValues[2]); break;
 		case CV_PARAM: shift_state ? setCVMode(analogValues[3]) : setCV(analogValues[3]); break;
 		}
+		return true;
 	}
+	return false;
 }
 
 void AnalogIo::setPitch(int analogValue) {
@@ -107,7 +116,7 @@ void AnalogIo::setPitch(int analogValue) {
 	if (recording || sequencerVar->setPitch(newVal)) {
 		setDisplayNum(newVal);
 		//if (display_mode == DISPLAY_MODE_NOTE_NAME)
-			setDisplayAlpha(sequencerVar->getPitchName(newVal, sequencerVar->getOctave())); 
+		displayPitchName();
 		if (audition) sequencerVar->auditionNote(true, 120);
 	}
 }
@@ -118,7 +127,7 @@ void AnalogIo::setOctave(int analogValue) {
 	if (recording || sequencerVar->setOctave(newVal)) {
 		setDisplayNum(newVal);
 		//if (display_mode == DISPLAY_MODE_NOTE_NAME)
-		setDisplayAlpha(sequencerVar->getPitchName(sequencerVar->getPitch(), newVal)); 
+		displayPitchName();
 		if (audition) sequencerVar->auditionNote(true, 120);
 	}
 
@@ -132,25 +141,25 @@ void AnalogIo::setDuration(long analogValue) { //need extra bits for exponent op
 
 void AnalogIo::setCV(int analogValue) {
 	display_param = CV_PARAM;
-	int newVal = analogValue / 10.23; //convert from 0-1024 to 0-100
-	if (recording || sequencerVar->setCv(newVal)) setDisplayNum(newVal);
+	if (recording || sequencerVar->setCv2(analogValue)) {
+		setDisplayNum(sequencerVar->getCv2DisplayValue());
+		displayCvName();
+	}
 }
+
 
 void AnalogIo::displaySelectedParam() {
 	//update display to show currently selected step value if applicable
 	switch (display_param) {
-	case PITCH_PARAM: setDisplayNum(sequencerVar->getPitch()); break;		
-	case OCTAVE_PARAM: setDisplayNum(sequencerVar->getOctave()); break;
+	case PITCH_PARAM: setDisplayNum(sequencerVar->getPitch()); displayPitchName(); break;		
+	case OCTAVE_PARAM: setDisplayNum(sequencerVar->getOctave()); displayPitchName(); break;
 	case DURATION_PARAM: setDisplayNum(sequencerVar->getDuration()); break;
-	case CV_PARAM:       setDisplayNum(sequencerVar->getCv()); break;
+	case CV_PARAM:       setDisplayNum(sequencerVar->getCv()); displayCvName(); break;
 	}
 }
 
 void AnalogIo::setDisplayNum(int displayNum){
 	display_num = displayNum;
-	if (paramIsAlpha()) {
-		setDisplayAlpha(sequencerVar->getPitchName(sequencerVar->getPitch(), sequencerVar->getOctave())); 
-	}
 	param_changed = true;
 }
 
@@ -165,13 +174,22 @@ void AnalogIo::setDisplayAlpha(char displayAlpha[]){
 	param_changed = true;
 }
 
+void AnalogIo::displayPitchName(){
+	setDisplayAlpha(sequencerVar->getPitchName(sequencerVar->getMidiPitch(sequencerVar->getPitch(), sequencerVar->getOctave()))); 
+}
+
+void AnalogIo::displayCvName(){
+	if (sequencerVar->getCvMode() == 3) //NOTE MODE
+		setDisplayAlpha(sequencerVar->getPitchName(sequencerVar->getMidiPitch(sequencerVar->getCv(), -3)));
+}
+
 
 void AnalogIo::recordCurrentParam(){
 	if (!recorded_input_active) return;
 	// if (sequencerVar->currentStepActive()) {
 		recording = false; //temporarily flip to enable one-step record
 		change_threshold = -1; //record regardless of motion
-		readInput(display_param, false); // read the currently selected param and write it to the sequence	
+		readInput(display_param, false, true); // read the currently selected param and write it to the sequence	
 		// change_threshold = DEFAULT_CHANGE_THRESHOLD;
 		recording = true;
 	// }
@@ -199,7 +217,9 @@ bool AnalogIo::paramChanged(){
 }
 
 bool AnalogIo::paramIsAlpha(){
-	return (display_param == MODE_PARAM) || ((display_mode == DISPLAY_MODE_NOTE_NAME) && (display_param == PITCH_PARAM || display_param == OCTAVE_PARAM));
+	return ((display_mode == DISPLAY_MODE_NOTE_NAME) && (display_param == PITCH_PARAM || display_param == OCTAVE_PARAM)) || 
+			(display_param == MODE_PARAM) || 
+			(display_param == CV_PARAM && sequencerVar->getCvMode() == 3);
 }
 
 void AnalogIo::setCVMode(int analogValue){
@@ -241,6 +261,12 @@ void AnalogIo::setAudition(int analogValue){
 	param_changed = true;
 	// sequencerVar->setAudition(audition);
 	return;
+}
+
+int AnalogIo::getCalibrationValue(){
+	int calibration_value = (analogValues[3] - 512) / 10; //convert from 0_1024 to 0_88 to -12_0_12
+	setDisplayNum(calibration_value);
+	return calibration_value;
 }
 
 
