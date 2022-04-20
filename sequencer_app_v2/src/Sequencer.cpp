@@ -497,6 +497,13 @@ void Sequencer::updateGlide() {
 			gate_active = false;
 			auditioning = false;
 		}
+	} else if (seq_effect_mode && active_sequence.effect == EFFECT_VIBRATO) {
+		int vibe_note_value = sin(getGlideKeeper(active_step) / 20.0) * 2.0 * active_sequence.effect_depth; 
+		dacVar->setOutput(0, GAIN_2, 1, vibe_note_value+current_note_value);
+		if (active_sequence.cv_mode == 3 || active_sequence.cv_mode == 2) {
+			dacVar->setOutput(1, GAIN_2, 1, vibe_note_value+current_note_value2);
+		}
+
 	} else if ((active_sequence.step_matrix[active_step] && active_sequence.glide_matrix[active_step]) || (seq_effect_mode && active_sequence.effect == EFFECT_GLIDE)) {
 		int glidekeeper = getGlideKeeper(active_step);
 		if (glidekeeper < glide_time) {
@@ -687,7 +694,7 @@ int Sequencer::incrementEffectDepth(int amount){
 		case EFFECT_CHORD:
 		case EFFECT_CHORD_Q: setMinMaxParamUnsigned(depth, amount, 0, 24); return active_sequence.effect_depth - 12; break;
 		case EFFECT_SUB: setMinMaxParamUnsigned(depth, amount, 0, 6); return active_sequence.effect_depth - 3; break;
-		case EFFECT_VIBRATO: setMinMaxParamUnsigned(depth, amount, 0, 10); 
+		case EFFECT_VIBRATO: setMinMaxParamUnsigned(depth, amount, 0, 30); 
 	}
 	return active_sequence.effect_depth;
 }
@@ -917,6 +924,11 @@ void Sequencer::setEffectMode(bool state){
 			}
 		}
 
+	} else if (active_sequence.effect == EFFECT_VIBRATO) {
+		dacVar->setOutput(0, GAIN_2, 1, current_note_value);
+		if (active_sequence.cv_mode == 3 || active_sequence.cv_mode == 2) {
+			dacVar->setOutput(1, GAIN_2, 1, current_note_value2);
+		}
 	}
 }
 
