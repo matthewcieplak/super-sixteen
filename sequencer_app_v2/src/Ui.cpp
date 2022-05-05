@@ -40,6 +40,7 @@ bool copy_state = false;
 bool encoder_bumped = false;
 byte erase_counter = 0;
 bool just_selected_param = false;
+bool mutate_on_reset_input = false;
 
 const byte SEQUENCE_MODE = 0;
 const byte CALIBRATE_MODE = 1;
@@ -358,6 +359,7 @@ void Ui::onEncoderIncrement(int increment_amount) {
 		display.blinkDisplay(true, 300, 0);
 	} else if (ui_mode == EDIT_PARAM_MODE) {
 		int param = 0;
+		encoder_bumped = false;
 		if (current_param == PARAM_SCALE) {
 			param = sequencerVar2->incrementScale(increment_amount);
 			strcpy_P(scalename, (char *)pgm_read_word(&(scale_names[param])));  // Necessary casts and dereferencing, just copy (for PROGMEM keywords in flash)
@@ -480,7 +482,7 @@ void Ui::selectStep(int step){
 	buttons.setGlideLed(sequencerVar2->getGlide());
 }
 
-bool calibration_matrix[16] = {1,1,1,1, 1,1,1,1, 1,0,0,0, 1,0,1,1};
+bool calibration_matrix[16] = {1,1,1,1, 1,1,1,1, 1,0,1,0, 1,0,1,1};
 
 void Ui::initializeCalibrationMode() {
 	cancelSaveOrLoad();
@@ -515,13 +517,23 @@ void Ui::updateCalibration(int step) {
 		return;
 	}
 
-	if (step == 12) {
+	if (step == 12) { //encoder left/right
 		calibration_step = step;
 		invertEncoder();
 		return;
 	}
 
-	if (step == 8) {
+	if (step == 10) {
+		calibration_step = step+1;
+		bool mutate_on_reset = sequencerVar2->toggleMutateOnReset();
+		if (mutate_on_reset) {
+			display.setDisplayAlpha("MUT");
+		} else {
+			display.setDisplayAlpha("RST");
+		}
+	}
+
+	if (step == 8) { // brightness
 		calibration_step = step+1;
 		display.setDisplayAlpha("BRT");
 		return;

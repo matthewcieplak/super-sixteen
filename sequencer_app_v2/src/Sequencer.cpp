@@ -84,6 +84,7 @@ static const int ROLL_PAUSE_DURATION = 5;
 const int CLOCK_PULSE_DURATION = 10; //milliseconds pulse width of clock output
 elapsedMillis timekeeper;
 unsigned int stepkeeper;
+bool mutate_on_reset;
 
 void Sequencer::init(Calibration& calibration, Dac& dac) {
 	calibrationVar = &calibration;
@@ -106,7 +107,7 @@ void Sequencer::init(Calibration& calibration, Dac& dac) {
 	incrementScale(0);
 	incrementTempo(0);
 	updateGlideCalc();
-
+	mutate_on_reset = calibrationVar->readMutateOnReset();
 }
 
 void Sequencer::updateClock() {
@@ -145,9 +146,16 @@ void Sequencer::updateClock() {
 	//reset high/clock high - reset playhead then increment step
 
 	if (reset_in_active == false && ((PIND & _BV(4)) >> 4) == LOW) { //digitalRead(RESET_PIN) == LOW) { //
-		onReset(); 
+		if (mutate_on_reset) {
+			onMutate(true);
+		} else {
+			onReset(); 
+		}
 		reset_in_active = true;
 	} else if (reset_in_active == true && ((PIND & _BV(4)) >> 4) == HIGH) {
+		if (mutate_on_reset) {
+			onMutate(false);
+		}
 		reset_in_active = false;
 	}
 
@@ -233,7 +241,7 @@ void Sequencer::runStepEffects(){
 		active_sequence.effect_matrix[current_step] = mutate_button;
 	} else if (active_sequence.effect_matrix[current_step]) { //if mutation data is recorded, play it back
 		if (!seq_effect_mode) setEffectMode(true); //don't re-trigger effect mode, to avoid messing up timings set by prev steps
-	} else if (seq_effect_mode && !mutate_button) {
+	} else if (seq_effect_mode && !mutate_button && !(mutate_on_reset && reset_in_active)) {
 		setEffectMode(false); //turn off sequenced effect after recorded activity (when not manually engaged) 
 	}
 	
@@ -934,8 +942,12 @@ void Sequencer::setEffectMode(bool state){
 
 void Sequencer::onMutateButton(bool state){
 	mutate_button = state;
+	onMutate(state);
+}
+
+void Sequencer::onMutate(bool state){
 	setEffectMode(state);
-	if (seq_record_mode && state) {
+	if (seq_record_mode && mutate_button) {
 		active_sequence.effect_matrix[current_step] = state;
 		seq_recording_effect = state;
 	}
@@ -1008,8 +1020,16 @@ void Sequencer::loadScale(uint8_t scale){
 
 void Sequencer::pickupPositionInNewSequence(){
 	if (prev_sequence_length != active_sequence.sequence_length) {
+		//TODO test and integrate better mismatched phrase pickup
 		if (clock_step > 0) {
-			clock_step = active_sequence.sequence_length - (prev_sequence_length - clock_step);
+			if (active_sequence.sequence_length >= prev_sequence_length && clock_step <= 4) { 
+				//when switching to a longer sequence at or near the first beat, 
+				//keep playhead at the beginning rather than picking up an extra bar
+				//no-op: clock_step = clock_step
+			} else { 
+				//by default, align next beat 1 by picking up position from end of sequence
+				clock_step = active_sequence.sequence_length - (prev_sequence_length - clock_step);
+			}
 		}
 		while (clock_step < 0) {
 			clock_step += active_sequence.sequence_length;
@@ -1081,6 +1101,12 @@ void Sequencer::setCVMode(uint8_t mode){
 
 uint8_t Sequencer::getCvMode(){
 	return active_sequence.cv_mode;
+}
+
+bool Sequencer::toggleMutateOnReset(){
+	mutate_on_reset = !mutate_on_reset;
+	calibrationVar->writeMutateOnReset(mutate_on_reset);
+	return mutate_on_reset;
 }
 
 }

@@ -7,8 +7,11 @@
 namespace supersixteen{
 
 const int calibrationEEPROMAddress = 0;
+//const int encoder_invert_address = 16; happens in encoder.cpp
 const int displayModeEEPROMAddress = 20; //set whether to display numbers or note names C0, B1
 const int calibrationValuesEEPROMAddress2 = 24; //9 values
+const int mutateOnResetAddress = 36;
+
 
 unsigned int octave_values[9] = { 0,   500,  1000, 1500, 2000, 2500, 3000, 3500, 4000 };
 //int calibration_values[9]   = { 0,   0,    0,    0,    0,    0,    0,    0,    0    };
@@ -105,6 +108,14 @@ int Calibration::readDisplayModeValue(){
 
 void Calibration::writeDisplayModeValue(int displayMode){
 	EEPROM.update(displayModeEEPROMAddress, displayMode);
+}
+
+bool Calibration::readMutateOnReset(){
+	return EEPROM.read(mutateOnResetAddress);
+}
+
+void Calibration::writeMutateOnReset(bool val){
+	EEPROM.update(mutateOnResetAddress, val);
 }
 
 }

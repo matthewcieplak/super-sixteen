@@ -28,8 +28,9 @@ const int analog_pins[4] = {
 #define DISPLAY_MODE_NUMERIC 0
 #define DISPLAY_MODE_NOTE_NAME 127
 
-#define DEFAULT_CHANGE_THRESHOLD 10
-#define LOW_CHANGE_THRESHOLD 3
+#define SHIFT_CHANGE_THRESHOLD 20
+#define DEFAULT_CHANGE_THRESHOLD 12
+#define LOW_CHANGE_THRESHOLD 5
 
 const int analog_params[4] = { PITCH_PARAM, OCTAVE_PARAM, DURATION_PARAM, CV_PARAM };
 bool editing = false;
@@ -92,7 +93,7 @@ bool AnalogIo::readInput(int i, bool shift_state, bool write_values){
 	analogValues[i] = analogRead(analog_pins[i]);
 	param_changed = false;
 
-	if (abs(analogValues[i] - lastAnalogValues[i]) > change_threshold) {
+	if (abs(analogValues[i] - lastAnalogValues[i]) > (shift_state ? SHIFT_CHANGE_THRESHOLD : change_threshold)) {
 		recorded_input_active = true;
 		lastAnalogValues[i] = analogValues[i];
 		if (!write_values) {

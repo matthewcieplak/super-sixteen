@@ -27,6 +27,10 @@ class Calibration {
         int readDisplayModeValue();
 
         void writeDisplayModeValue(int displayMode);
+
+        bool readMutateOnReset();
+
+        void writeMutateOnReset(bool val);
 };
 
 }

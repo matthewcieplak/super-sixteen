@@ -103,6 +103,8 @@ class Sequencer{
 
         void setAudition(bool audition);
         void setCVMode(uint8_t mode);
+        bool toggleMutateOnReset();
+
         uint8_t getCvMode();
         int8_t getCv2DisplayValue(int analogvalue);
         //void getSongLoops(int loops);
@@ -137,6 +139,7 @@ class Sequencer{
         void setLfoTarget();
         void updateLfo();
         void runStepEffects();
+        void onMutate(bool state);
 
 };
 
