@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Display.h"
-#include "AnalogIo.h"
+#include "AnalogIO.h"
 #include <MCP23S17.h>
 
 namespace supersixteen{
