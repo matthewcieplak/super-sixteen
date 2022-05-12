@@ -3,7 +3,7 @@ Super Sixteen is an open-source/open-hardware sequencer for the Eurorack synthes
 
 ![Photo of the Super Sixteen module](https://s3.amazonaws.com/extralifeinstruments.com/images/product/supersixteen-metal.jpg)
 
-At just 20HP, it is a compact and powerful 64-step control voltage sequencer with 99 song patch memory, motion recording, scale selection, realtime pitch and rhythm effects, and a uniquely powerful two-handed programming interface.
+At just 20HP, it is a compact and powerful 64-step control voltage sequencer with 99 song patch memory, motion recording, scale selection, realtime pitch and rhythm effects, paraphonic modes, generative mutations, and a uniquely powerful two-handed programming interface.
 
 Video blogs [documenting the sequencer progress are available on youtube](
 https://www.youtube.com/playlist?list=PLXcIAQij6ZZKMTHAFv8BHvEnsouNYhx3t).
@@ -17,7 +17,7 @@ https://www.youtube.com/playlist?list=PLXcIAQij6ZZKMTHAFv8BHvEnsouNYhx3t).
 *   INTERACTIVE BOM (html - for easy part placement) [CPU board](http://extralifeinstruments.com/docs/super-sixteen/ibom-cpu.html) / [Control board](http://extralifeinstruments.com/docs/super-sixteen/ibom-control.html)
 *   [Video build guide](https://www.youtube.com/watch?v=RGmp3aG8Nbw&feature=emb_title)
 *   [1v/oct calibration tutorial video](https://www.youtube.com/watch?v=QJvS-ma6CHY)
-*   [Build support thread on Muff Wiggler](https://muffwiggler.com/forum/viewtopic.php?f=97&t=238514)
+*   [Build support thread on Mod Wiggler](https://modwiggler.com/forum/viewtopic.php?f=97&t=238514)
 *   [ModularGrid page](https://modulargrid.net/e/other-unknown-extralife-instruments-super-sixteen)
 
 # Hardware files
@@ -27,7 +27,7 @@ Kicad and gerber files for four PCBs are included in this repository. The projec
 Primary development of the firmware takes place in [sequencer_app_v2](https://github.com/matthewcieplak/super-sixteen/tree/master/sequencer_app_v2) using the Arduino C++ libraries but compiled using PlatformIO and typical C header files. (The older, pure Arduino version, [sequencer_app](https://github.com/matthewcieplak/super-sixteen/tree/master/sequencer_app) is here only for archival purposes and is unmaintained). You can find the .hex files to upload using the arduino updater in [sequencer_app_v2/build](https://github.com/matthewcieplak/super-sixteen/tree/master/sequencer_app_v2/build). The shell commands for updating using avrdude are contained in [upload.sh](sequencer_app_v2/upload.sh), though you may also use the Arduino IDE to upload new firmware.
 
 # Troubleshooting
-Please refer to the [official build support thread on Muff Wiggler](https://muffwiggler.com/forum/viewtopic.php?f=97&t=238514) to post a query. You may find your question has already been answered!
+Please refer to the [official build support thread on Mod Wiggler](https://modwiggler.com/forum/viewtopic.php?f=97&t=238514) to post a query. You may find your question has already been answered!
 
 Common issues:
 * *My sequencer doesn't turn on!* - Check your soldering carefully, under magnification and bright light! 90% of functional issues can be traced to bad connections caused by missing or cold solder joints. A common place to find bad joints is on the header connector pins, as they are on the opposite side of the board from the othres.
