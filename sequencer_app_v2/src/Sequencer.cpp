@@ -387,7 +387,7 @@ void Sequencer::setCv2Output(uint8_t step){
 			current_note_value2 =  active_sequence.cv_matrix[step] * 40;
 			break;
 		case 2://interval mode - relative to pitch1
-			active_note2 = quantizePitch(active_sequence.pitch_matrix[step] + active_sequence.cv_matrix[step]) + 24;
+			active_note2 = quantizePitch(active_sequence.pitch_matrix[step] + active_sequence.cv_matrix[step]);
 			active_note2 = ((active_sequence.octave_matrix[step] + 3) * 12) + 
 	 				active_note2 + 
 	 				(active_sequence.transpose - 24)  + 
@@ -396,7 +396,7 @@ void Sequencer::setCv2Output(uint8_t step){
 			current_note_value2 = calibrationVar->getCalibratedOutput(active_note2, 1);
 			break;
 		case 3://note mode - quantized pitch
-			active_note2 = quantizePitch(active_sequence.cv_matrix[step] - 24) + 36;
+			active_note2 = quantizePitch(active_sequence.cv_matrix[step]);
 			active_note2  += (active_sequence.transpose - 24) + (random_octave * 12);
 			current_note_value2 = calibrationVar->getCalibratedOutput(active_note2, 1);
 			break;
