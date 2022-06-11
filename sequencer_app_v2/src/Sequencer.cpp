@@ -346,7 +346,7 @@ void Sequencer::setPitchOutput(uint8_t step){
 	if (seq_effect_mode && turing_mode) {
 		generateTuringPitches();
 	}
-	active_note = quantizePitch(active_sequence.pitch_matrix[step]) + 24;
+	active_note = quantizePitch(active_sequence.pitch_matrix[step]); // + 24;
 	active_note = ((active_sequence.octave_matrix[step] + 3) * 12) + 
 	 				active_note + 
 	 				(active_sequence.transpose - 24)  + 
@@ -1039,6 +1039,7 @@ void Sequencer::pickupPositionInNewSequence(){
 
 	song_mode_loops = 0;
 	song_mode = active_sequence.song_next_seq > 0 && active_sequence.song_loops > 0;
+	
 	time_for_next_sequence = false;
 }
 
