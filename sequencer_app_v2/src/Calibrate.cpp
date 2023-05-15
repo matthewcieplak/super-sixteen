@@ -75,7 +75,7 @@ int Calibration::getBrightness(){
 }
 
 void Calibration::readCalibrationValues() {
-	for (int i = 0; i < 9; i++) {
+	for (int i = 1; i < 9; i++) {
 		calibration_values[i] = EEPROM.read(i) - 100; //convert 0-255 to +/-99
 		if (abs(calibration_values[i]) > 99) { //discard garbage
 			calibration_values[i] = 0;
@@ -83,7 +83,7 @@ void Calibration::readCalibrationValues() {
 	}
 
 	//to avoid memory collision, the cv2 valeus are stored separately
-	for (int i = 9; i < 18; i++) { 
+	for (int i = 10; i < 18; i++) { 
 		calibration_values[i] = EEPROM.read(i+calibrationValuesEEPROMAddress2) - 100; //convert 0-255 to +/-99
 		if (abs(calibration_values[i]) > 99) { //discard garbage
 			calibration_values[i] = 0;

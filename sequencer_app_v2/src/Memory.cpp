@@ -33,7 +33,7 @@ void Memory::erase(){
 
 
 char* Memory::getFileName(int patch){
-    char filenum[3];
+    char filenum[4];
     itoa(patch, filenum, 10);
     memset(&filename[0], 0, sizeof(filename));
     strcpy(filename, filenum);

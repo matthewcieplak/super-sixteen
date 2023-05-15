@@ -819,7 +819,7 @@ int8_t Sequencer::getCv2DisplayValue(int analogValue){
 			newVal = analogValue / 10.23; //convert from 0-1024 to 0-100 for int8_t
 			break;
 		case 2: //interval mode, normalize -24 / 0 / + 24
-			newVal = analogValue / 21.1 - 24;
+			newVal = analogValue / 21.0 - 24.5;
 			break;
 		case 3: //note mode, normalize 12-60?
 			newVal = analogValue / 21.1 + 12;
@@ -1019,6 +1019,8 @@ void Sequencer::loadScale(uint8_t scale){
 }
 
 void Sequencer::pickupPositionInNewSequence(){
+	song_mode_loops = 0;
+
 	if (prev_sequence_length != active_sequence.sequence_length) {
 		//TODO test and integrate better mismatched phrase pickup
 		if (clock_step > 0) {
@@ -1029,6 +1031,7 @@ void Sequencer::pickupPositionInNewSequence(){
 			} else { 
 				//by default, align next beat 1 by picking up position from end of sequence
 				clock_step = active_sequence.sequence_length - (prev_sequence_length - clock_step);
+				song_mode_loops = -1;
 			}
 		}
 		while (clock_step < 0) {
@@ -1037,7 +1040,7 @@ void Sequencer::pickupPositionInNewSequence(){
 		prev_sequence_length = active_sequence.sequence_length;
 	}
 
-	song_mode_loops = 0;
+
 	song_mode = active_sequence.song_next_seq > 0 && active_sequence.song_loops > 0;
 	
 	time_for_next_sequence = false;
